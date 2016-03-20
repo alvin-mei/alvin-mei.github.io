@@ -57,21 +57,21 @@
 
 
 
-<meta name="description" content="AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。
-   在AQS中提供了">
+<meta name="description" content="一、AQS简介AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。
+在AQS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ReenTrantLock技术内幕（一）">
 <meta property="og:url" content="http://alvin-mei.github.io/2016/03/19/20160319_ReenTrantLock-1/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。
-   在AQS中提供了">
+<meta property="og:description" content="一、AQS简介AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。
+在AQS">
 <meta property="og:image" content="http://img.blog.csdn.net/20160319235313454">
 <meta property="og:image" content="http://img.blog.csdn.net/20160319235335470">
-<meta property="og:updated_time" content="2016-03-20T14:09:51.000Z">
+<meta property="og:updated_time" content="2016-03-20T15:00:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ReenTrantLock技术内幕（一）">
-<meta name="twitter:description" content="AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。
-   在AQS中提供了">
+<meta name="twitter:description" content="一、AQS简介AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。
+在AQS">
 <meta name="twitter:image" content="http://img.blog.csdn.net/20160319235313454">
 
 
@@ -314,17 +314,17 @@
       
 
       
-        <p>AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。</p>
-<p>   在AQS中提供了下面五个方法的接口，供子类实现：</p>
+        <h3 id="一、AQS简介"><a href="#一、AQS简介" class="headerlink" title="一、AQS简介"></a>一、AQS简介</h3><p>AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。</p>
+<p>在AQS中提供了下面五个方法的接口，供子类实现：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">tryRelease</span><span class="params">(<span class="keyword">int</span> arg)</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">tryAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">tryReleaseShared</span><span class="params">(<span class="keyword">int</span> arg)</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">isHeldExclusively</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
 <p>这里在实现过程中一般有两种模式，一种是共享模式、一种是独占模式。共享模式表示多个线程能够共享摸个锁，独占模式表示只有一个线程能够获取方法执行权，其他线程必须等待。下面直接看一下ReenTrantLock的实现原理。</p>
 <p>ReenTrantLock默认是非公平锁，但是在使用ReenTrantLock的过程中，所有的操作都是委派至一个Sync类上，Sync类继承了AQS，如下图所示：</p>
 <p><img src="http://img.blog.csdn.net/20160319235313454" alt="这里写图片描述"></p>
 <p>而NonfairSync表示已非公平锁形式实现AQS，FairSycn表示使用公平所形式实现AQS。</p>
-<p>##CLH队列</p>
-<p>在AQS中，通过改进CLH队列结构来管理线程状态，以便完成tryLock、lockInterruptibly等操作。先看一下AQS中CLH队列的元素：</p>
+<h3 id="二、CLH队列"><a href="#二、CLH队列" class="headerlink" title="二、CLH队列"></a>二、CLH队列</h3><p>在AQS中，通过改进CLH队列结构来管理线程状态，以便完成tryLock、lockInterruptibly等操作。先看一下AQS中CLH队列的元素：</p>
 <p><img src="http://img.blog.csdn.net/20160319235335470" alt="这里写图片描述"></p>
-<p>可以看到AQS将CLH队列设计成为一个阻塞队列，每一个节点表示需要竞争资源的线程，而每个节点有自身的状态，它只需要关注自身的状态与前驱节点状态就行，而且通过队列管理，对资源竞争的操作只出现在队列头与队列尾，这大大降低了系统的压力，提升了系统的性能。下面我们直接看源码。<br>之前介绍的ReentrantLock中有两种锁，一种是公平锁，一种是非公平锁。下面看一下公平锁的lock方法：</p>
+<p>可以看到AQS将CLH队列设计成为一个阻塞队列，每一个节点表示需要竞争资源的线程，而每个节点有自身的状态，它只需要关注自身的状态与前驱节点状态就行，而且通过队列管理，对资源竞争的操作只出现在队列头与队列尾，这大大降低了系统的压力，提升了系统的性能。</p>
+<h3 id="三、ReentrantLock中的Lock与UnLock实现原理"><a href="#三、ReentrantLock中的Lock与UnLock实现原理" class="headerlink" title="三、ReentrantLock中的Lock与UnLock实现原理"></a>三、ReentrantLock中的Lock与UnLock实现原理</h3><p>之前介绍的ReentrantLock中有两种锁，一种是公平锁，一种是非公平锁。下面看一下公平锁的lock方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            acquire(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
 <p>可以看到FairSync的lock方法直接调用了AQS的acquire方式来获取锁。我们看一下AQS中的acquire方法代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">            selfInterrupt();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
@@ -333,10 +333,10 @@
 <p>由上述方法可以看出，在AQS的CLH队列中，队列头表示拥有执行权的线程，后续线程需要获取锁，则需要加入到CLH队列尾部，若CLH队列为空，则表示该线程能直接获取锁。addWaiter返回一个node，代表着当前CLH的队尾。现在看一下acquireQueue方法的代码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> failed = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">               <span class="comment">//获取当前节点的前一个节点，也就是我们刚才addWaiter返回的node节点的前置节点。</span></span><br><span class="line">                <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">               <span class="comment">//若该前置节点是头结点，且当前节点已经获取到锁，那么将node设置为头结点并返回。</span></span><br><span class="line">                <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) &#123;</span><br><span class="line">                    setHead(node);</span><br><span class="line">                    p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                    failed = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">return</span> interrupted;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//若不是，则判断前一个节点的状态，看是需要挂起还是中断</span></span><br><span class="line">                <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                <span class="comment">//若需要挂起，则使用LockSupport中的park方法把当前线程挂起。</span></span><br><span class="line">                    parkAndCheckInterrupt())</span><br><span class="line">                    interrupted = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (failed)</span><br><span class="line">                <span class="comment">//若果有异常，则取消请求，将当前节点从队列中移除。</span></span><br><span class="line">                cancelAcquire(node);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>现在我们在理一下lock方法的执行顺序：先执行acquire方法，acquire方执行时，会先调用自行实现的tryAcquire获取锁，若获取锁成功，则直接执行线程；若不成功，则为当前线程创建一个node，加到CLH队列尾部，可以看到需要竞争锁线程进入到CLH队列中后，就要开始控制访问了，通过acquireQueued方法进行自旋，直到线程获取锁或者中断退出，在获取锁的期间，线程会处于阻塞状态，直到被唤醒获取锁。在AQS中只有一个线程能够在同一时刻继续运行，其他的进入等待状态。每一个线程是一个独立的个体，他们自己观察，当条件满足的时候（前节点是队列头且其CAS获取锁1操作成功），那么该线程就能运行了。下面来看一下ReenTrantLock中对tryAcquire的两种实现方式</p>
-<ol>
-<li>公平获取锁</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">           <span class="comment">//先获取当前线程并通过getState获取当前线程的状态</span></span><br><span class="line">            <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">            <span class="keyword">int</span> c = getState();</span><br><span class="line">           <span class="comment">//若为0则执行以下操作：</span></span><br><span class="line">           <span class="comment">//1.通过hasQueuedPredecessors判断当前线程是否为CLH的头结点</span></span><br><span class="line">           <span class="comment">//2.通过CAS操作设置当前节点的状态</span></span><br><span class="line">           <span class="comment">//3.设置成功则让当先线程获取执行权，返回true</span></span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">                    compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">                    setExclusiveOwnerThread(current);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">           <span class="comment">//由于ReenTrantLock是可重入锁，所以这里获取当前拥有锁的线程，因为lock，unlock方法必须成对出现</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">          <span class="comment">//进行计数</span></span><br><span class="line">                <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">                <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">                setState(nextc);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>公平获取锁<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">           <span class="comment">//先获取当前线程并通过getState获取当前线程的状态</span></span><br><span class="line">            <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">            <span class="keyword">int</span> c = getState();</span><br><span class="line">           <span class="comment">//若为0则执行以下操作：</span></span><br><span class="line">           <span class="comment">//1.通过hasQueuedPredecessors判断当前线程是否为CLH的头结点</span></span><br><span class="line">           <span class="comment">//2.通过CAS操作设置当前节点的状态</span></span><br><span class="line">           <span class="comment">//3.设置成功则让当先线程获取执行权，返回true</span></span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">                    compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">                    setExclusiveOwnerThread(current);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">           <span class="comment">//由于ReenTrantLock是可重入锁，所以这里获取当前拥有锁的线程，因为lock，unlock方法必须成对出现</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">          <span class="comment">//进行计数</span></span><br><span class="line">                <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">                <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">                setState(nextc);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 
       
     </div>
@@ -362,8 +362,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/09/09/20150909_ssmdev_2/" rel="next" title="菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（下）">
-                <i class="fa fa-chevron-left"></i> 菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（下）
+              <a href="/2015/10/02/20151002_SpringMvcProblem/" rel="next" title="springMVC配置spring  AOP功能中遇到的问题">
+                <i class="fa fa-chevron-left"></i> springMVC配置spring  AOP功能中遇到的问题
               </a>
             
           </div>
@@ -440,7 +440,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -448,7 +448,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -457,7 +457,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -501,7 +501,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、AQS简介"><span class="nav-number">1.</span> <span class="nav-text">一、AQS简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、CLH队列"><span class="nav-number">2.</span> <span class="nav-text">二、CLH队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、ReentrantLock中的Lock与UnLock实现原理"><span class="nav-number">3.</span> <span class="nav-text">三、ReentrantLock中的Lock与UnLock实现原理</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
