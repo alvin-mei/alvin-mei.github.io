@@ -366,8 +366,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/10/31/Collection_Vector/" itemprop="url">
-                  Collection探究之Vector
+                <a class="post-title-link" href="/2016/03/02/java_concurrency_2/" itemprop="url">
+                  java并发原理（下）
                 </a>
               
             
@@ -380,397 +380,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-10-31T09:37:21+08:00" content="2015-10-31">
-              2015-10-31
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/10/31/Collection_Vector/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/31/Collection_Vector/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2015/10/31/Collection_Vector/" class="leancloud_visitors" data-flag-title="Collection探究之Vector">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          Vector与ArrayList一样内部是由数组组成的，它也是一个动态数组，但是由于其内部实现了线程安全机制，所以在性能方面较差，使用的次数也没有ArrayList那样频繁，下面我们来看一看Vector的源码。
-一、Vector的定义123public class Vector&lt;E&gt;    extends AbstractList&lt;E&gt;    implements List
-          ...
-
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/10/31/Collection_Vector/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/10/25/Collection_LinkedList/" itemprop="url">
-                  Collection探究之LinkedList
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-10-25T09:35:35+08:00" content="2015-10-25">
-              2015-10-25
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/10/25/Collection_LinkedList/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/25/Collection_LinkedList/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2015/10/25/Collection_LinkedList/" class="leancloud_visitors" data-flag-title="Collection探究之LinkedList">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          LinkedList与ArrayList一样都是List的实现类，但是它内部结构与ArrayList有着极大的不同。LinkedList内部是由一个双向的链表组成，由链表的特征我们可以知道，LinkedList它插入元素的效率非常高而要查找元素的话因为需要遍历整个链表所以性能比较差。
-一、LinkedList类定义123public class LinkedList&lt;E&gt;    ext
-          ...
-
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/10/25/Collection_LinkedList/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/10/24/Collection_ArrayList/" itemprop="url">
-                  Collection探究之ArrayList
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-10-24T14:02:33+08:00" content="2015-10-24">
-              2015-10-24
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2015/10/24/Collection_ArrayList/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/24/Collection_ArrayList/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2015/10/24/Collection_ArrayList/" class="leancloud_visitors" data-flag-title="Collection探究之ArrayList">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          一、ArrayList简介ArrayList是我们在平时使用的最多的集合类之一，其本质原理为由数组组成的链表，也就是动态数组。由数组的特性我们可以得知在查找数据时，可以根据数组的下标来快速定位我们想查询的数据，效率非常高。但是也具有相应的缺点，由于数组是连续的，所以在插入数据时会牵扯到数组的复制与扩容且在多线程环境下是不安全的，因此ArrayList适合查询多，数据插入少的场合。下面我们来对Arr
-          ...
-
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/10/24/Collection_ArrayList/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/10/02/SpringMvcProblem/" itemprop="url">
-                  springMVC配置spring  AOP功能中遇到的问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-10-02T20:57:50+08:00" content="2015-10-02">
-              2015-10-02
+            <time itemprop="dateCreated" datetime="2016-03-02T23:09:45+08:00" content="2016-03-02">
+              2016-03-02
             </time>
           </span>
 
@@ -795,8 +406,8 @@
 
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/常见问题/" itemprop="url" rel="index">
-                    <span itemprop="name">常见问题</span>
+                  <a href="/categories/Java/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
                   </a>
                 </span>
 
@@ -811,8 +422,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/10/02/SpringMvcProblem/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/02/SpringMvcProblem/" itemprop="commentsCount"></span>
+                <a href="/2016/03/02/java_concurrency_2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/02/java_concurrency_2/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -822,7 +433,7 @@
 
           
           
-             <span id="/2015/10/02/SpringMvcProblem/" class="leancloud_visitors" data-flag-title="springMVC配置spring  AOP功能中遇到的问题">
+             <span id="/2016/03/02/java_concurrency_2/" class="leancloud_visitors" data-flag-title="java并发原理（下）">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -845,11 +456,12 @@
       
         
           
-          由于在开发过程中我们会将一些比较共用方法提取出来，采用spring AOP来对其进行管理，在各模块中将方法进行织入，但是在springMVC与spring整合过程中，我出现了一些问题，现在记录下来，方便大家参考。我出现的问题是：我的spring AOP配置是正确的，但是我的方法却怎么无法织入到目标上，经过查询发现，原来在对spring配置与springMVC配置过程中，若采用注解自动扫描包方式，如
+          VolatileVolatile关键字用于确保共享数据的可见性与有序性，但是并不能保证方法的原子性，在程序中对Volatile关键字使用得当的话，它比synchronized的使用和执行成本会更低，因为他不会引起线程的上下文切换和调度。
+先讲一下重排序，重排序是什么?我们所编写的程序会经过编译器编译，然后写入内存中。在执行时，CPU会从内存中读取并执行，在这里，编译器与CPU为了提高程序执行时的效
           ...
 
           <div class="post-more-link text-center">
-            <a class="btn" href="/2015/10/02/SpringMvcProblem/#more" rel="contents">
+            <a class="btn" href="/2016/03/02/java_concurrency_2/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -896,8 +508,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/09/20/SpringMvcGarbled/" itemprop="url">
-                  SpringMVC开发过程中的中文乱码问题
+                <a class="post-title-link" href="/2016/02/22/java_concurrency_1/" itemprop="url">
+                  java并发原理（上）
                 </a>
               
             
@@ -910,8 +522,149 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-09-20T14:12:50+08:00" content="2015-09-20">
-              2015-09-20
+            <time itemprop="dateCreated" datetime="2016-02-22T22:50:54+08:00" content="2016-02-22">
+              2016-02-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/22/java_concurrency_1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/22/java_concurrency_1/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/02/22/java_concurrency_1/" class="leancloud_visitors" data-flag-title="java并发原理（上）">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          一、CPU是如何执行程序的我们知道CPU是用来处理、运算计算机所有数据的功能模块，而我们的程序在运行时会将数据保存在内存中，CPU会去内存中读取计算时所使用到的数据。随着CPU运算速度的升级，出现了CPU运算速度与内存读写速度不匹配的情况，为了解决CPU在运行时总是等待从内存中读写数据从而导致CPU空闲而影响效率的问题，在CPU内部集成了一定量的寄存器与高速缓存，来提高CPU在处理数据时的效率。现
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/02/22/java_concurrency_1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/02/02/java_executor/" itemprop="url">
+                  java中Executor线程池讲解与实例
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-02-02T15:14:45+08:00" content="2016-02-02">
+              2016-02-02
             </time>
           </span>
 
@@ -940,8 +693,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/09/20/SpringMvcGarbled/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/20/SpringMvcGarbled/" itemprop="commentsCount"></span>
+                <a href="/2016/02/02/java_executor/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/02/java_executor/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -951,7 +704,7 @@
 
           
           
-             <span id="/2015/09/20/SpringMvcGarbled/" class="leancloud_visitors" data-flag-title="SpringMVC开发过程中的中文乱码问题">
+             <span id="/2016/02/02/java_executor/" class="leancloud_visitors" data-flag-title="java中Executor线程池讲解与实例">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -974,13 +727,12 @@
       
         
           
-          相信大家在开发初期遇到中文乱码问题一定是一头雾水，不是数据库乱码了就是页面乱码了或者传值时乱码。其实解决乱码的途径很简单，就是统一编码与解码的类型，我把自己遇到的乱码问题整理出来，希望能够对大家有用。
-一、IDEA配置首先需要对ide下的编码做统一，我使用的是idea，在页面下面如图所示都有文件编码类型，选择utf-8：
-配置完后，需要对idea的全局编码也进行配置,在idea的配置中进行设置，P
+          近期研究了一下java自带的线程池工具Executo，所以记录一下学习的内容。
+一、什么是线程池？线程池是预先创建线程的一种技术。线程池在还没有任务到来之前，创建一定数量的线程，放入空闲队列中。这些线程都是处于睡眠状态，即均为启动，不消耗CPU，而只是占用较小的内存空间。当请求到来之后，缓冲池给这次请求分配一个空闲线程，把请求传入此线程中运行，进行处理。当预先创建的线程都处于运行状态，即预制线程不
           ...
 
           <div class="post-more-link text-center">
-            <a class="btn" href="/2015/09/20/SpringMvcGarbled/#more" rel="contents">
+            <a class="btn" href="/2016/02/02/java_executor/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1027,8 +779,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/09/09/SSMdev_2/" itemprop="url">
-                  菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（下）
+                <a class="post-title-link" href="/2016/01/19/java_initialization/" itemprop="url">
+                  JAVA类的初始化顺序
                 </a>
               
             
@@ -1041,8 +793,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-09-09T18:25:34+08:00" content="2015-09-09">
-              2015-09-09
+            <time itemprop="dateCreated" datetime="2016-01-19T22:24:03+08:00" content="2016-01-19">
+              2016-01-19
             </time>
           </span>
 
@@ -1055,8 +807,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
                   </a>
                 </span>
 
@@ -1071,8 +823,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/09/09/SSMdev_2/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/09/SSMdev_2/" itemprop="commentsCount"></span>
+                <a href="/2016/01/19/java_initialization/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/19/java_initialization/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -1082,7 +834,7 @@
 
           
           
-             <span id="/2015/09/09/SSMdev_2/" class="leancloud_visitors" data-flag-title="菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（下）">
+             <span id="/2016/01/19/java_initialization/" class="leancloud_visitors" data-flag-title="JAVA类的初始化顺序">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1105,13 +857,12 @@
       
         
           
-          昨天介绍了mybatis与spring的整合，今天我们完成剩下的springmvc的整合工作。
-一、SpringMvc与Spring整合要整合springmvc首先得在web.xml中配置springmvc的前端控制器DispatcherServlet，它是springmvc的核心，为springmvc提供集中访问点，springmvc对页面的分派与调度功能主要靠它完成。
-在我们之前配置的web.
+          java类的初始化顺序是面试中常问到的一个问题，下面通过一个加载例子就可以让我们深入了解java类的加载顺序，而不是死记硬背。先定义一个父类Father
+12345678910111213141516171819202122232425262728public class Father &#123;    public static String str1 = "Father静态字符串";    
           ...
 
           <div class="post-more-link text-center">
-            <a class="btn" href="/2015/09/09/SSMdev_2/#more" rel="contents">
+            <a class="btn" href="/2016/01/19/java_initialization/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1158,8 +909,8 @@
             
               
                 
-                <a class="post-title-link" href="/2015/09/08/ssmdev_1/" itemprop="url">
-                  菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（上）
+                <a class="post-title-link" href="/2015/12/12/java_binarytree_traversing/" itemprop="url">
+                  二叉树非递归遍历实现－java版本
                 </a>
               
             
@@ -1172,8 +923,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-09-08T21:13:34+08:00" content="2015-09-08">
-              2015-09-08
+            <time itemprop="dateCreated" datetime="2015-12-12T10:52:31+08:00" content="2015-12-12">
+              2015-12-12
             </time>
           </span>
 
@@ -1186,8 +937,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
                   </a>
                 </span>
 
@@ -1202,8 +953,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/09/08/ssmdev_1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/08/ssmdev_1/" itemprop="commentsCount"></span>
+                <a href="/2015/12/12/java_binarytree_traversing/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/12/java_binarytree_traversing/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -1213,7 +964,7 @@
 
           
           
-             <span id="/2015/09/08/ssmdev_1/" class="leancloud_visitors" data-flag-title="菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（上）">
+             <span id="/2015/12/12/java_binarytree_traversing/" class="leancloud_visitors" data-flag-title="二叉树非递归遍历实现－java版本">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1236,12 +987,558 @@
       
         
           
-          由于本人愚钝，整合ssm框架真是费劲了全身的力气，所以打算写下这篇文章，一来是对整个过程进行一个回顾，二来是方便有像我一样的笨鸟看过这篇文章后对其有所帮助，如果本文中有不对的地方，也请大神们指教。
-一、代码结构整个项目的代码结构如图所示：controller为控制层，主要用于对业务模块的流程控制。dao为数据接入层，主要用于与数据库进行连接，访问数据库进行操作，这里定义了各种操作数据库的接口。ma
+          最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980//二叉树非递归先
           ...
 
           <div class="post-more-link text-center">
-            <a class="btn" href="/2015/09/08/ssmdev_1/#more" rel="contents">
+            <a class="btn" href="/2015/12/12/java_binarytree_traversing/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2015/11/18/java_binarytree/" itemprop="url">
+                  二叉树的实现Java版本
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-11-18T21:19:25+08:00" content="2015-11-18">
+              2015-11-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/18/java_binarytree/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/18/java_binarytree/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2015/11/18/java_binarytree/" class="leancloud_visitors" data-flag-title="二叉树的实现Java版本">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          在计算机科学中，二叉树是每个节点最多有两个子树的树结构。通常子树被称作“左子树”（left subtree）和“右子树”（right subtree）。二叉树常被用于实现二叉查找树和二叉堆。二叉树每个节点至多有两个子节点：左子节点与右子节点。二叉树的第i层最多有2^(i-1)个子节点。深度为k的二叉树的所有节点数量不超过2^k-1个。完全二叉树：深度为k都二叉树，除了第k层，其余各层子节点都达到上
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/11/18/java_binarytree/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2015/11/17/java_string_exercise/" itemprop="url">
+                  笔试面试中的字符串题目思路与简单解析JAVA版本
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-11-17T19:06:54+08:00" content="2015-11-17">
+              2015-11-17
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/面试/" itemprop="url" rel="index">
+                    <span itemprop="name">面试</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/17/java_string_exercise/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/17/java_string_exercise/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2015/11/17/java_string_exercise/" class="leancloud_visitors" data-flag-title="笔试面试中的字符串题目思路与简单解析JAVA版本">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          分享一些在笔试或者面试中会遇到的字符串类型的题目，这些题目都是我四处收集起来或者自己想到就做的题目，可能不是最优解，仅供大家参考，若有更好的方法也希望能够一起交流，本文会不定时的更新，希望能给需要用到的人带来帮助。
+ 1.判断两个字符串是否互为变形如str1=”asd”，str2 =”dsa”那么我们就说str1与str2互为变形，指的是两个字符串长度相同，含有的字母相同，每个字母的数量相同。
+1
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/11/17/java_string_exercise/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2015/11/16/Spring_Aop/" itemprop="url">
+                  菜鸟级Spring AOP开发简介
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-11-16T16:44:54+08:00" content="2015-11-16">
+              2015-11-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/16/Spring_Aop/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/16/Spring_Aop/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2015/11/16/Spring_Aop/" class="leancloud_visitors" data-flag-title="菜鸟级Spring AOP开发简介">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          最近用到了AOP编程，由于之前对这方面一直稀里糊涂的，所以打算写这篇文章来巩固一下自己的知识。
+一、什么是AOP？AOP是Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。在大型程序中，有许多重复的，不可少的功能，如日志记录、权限检查等功能，它们散落在我们程序的各个角落，如果我们有一天对这些功能的接口进
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/11/16/Spring_Aop/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2015/11/15/java_exercise/" itemprop="url">
+                  链表基础操作与常见题目Java实现
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-11-15T22:58:04+08:00" content="2015-11-15">
+              2015-11-15
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/15/java_exercise/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/15/java_exercise/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2015/11/15/java_exercise/" class="leancloud_visitors" data-flag-title="链表基础操作与常见题目Java实现">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          好久没有关注数据结构的题目了，最近回顾了一下，链表的基础题目大概有以下几种，用java实现了一下，大部分题目根据一下链接而来
+
+http://www.jb51.net/article/71885.htm
+
+自己实现了一遍，收益良多，所以分享给大家。1234567891011121314151617181920212223242526272829303132333435363738394041424
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/11/15/java_exercise/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1270,6 +1567,10 @@
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1308,7 +1609,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">21</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1316,7 +1617,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1325,7 +1626,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

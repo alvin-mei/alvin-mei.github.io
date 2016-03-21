@@ -1,0 +1,958 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java,多线程," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="VolatileVolatile关键字用于确保共享数据的可见性与有序性，但是并不能保证方法的原子性，在程序中对Volatile关键字使用得当的话，它比synchronized的使用和执行成本会更低，因为他不会引起线程的上下文切换和调度。
+先讲一下重排序，重排序是什么?我们所编写的程序会经过编译器编译，然后写入内存中。在执行时，CPU会从内存中读取并执行，在这里，编译器与CPU为了提高程序执行时的效">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java并发原理（下）">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/03/02/java_concurrency_2/index.html">
+<meta property="og:site_name" content="隐忍以行">
+<meta property="og:description" content="VolatileVolatile关键字用于确保共享数据的可见性与有序性，但是并不能保证方法的原子性，在程序中对Volatile关键字使用得当的话，它比synchronized的使用和执行成本会更低，因为他不会引起线程的上下文切换和调度。
+先讲一下重排序，重排序是什么?我们所编写的程序会经过编译器编译，然后写入内存中。在执行时，CPU会从内存中读取并执行，在这里，编译器与CPU为了提高程序执行时的效">
+<meta property="og:image" content="http://img.blog.csdn.net/20160302231234112">
+<meta property="og:image" content="http://img.blog.csdn.net/20160302231304894">
+<meta property="og:image" content="http://img.blog.csdn.net/20160302231324004">
+<meta property="og:image" content="http://img.blog.csdn.net/20160302231405536">
+<meta property="og:updated_time" content="2016-03-21T02:48:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java并发原理（下）">
+<meta name="twitter:description" content="VolatileVolatile关键字用于确保共享数据的可见性与有序性，但是并不能保证方法的原子性，在程序中对Volatile关键字使用得当的话，它比synchronized的使用和执行成本会更低，因为他不会引起线程的上下文切换和调度。
+先讲一下重排序，重排序是什么?我们所编写的程序会经过编译器编译，然后写入内存中。在执行时，CPU会从内存中读取并执行，在这里，编译器与CPU为了提高程序执行时的效">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160302231234112">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> java并发原理（下） | 隐忍以行 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?fec02795d75452b708e3b71ad19f8584";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">隐忍以行</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                java并发原理（下）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-02T23:09:45+08:00" content="2016-03-02">
+              2016-03-02
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/02/java_concurrency_2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/02/java_concurrency_2/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/03/02/java_concurrency_2/" class="leancloud_visitors" data-flag-title="java并发原理（下）">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Volatile"><a href="#Volatile" class="headerlink" title="Volatile"></a>Volatile</h3><p>Volatile关键字用于确保共享数据的可见性与有序性，但是并不能保证方法的原子性，在程序中对Volatile关键字使用得当的话，它比synchronized的使用和执行成本会更低，因为他不会引起线程的上下文切换和调度。</p>
+<h4 id="先讲一下重排序，重排序是什么"><a href="#先讲一下重排序，重排序是什么" class="headerlink" title="先讲一下重排序，重排序是什么?"></a>先讲一下重排序，重排序是什么?</h4><p>我们所编写的程序会经过编译器编译，然后写入内存中。在执行时，CPU会从内存中读取并执行，在这里，编译器与CPU为了提高程序执行时的效率，会对代码的执行顺序进行优化，但代码输出的结果并不会改变，所以从宏观上我们认为程序是按照我们的思路来运行的，这里有三种重排序：</p>
+<ol>
+<li>编译器重排序：在不改变代码语义的情况下，对重新对代码执行顺序进行排序。</li>
+<li>CPU重排序：我们的代码在CPU处理时，会被编译成各种指令，若不存在数据依赖性，处理器在执行代码语句时，可以对其生成的指令进行重排序。</li>
+<li>缓存的重排序：在CPU对缓存进行读/写时，加载与存储的操作是存在乱序的。</li>
+</ol>
+<p>所以在单线程运行情况下的，重排序是提升程序的执行效率，这些重排序对程序运行是无害的，而在多线程运行情况下，线程交替执行则会出问题。先看一个比较常见的例子：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Counter</span></span>&#123;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">inc</span><span class="params">()</span></span>&#123;</span><br><span class="line">    count++;                  <span class="comment">//-------操作1</span></span><br><span class="line">    flag = <span class="keyword">true</span>;             <span class="comment">//-------操作2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(falg)&#123;</span><br><span class="line">        flag = <span class="keyword">false</span>;         <span class="comment">//-------操作3</span></span><br><span class="line">        <span class="keyword">return</span> count;        <span class="comment">//-------操作4</span></span><br><span class="line">    &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>正常情况下是调用inc()后执行操作1与操作2，然后再调用getCount()执行操作3与操作4，但是再多线程情况下，如果对这段代码进行了重排序，很有可能会出现如下结果：</p>
+<ol>
+<li>线程A调用了inc()，代码被重排序后执行顺序为先将flag置为ture，再对count进行自增。</li>
+<li>而此时线程B调用了getCount()，此时线程A只运行了flag置为ture，还没有执行到对count自增，这时线程B就会返回非预期值。</li>
+</ol>
+<p>在我们使用Volatile关键字时，JMM会向CPU指令中插入特定的指令来确保共享数据可见性与有序性。</p>
+<h4 id="内存屏障用于保障有序性"><a href="#内存屏障用于保障有序性" class="headerlink" title="内存屏障用于保障有序性"></a>内存屏障用于保障有序性</h4><p>内存屏障是一组同步指令集，使得CPU与编译器在对加入内存屏障之前的所有读写操作都执行后才可以开始执行此点之后的操作。它用于保障程序的有序执行，被插入内存屏障指令的代码，会对其实际代码执行顺序进行限制，有以下四种内存屏障：<br><img src="http://img.blog.csdn.net/20160302231234112" alt="这里写图片描述"><br>根据JSR-133 CookBook中的描述，我们可以从下表中得出结论：<br><img src="http://img.blog.csdn.net/20160302231304894" alt="这里写图片描述"></p>
+<ul>
+<li>如果第二个操作是Volatile写，那么无论第一个操作是什么类型的操作，都不能改变代码的执行顺序。它用于保障Volatile写之前的操作不会被重排序到其后执行。</li>
+<li>如果第一个操作是Volatile读，那么无论第二个操作是什么类型的操作，都不能改变代码的执行顺序。它用于保障Volatile读之后的操作不会被冲排序到其前面执行。</li>
+</ul>
+<p>为了达到上述规则，编译器在生成字节码时，会在指令中插入内存屏障来保证Volatile数据前后代码的执行顺序。</p>
+<ol>
+<li>读：<ul>
+<li>在对一个Volatile读操作之后添加一个LoadLoad指令。（用来确保当前读操作之后的读操作都不会被重排序）</li>
+<li>对于一个Volatile读操作之后添加一个LoadStore指令。（用来确保当前读操作于后续写操作之前进行）</li>
+</ul>
+</li>
+<li>写：<ul>
+<li>在对一个Volatile写操作之前添加一个StoreStore指令。（用来确保当前写操作之前的写操作不会被重排序到其后面执行）</li>
+<li>在一个Volatile写操作之后添加一个StoreLoad指令。（用来确保当前写操作于之后读操作之前执行）</li>
+</ul>
+</li>
+</ol>
+<h4 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h4><p>当共享变量被Volatile关键字修饰后，对Volatile变量进行读写都使JVM在变量前插入LOCK前缀指令，若不涉及缓存一致性协议，LOCK前缀指令会锁住总线，使其他CPU暂时无法通过总线访问内存，作用如下:</p>
+<ul>
+<li>对被Volatile关键字修饰的变量进行写操作，Lock指令会直接将工作内存中的变量刷新至主存中。</li>
+<li>对于被Volatile关键字修饰的变量进行读操作，Lock指令会令工作内存中的该变量失效，直接从主存中读取。</li>
+</ul>
+<p>这里需要注意的是Volatile关键字只能修饰单个变量，它无法保障代码块的原子性，如a++这样的操作并不能保障它的原子性，因为它是由做个指令集组成。</p>
+<p>volitatile的使用情景：</p>
+<ul>
+<li>状态标记</li>
+<li>double check</li>
+</ul>
+<h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><p>synchronized关键字用于解决在并发编程时的有序性、原子性、可见性。相比于Volatile关键字，synchronized锁能够控制的范围更大，使用synchronized关键字修饰方法或代码块时，能够确保在同一时刻最多只有一个线程能够执行该代码。当synchronized修饰方法时，它锁住的是对象的实例synchronized（this），当作用在对象实例时，它锁住的是代码块。</p>
+<h4 id="synchronized实现原理："><a href="#synchronized实现原理：" class="headerlink" title="synchronized实现原理："></a>synchronized实现原理：</h4><p>我们对于synchronized的理解也许只在于其互斥的特性，认为线程在执行加上synchronized关键字的代码，需要执行该代码块或方法的线程就会竞争该代码块或方法的互斥锁。若竞争成功则线程该代码块的执行权，而未竞争到该锁的线程只能被阻塞，等到持有锁的线程执行代码块或方法执行完毕后释放锁，其他线程才能继续竞争，而这仅仅synchronized关键字中重量锁的特性。其实synchronized在经过不断优化后，其锁的特性为偏向锁-》轻量锁-》重量锁三种，偏量锁和轻量锁在某种意义上能够减少重量锁带来的开销，但是他们都不能替代重量锁，下面就让我们来看看这三种锁的原理。</p>
+<h4 id="重量锁"><a href="#重量锁" class="headerlink" title="重量锁"></a>重量锁</h4><p>重量锁故名思议就是需要消耗大量系统资源的锁，因为很重嘛。当多线程执行到具有synchronized关键字的代码时，会进行锁竞争，竞争失败的线程会进入一个阻塞队列，而获得锁的线程会获取代码的执行权。</p>
+<p>具体重量锁的原理可以参考：<a href="http://blog.csdn.net/chen77716/article/details/6618779" target="_blank" rel="external">http://blog.csdn.net/chen77716/article/details/6618779</a></p>
+<p>而synchronized锁是一种非公平锁，当线程竞争失败时会阻塞，我们知道线程从运行状态切换到阻塞状态是依赖于操作系统从用户态切换到内核态来执行的，这种切换会消耗大量的系统资源（因为用户态与内核态都有各自专用的内存空间，专用的寄存器租等，用户态切换至内核态需要传递给许多变量、参数给内核，内核也需要保护好用户态在切换时的一些寄存器值、变量等，以便内核态调用结束后切换回用户态继续工作）。如果该方法是一个高频操作时，这将会消耗很多CPU处理时间。所以为了避免线程阻塞带来的消耗，引入了轻量锁。</p>
+<h4 id="轻量锁"><a href="#轻量锁" class="headerlink" title="轻量锁"></a>轻量锁</h4><p>轻量锁是为了避免在没有竞争的情况下重量锁所带来的开销，一旦该对象有多个线程竞争，轻量锁就会升级为重量锁，所以轻量锁和偏向锁并不能在多线程竞争情况下代替重量锁！！！只能在无锁竞争的条件下减缓重量锁的开销。在了解轻量锁前，我们先了解一下CAS操作与mark word标记，他们是实现轻量锁的基础。</p>
+<h4 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h4><p>CAS英文名（compare and swap）也就是比较交换，java语言在代码层面对其进行了封装，实际上是它是通过调用jni来实现的，它本质上是调用了cpu的指令集。在JUC中大量的使用到了CAS操作，它作为一种乐观锁，使用它就能实现所谓的无锁交换。</p>
+<p>在CAS操作中，一个变量有三个状态值，一个是内存值V，一个是旧的预期值A，还有一个是要替换新值的B。对应到JMM中，V表示为主存中的值，而旧的预期值A为我们工作内存中的值，而B为操作后的新值，若V与B相等就说明该变量没有被其他线程修改，那么将变量替换为B值，不相等则不进行交换。所以使用CAS操作的开销相对于线程竞争过程中的阻塞唤醒引起的上下文切换来说小了很多（竞争情况下，操作队列，线程挂起，上下文切换）。</p>
+<h4 id="MARK-WORD"><a href="#MARK-WORD" class="headerlink" title="MARK WORD"></a>MARK WORD</h4><p>我们知道java的Class文件是对java程序二进制文件格式的定义，java编译器将Class文件编译成字节码在jvm中运行，在堆内存中的对象都含有各自的对象头用于确定obj在运行时的状态，而Mark Word正是一个长为32bit的对象头，是用来标记同步线程的，具体信息如下图所示：</p>
+<p><img src="http://img.blog.csdn.net/20160302231324004" alt="这里写图片描述"></p>
+<p>这里先解释HashCode 与state两个变量的值，轻量锁与重量锁在HashCode中存入的值为指向占有锁的线程的栈中的存储该线程所占有锁的信息的地址（有点绕口，其实就是存了一个地址，下面会详细说），state表示当前对象所处的状态，下面我们来看一下轻量锁如何来实现锁机制，这里分两种情况。</p>
+<ol>
+<li><p>该对象没有被其他线程锁定<br>因为轻量锁是由偏向锁升级而来，通过判断tag是否为1与锁标志位是否为01来得知对象是否有没有被其他线程占用，若没有被其他线程占用，jvm会在当前线程的栈中创建一个lock record空间，将当前需要被锁定的对象的mark word的拷贝副本存入到lock record中，然后尝试使用CAS操作将mark Word中的betifields字段中的值更新为指向lock record空间的地址，若CAS操作成功，则将state更新为00，表示轻量锁添加成功，当前线程拥有对该对象的执行权。<br><img src="http://img.blog.csdn.net/20160302231405536" alt="这里写图片描述"></p>
+</li>
+<li><p>出现锁竞争或对象已经被其他线程占用<br>若有两个线程同时对未被锁定的对象上轻量锁时，会有一个线程竞争失败，此时竞争失败标志是CAS操作失败，则该线程会自旋一段时间，若还是CAS操作失败，则该轻量锁会升级为重量锁，竞争失败的线程进入阻塞状态，state标志置为10，且mark down中重量锁指针会被修改。当占有该轻量锁的线程释放锁时，竞争失败的锁会被唤醒，重新竞争锁。</p>
+</li>
+</ol>
+<h4 id="unlock"><a href="#unlock" class="headerlink" title="unlock"></a>unlock</h4><p>解锁过程也是将lock record中存储的mark down副本与object头中mark down进行CAS操作，若两者相等，则说明没有其他线程竞争该轻量锁，释放成功。如果失败，则当前轻量锁存在竞争，则锁会升级为重量锁。</p>
+<p>从上述轻量锁实现过程我们可以看到轻量锁是使用CAS操作来代替重量锁的互斥操作，在语言层面上实现了同步操作，这样能够节约许多系统开销，但是需要注意的是，这都是在无锁竞争的前提条件下，因为轻量锁并不能代替重量锁。</p>
+<h4 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h4><p>偏向锁是在JVM1.6中引入了，主要也是为了解决在没有竞争情况下锁性能的问题，通过上述轻量锁的讲解，我们了解到轻量锁是通过CAS操作来避免重量锁的阻塞开销。但是我们知道CAS操作也是需要通过本地调用来实现，归根到底还是通过CPU指令集的实现，JVM只是封装了该指令调用。所以CAS操作会产生一定的副作用。因为CPU通过总线来实现对内存中数据的读写，而多核CPU在将自身cache内存中的数据刷新至主存中时，会引触发“缓存一致性协议”，就是说CPU1对主存中的值进行了改变，“缓存一致性协议”会通知CPU2、CPU3自身cache中该值已经失效，需要重新读取。若在轻量锁中每次进入操作，若CAS操作很频繁的话，会给总线带来巨大的开销，而偏向锁就是为了避免这个开销产生的。</p>
+<p>若线程在没有竞争的情况下去获取某一对象的锁，会通过CAS操作将自身的Thread ID 存入Mark Word中，如果CAS操作成功，则表示该线程拥有该对象的执行权，而偏向锁是具有可重入性的，偏向吗，就是偏袒第一次占有该对象锁的线程，当该线程再次竞争该对象的锁时，只需要对比较Mark Word中的Thread ID 与自身的Thread ID 是否相同,相同则表明没有其他线程竞争，可以继续使用；如果这时有线程来竞争，则该线程在执行完代码块后，偏向锁会升级为轻量锁。这里需要注意的是，偏向锁只有再有竞争时才会撤销，若没有竞争，则一直是第一次获得偏向锁的线程持有。我们可以看到偏向锁的出现更加降低了线程初次获取锁的开销。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag">#Java</a>
+          
+            <a href="/tags/多线程/" rel="tag">#多线程</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/22/java_concurrency_1/" rel="next" title="java并发原理（上）">
+                <i class="fa fa-chevron-left"></i> java并发原理（上）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/19/ReenTrantLock-1/" rel="prev" title="ReenTrantLock技术内幕（一）">
+                ReenTrantLock技术内幕（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/03/02/java_concurrency_2/"
+           data-title="java并发原理（下）" data-url="http://alvin-mei.github.io/2016/03/02/java_concurrency_2/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Alvin" />
+          <p class="site-author-name" itemprop="name">Alvin</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/alvin-mei" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Volatile"><span class="nav-number">1.</span> <span class="nav-text">Volatile</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#先讲一下重排序，重排序是什么"><span class="nav-number">1.1.</span> <span class="nav-text">先讲一下重排序，重排序是什么?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存屏障用于保障有序性"><span class="nav-number">1.2.</span> <span class="nav-text">内存屏障用于保障有序性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可见性"><span class="nav-number">1.3.</span> <span class="nav-text">可见性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-number">2.</span> <span class="nav-text">synchronized</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#synchronized实现原理："><span class="nav-number">2.1.</span> <span class="nav-text">synchronized实现原理：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重量锁"><span class="nav-number">2.2.</span> <span class="nav-text">重量锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#轻量锁"><span class="nav-number">2.3.</span> <span class="nav-text">轻量锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CAS"><span class="nav-number">2.4.</span> <span class="nav-text">CAS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MARK-WORD"><span class="nav-number">2.5.</span> <span class="nav-text">MARK WORD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#unlock"><span class="nav-number">2.6.</span> <span class="nav-text">unlock</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#偏向锁"><span class="nav-number">2.7.</span> <span class="nav-text">偏向锁</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alvin</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"alvin"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Nafa5hj9jLhqOdAziGBu1AoY-gzGzoHsz", "b5PNFA15YkvIqTlnAofym3Gz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+
+</body>
+</html>
