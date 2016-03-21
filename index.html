@@ -314,8 +314,7 @@
       
         
           
-          一、AQS简介AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。
-在AQS
+          一、AQS简介AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法，如线程如何等待锁和释放锁的规则等。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实
           ...
 
           <div class="post-more-link text-center">
