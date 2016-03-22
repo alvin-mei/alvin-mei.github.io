@@ -443,7 +443,7 @@
       
         
           
-          一、AQS简介AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法，如线程如何等待锁和释放锁的规则等。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实
+          在Java中有synchronized与Lock两种方式来进行并发编程，我们知道synchronized是Java的内置关键字而Lock是在类级别实现对线程的同步访问控制，所以使用Lock同步相比于synchronized关键字有着更强的灵活性。因为当一个线程持有锁后，其他线程也需要执行相关同步代码时，在持有锁的线程让出锁前会一直阻塞下去，而Lock提供了tryLock、lockInterrupt
           ...
 
           <div class="post-more-link text-center">
