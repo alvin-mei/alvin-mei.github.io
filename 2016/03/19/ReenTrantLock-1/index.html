@@ -65,7 +65,7 @@
 <meta property="og:description" content="在Java中有synchronized与Lock两种方式来进行并发编程，我们知道synchronized是Java的内置关键字而Lock是在类级别实现对线程的同步访问控制，所以使用Lock同步相比于synchronized关键字有着更强的灵活性。因为当一个线程持有锁后，其他线程也需要执行相关同步代码时，在持有锁的线程让出锁前会一直阻塞下去，而Lock提供了tryLock、lockInterrupt">
 <meta property="og:image" content="http://img.blog.csdn.net/20160319235313454">
 <meta property="og:image" content="http://img.blog.csdn.net/20160319235335470">
-<meta property="og:updated_time" content="2016-03-22T01:04:18.000Z">
+<meta property="og:updated_time" content="2016-03-23T02:06:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ReenTrantLock技术内幕">
 <meta name="twitter:description" content="在Java中有synchronized与Lock两种方式来进行并发编程，我们知道synchronized是Java的内置关键字而Lock是在类级别实现对线程的同步访问控制，所以使用Lock同步相比于synchronized关键字有着更强的灵活性。因为当一个线程持有锁后，其他线程也需要执行相关同步代码时，在持有锁的线程让出锁前会一直阻塞下去，而Lock提供了tryLock、lockInterrupt">
@@ -315,8 +315,8 @@
 <h3 id="一、AQS简介"><a href="#一、AQS简介" class="headerlink" title="一、AQS简介"></a>一、AQS简介</h3><p>AbstractQueuedSynchronizer（AQS）是JUC的基石，是由伟大的Doug Lea设计完成。具体的设计过程可以看他写的论文，介绍的非常详细。AQS其实是一个抽象类，但内部已经帮我们实现了许多的核心方法，如线程如何等待锁和释放锁的规则等。通过利用CAS操作与改进CLH队列来完成同步操作并且提供了一种细颗粒的锁机制，我们知道ReenTrantLock的底层就是通过实现AQS来完成同步操作。</p>
 <p>在AQS中提供了下面五个方法的接口，供子类实现：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">tryRelease</span><span class="params">(<span class="keyword">int</span> arg)</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">tryAcquireShared</span><span class="params">(<span class="keyword">int</span> arg)</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">tryReleaseShared</span><span class="params">(<span class="keyword">int</span> arg)</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">isHeldExclusively</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
-<p>这里在实现过程中一般有两种模式，一种是共享模式、一种是独占模式。共享模式表示多个线程能够共享摸个锁，独占模式表示只有一个线程能够获取方法执行权，其他线程必须等待。下面直接看一下ReenTrantLock的实现原理。</p>
-<p>ReenTrantLock默认是非公平锁，但是在使用ReenTrantLock的过程中，所有的操作都是委派至一个Sync类上，Sync类继承了AQS，如下图所示：</p>
+<p>这里在实现过程中对锁的占有模式一般有两种模式，一种是共享模式、一种是独占模式。共享模式表示多个线程能够共享某个锁，独占模式表示只有一个线程能够获取方法执行权，其他线程必须等待。下面直接看一下ReenTrantLock的实现原理。</p>
+<p>ReenTrantLock在获取锁的时候有两种方式公平与非公平，所谓的公平锁就是要获取锁的线程按照类似于FIFO队列的形式，以先来先得的方式去获取锁，所有未获得锁的线程都维护在一个阻塞队列中，等待持有锁的线程执行完。非公平锁就不按照线程请求锁的顺序来获取锁了，每次新来的竞争线程都会与阻塞队列中的线程一起获取锁，获取成功则获得执行权，获取不成功后再加入阻塞队列中。虽然连续的非公平锁竞争会导致阻塞队列中的线程等待时间过长，但是吞吐量会高于公平锁。<br>默认是非公平锁，但是在使用ReenTrantLock的过程中，所有的操作都是委派至一个Sync类上，Sync类继承了AQS，如下图所示：</p>
 <p><img src="http://img.blog.csdn.net/20160319235313454" alt="这里写图片描述"></p>
 <p>而NonfairSync表示使用非公平锁形式实现AQS，FairSycn表示使用公平所形式实现AQS。</p>
 <h3 id="二、CLH队列"><a href="#二、CLH队列" class="headerlink" title="二、CLH队列"></a>二、CLH队列</h3><p>在AQS中，通过改进CLH队列结构来管理线程状态，以便完成tryLock、lockInterruptibly等操作。先看一下AQS中CLH队列的元素：</p>
@@ -451,7 +451,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">25</span>
+              <span class="site-state-item-count">26</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -468,7 +468,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
