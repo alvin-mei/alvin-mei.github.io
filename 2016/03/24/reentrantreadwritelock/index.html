@@ -59,13 +59,13 @@
 
 <meta name="description" content="一、ReentrantReadWriteLock简介在使用synchronized关键字与Lock方法对共享变量上锁时，同一时间下只允许一个线程访问该共享数据，而在大多数情况下，我们面对的是读多写少的业务情景，所以使用synchronized关键字与Lock方法将会造成不必要的系统消耗，降低系统效率。ReadWriteLock的出现解决了我们的问题。JUC为我们提供了ReadWriteLock接口">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ReentrantReadWriteLock技术内幕">
+<meta property="og:title" content="ReentrantReadWriteLock 技术内幕">
 <meta property="og:url" content="http://alvin-mei.github.io/2016/03/24/reentrantreadwritelock/index.html">
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description" content="一、ReentrantReadWriteLock简介在使用synchronized关键字与Lock方法对共享变量上锁时，同一时间下只允许一个线程访问该共享数据，而在大多数情况下，我们面对的是读多写少的业务情景，所以使用synchronized关键字与Lock方法将会造成不必要的系统消耗，降低系统效率。ReadWriteLock的出现解决了我们的问题。JUC为我们提供了ReadWriteLock接口">
-<meta property="og:updated_time" content="2016-03-24T14:45:04.000Z">
+<meta property="og:updated_time" content="2016-03-25T14:26:33.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ReentrantReadWriteLock技术内幕">
+<meta name="twitter:title" content="ReentrantReadWriteLock 技术内幕">
 <meta name="twitter:description" content="一、ReentrantReadWriteLock简介在使用synchronized关键字与Lock方法对共享变量上锁时，同一时间下只允许一个线程访问该共享数据，而在大多数情况下，我们面对的是读多写少的业务情景，所以使用synchronized关键字与Lock方法将会造成不必要的系统消耗，降低系统效率。ReadWriteLock的出现解决了我们的问题。JUC为我们提供了ReadWriteLock接口">
 
 
@@ -84,7 +84,7 @@
   };
 </script>
 
-  <title> ReentrantReadWriteLock技术内幕 | 隐忍以行 </title>
+  <title> ReentrantReadWriteLock 技术内幕 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -234,7 +234,7 @@
             
             
               
-                ReentrantReadWriteLock技术内幕
+                ReentrantReadWriteLock 技术内幕
               
             
           </h1>
@@ -267,6 +267,18 @@
 
                 
                 
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
 
               
             </span>
@@ -287,7 +299,7 @@
 
           
           
-             <span id="/2016/03/24/reentrantreadwritelock/" class="leancloud_visitors" data-flag-title="ReentrantReadWriteLock技术内幕">
+             <span id="/2016/03/24/reentrantreadwritelock/" class="leancloud_visitors" data-flag-title="ReentrantReadWriteLock 技术内幕">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -371,13 +383,17 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/03/21/java_condition/" rel="next" title="ReenTrantLock Condition技术内幕">
-                <i class="fa fa-chevron-left"></i> ReenTrantLock Condition技术内幕
+              <a href="/2016/03/21/java_condition/" rel="next" title="ReenTrantLock Condition 技术内幕">
+                <i class="fa fa-chevron-left"></i> ReenTrantLock Condition 技术内幕
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/25/countdownlatch/" rel="prev" title="CountDownLatch 技术内幕">
+                CountDownLatch 技术内幕 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -404,7 +420,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/03/24/reentrantreadwritelock/"
-           data-title="ReentrantReadWriteLock技术内幕" data-url="http://alvin-mei.github.io/2016/03/24/reentrantreadwritelock/">
+           data-title="ReentrantReadWriteLock 技术内幕" data-url="http://alvin-mei.github.io/2016/03/24/reentrantreadwritelock/">
       </div>
     
   </div>
@@ -449,7 +465,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">26</span>
+              <span class="site-state-item-count">27</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -457,7 +473,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

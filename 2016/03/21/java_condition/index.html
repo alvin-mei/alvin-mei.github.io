@@ -59,13 +59,13 @@
 
 <meta name="description" content="一、Condition简介Condition也就是信号量，每一个Lock对象都可以拥有Condition对象，通过Condition可以使线程之间进行通信，可以说Condition是一个线程间通信的工具类。它可以使线程在某些条件下进入条件队列，从而变成阻塞状态，而又在达到一定的条件后重新被唤醒，从条件队列中退出并重新夺取锁，从而拥有执行权。通过Condition我们可以对线程的执行顺序，执行情况进">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ReenTrantLock Condition技术内幕">
+<meta property="og:title" content="ReenTrantLock Condition 技术内幕">
 <meta property="og:url" content="http://alvin-mei.github.io/2016/03/21/java_condition/index.html">
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description" content="一、Condition简介Condition也就是信号量，每一个Lock对象都可以拥有Condition对象，通过Condition可以使线程之间进行通信，可以说Condition是一个线程间通信的工具类。它可以使线程在某些条件下进入条件队列，从而变成阻塞状态，而又在达到一定的条件后重新被唤醒，从条件队列中退出并重新夺取锁，从而拥有执行权。通过Condition我们可以对线程的执行顺序，执行情况进">
-<meta property="og:updated_time" content="2016-03-21T15:17:24.000Z">
+<meta property="og:updated_time" content="2016-03-25T14:32:14.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ReenTrantLock Condition技术内幕">
+<meta name="twitter:title" content="ReenTrantLock Condition 技术内幕">
 <meta name="twitter:description" content="一、Condition简介Condition也就是信号量，每一个Lock对象都可以拥有Condition对象，通过Condition可以使线程之间进行通信，可以说Condition是一个线程间通信的工具类。它可以使线程在某些条件下进入条件队列，从而变成阻塞状态，而又在达到一定的条件后重新被唤醒，从条件队列中退出并重新夺取锁，从而拥有执行权。通过Condition我们可以对线程的执行顺序，执行情况进">
 
 
@@ -84,7 +84,7 @@
   };
 </script>
 
-  <title> ReenTrantLock Condition技术内幕 | 隐忍以行 </title>
+  <title> ReenTrantLock Condition 技术内幕 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -234,7 +234,7 @@
             
             
               
-                ReenTrantLock Condition技术内幕
+                ReenTrantLock Condition 技术内幕
               
             
           </h1>
@@ -267,6 +267,18 @@
 
                 
                 
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
 
               
             </span>
@@ -287,7 +299,7 @@
 
           
           
-             <span id="/2016/03/21/java_condition/" class="leancloud_visitors" data-flag-title="ReenTrantLock Condition技术内幕">
+             <span id="/2016/03/21/java_condition/" class="leancloud_visitors" data-flag-title="ReenTrantLock Condition 技术内幕">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -308,7 +320,7 @@
       
 
       
-        <h3 id="一、Condition简介"><a href="#一、Condition简介" class="headerlink" title="一、Condition简介"></a>一、Condition简介</h3><p>Condition也就是信号量，每一个Lock对象都可以拥有Condition对象，通过Condition可以使线程之间进行通信，可以说Condition是一个线程间通信的工具类。它可以使线程在某些条件下进入条件队列，从而变成阻塞状态，而又在达到一定的条件后重新被唤醒，从条件队列中退出并重新夺取锁，从而拥有执行权。通过Condition我们可以对线程的执行顺序，执行情况进行精准控制。我们先通过下面的例子来了解下Condition的功能<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个可重入锁</span></span><br><span class="line">        <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        <span class="comment">//Condition是由可重入锁创建的，它与可重入锁绑定</span></span><br><span class="line">        <span class="keyword">final</span> Condition condition = lock.newCondition();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="comment">//获取锁</span></span><br><span class="line">                lock.lock();</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName() + <span class="string">"拿到锁啦"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">//调用Condition的await方法进行阻塞，等待相关条件来唤醒该线程</span></span><br><span class="line">                    condition.await();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName()+<span class="string">"接受信号成功,停止等待!"</span>);</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName() + <span class="string">"拿到锁了"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">5000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//通过Condition的signalAll方法唤醒在Condition队列中阻塞的线程。</span></span><br><span class="line">                condition.signalAll();</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName()+<span class="string">"发送信号成功!"</span>);</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+        <h3 id="一、Condition简介"><a href="#一、Condition简介" class="headerlink" title="一、Condition简介"></a>一、Condition简介</h3><p>Condition也就是信号量，每一个Lock对象都可以拥有Condition对象，通过Condition可以使线程之间进行通信，可以说Condition是一个线程间通信的工具类。它可以使线程在某些条件下进入条件队列，从而变成阻塞状态，而又在达到一定的条件后重新被唤醒，从条件队列中退出并重新夺取锁，从而拥有执行权。通过Condition我们可以对线程的执行顺序，执行情况进行精准控制。我们先通过下面的例子来了解下Condition的功能<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个可重入锁</span></span><br><span class="line">        <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        <span class="comment">//Condition是由可重入锁创建的，它与可重入锁绑定</span></span><br><span class="line">        <span class="keyword">final</span> Condition condition = lock.newCondition();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="comment">//获取锁</span></span><br><span class="line">                lock.lock();</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName() + <span class="string">"拿到锁啦"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">//调用Condition的await方法进行阻塞，等待相关条件来唤醒该线程</span></span><br><span class="line">                    condition.await();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName()+<span class="string">"接收信号成功,停止等待!"</span>);</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName() + <span class="string">"拿到锁了"</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">5000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//通过Condition的signalAll方法唤醒在Condition队列中阻塞的线程。</span></span><br><span class="line">                condition.signalAll();</span><br><span class="line">                System.out.println(<span class="keyword">this</span>.getClass().getName()+<span class="string">"发送信号成功!"</span>);</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <p>可以看到运行结果如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">com.mjl.test$<span class="number">1</span>拿到锁啦</span><br><span class="line">com.mjl.test$<span class="number">2</span>拿到锁了</span><br><span class="line">com.mjl.test$<span class="number">2</span>发送信号成功!</span><br><span class="line">com.mjl.test$<span class="number">1</span>接受信号成功,停止等待!</span><br></pre></td></tr></table></figure></p>
 <p>从上述实现可以看到，当拥有锁的线程调用Condition的await方法后，就让出CPU执行权，进入阻塞状态，而当另一线程调用signalAll方法后，会被重新唤醒，去争夺执行权。下面介绍一下Condition类的方法</p>
 <h3 id="二、Condition中的方法"><a href="#二、Condition中的方法" class="headerlink" title="二、Condition中的方法"></a>二、Condition中的方法</h3><p>Condition接口中有一下7个方法供子类实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">await</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"><span class="comment">//当前线程调用await方法后，将会在接收信号或者被中断前进入阻塞状态</span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">awaitUninterruptibly</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">//当前线程调用await方法后，将会在接收信号前进入阻塞状态</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">awaitNanos</span><span class="params">(<span class="keyword">long</span> nanosTimeout)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"><span class="comment">//当前线程调用await方法后，将会在接收信号、被中断或者到达指定之间之前进入阻塞状态</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">await</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"><span class="comment">//当前线程调用await方法后，将会在接收信号、被中断或者到达指定之间之前进入阻塞状态</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">awaitUntil</span><span class="params">(Date deadline)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"><span class="comment">//当前线程调用await方法后，将会在接收信号、被中断或者到达指定之间之前进入阻塞状态</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">signal</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">//唤醒一个等待线程</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">signalAll</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">//唤醒所有等待线程</span></span><br></pre></td></tr></table></figure></p>
@@ -357,16 +369,16 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/03/19/ReenTrantLock-1/" rel="next" title="ReenTrantLock技术内幕">
-                <i class="fa fa-chevron-left"></i> ReenTrantLock技术内幕
+              <a href="/2016/03/19/ReenTrantLock-1/" rel="next" title="ReenTrantLock 技术内幕">
+                <i class="fa fa-chevron-left"></i> ReenTrantLock 技术内幕
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/03/24/reentrantreadwritelock/" rel="prev" title="ReentrantReadWriteLock技术内幕">
-                ReentrantReadWriteLock技术内幕 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/03/24/reentrantreadwritelock/" rel="prev" title="ReentrantReadWriteLock 技术内幕">
+                ReentrantReadWriteLock 技术内幕 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -394,7 +406,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/03/21/java_condition/"
-           data-title="ReenTrantLock Condition技术内幕" data-url="http://alvin-mei.github.io/2016/03/21/java_condition/">
+           data-title="ReenTrantLock Condition 技术内幕" data-url="http://alvin-mei.github.io/2016/03/21/java_condition/">
       </div>
     
   </div>
@@ -439,7 +451,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">26</span>
+              <span class="site-state-item-count">27</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -447,7 +459,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
