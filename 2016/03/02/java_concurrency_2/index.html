@@ -69,7 +69,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20160302231304894">
 <meta property="og:image" content="http://img.blog.csdn.net/20160302231324004">
 <meta property="og:image" content="http://img.blog.csdn.net/20160302231405536">
-<meta property="og:updated_time" content="2016-03-21T02:48:41.000Z">
+<meta property="og:updated_time" content="2016-05-04T13:29:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java并发原理（下）">
 <meta name="twitter:description" content="VolatileVolatile关键字用于确保共享数据的可见性与有序性，但是并不能保证方法的原子性，在程序中对Volatile关键字使用得当的话，它比synchronized的使用和执行成本会更低，因为他不会引起线程的上下文切换和调度。
@@ -391,7 +391,7 @@
 <h4 id="unlock"><a href="#unlock" class="headerlink" title="unlock"></a>unlock</h4><p>解锁过程也是将lock record中存储的mark down副本与object头中mark down进行CAS操作，若两者相等，则说明没有其他线程竞争该轻量锁，释放成功。如果失败，则当前轻量锁存在竞争，则锁会升级为重量锁。</p>
 <p>从上述轻量锁实现过程我们可以看到轻量锁是使用CAS操作来代替重量锁的互斥操作，在语言层面上实现了同步操作，这样能够节约许多系统开销，但是需要注意的是，这都是在无锁竞争的前提条件下，因为轻量锁并不能代替重量锁。</p>
 <h4 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h4><p>偏向锁是在JVM1.6中引入了，主要也是为了解决在没有竞争情况下锁性能的问题，通过上述轻量锁的讲解，我们了解到轻量锁是通过CAS操作来避免重量锁的阻塞开销。但是我们知道CAS操作也是需要通过本地调用来实现，归根到底还是通过CPU指令集的实现，JVM只是封装了该指令调用。所以CAS操作会产生一定的副作用。因为CPU通过总线来实现对内存中数据的读写，而多核CPU在将自身cache内存中的数据刷新至主存中时，会引触发“缓存一致性协议”，就是说CPU1对主存中的值进行了改变，“缓存一致性协议”会通知CPU2、CPU3自身cache中该值已经失效，需要重新读取。若在轻量锁中每次进入操作，若CAS操作很频繁的话，会给总线带来巨大的开销，而偏向锁就是为了避免这个开销产生的。</p>
-<p>若线程在没有竞争的情况下去获取某一对象的锁，会通过CAS操作将自身的Thread ID 存入Mark Word中，如果CAS操作成功，则表示该线程拥有该对象的执行权，而偏向锁是具有可重入性的，偏向吗，就是偏袒第一次占有该对象锁的线程，当该线程再次竞争该对象的锁时，只需要对比较Mark Word中的Thread ID 与自身的Thread ID 是否相同,相同则表明没有其他线程竞争，可以继续使用；如果这时有线程来竞争，则该线程在执行完代码块后，偏向锁会升级为轻量锁。这里需要注意的是，偏向锁只有再有竞争时才会撤销，若没有竞争，则一直是第一次获得偏向锁的线程持有。我们可以看到偏向锁的出现更加降低了线程初次获取锁的开销。</p>
+<p>若线程在没有竞争的情况下去获取某一对象的锁，会通过CAS操作将自身的Thread ID 存入Mark Word中并将偏向位置1，如果CAS操作成功，则表示该线程拥有该对象的执行权，而偏向锁是具有可重入性的，偏向吗，就是偏袒第一次占有该对象锁的线程，当该线程再次竞争该对象的锁时，只需要对比较Mark Word中的Thread ID 与自身的Thread ID 是否相同,相同则表明没有其他线程竞争，可以继续使用；如果这时有线程来竞争，则该线程在执行完代码块后，偏向锁会升级为轻量锁。这里需要注意的是，偏向锁只有再有竞争时才会撤销，若没有竞争，则一直是第一次获得偏向锁的线程持有。我们可以看到偏向锁的出现更加降低了线程初次获取锁的开销。</p>
 
       
     </div>
