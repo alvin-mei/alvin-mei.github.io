@@ -227,7 +227,7 @@
               
                 
                 <a class="post-title-link" href="/2016/05/11/threadpool_source/" itemprop="url">
-                  ThreadPoolExecutor源码分析
+                  ThreadPoolExecutor源码分析（一）
                 </a>
               
             
@@ -293,7 +293,7 @@
 
           
           
-             <span id="/2016/05/11/threadpool_source/" class="leancloud_visitors" data-flag-title="ThreadPoolExecutor源码分析">
+             <span id="/2016/05/11/threadpool_source/" class="leancloud_visitors" data-flag-title="ThreadPoolExecutor源码分析（一）">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -316,9 +316,9 @@
       
         
           
-          之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
+          写在开头之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
 ExecutorExecutor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。
-ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声明了对线
+ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
           ...
 
           <div class="post-more-link text-center">

@@ -57,22 +57,22 @@
 
 
 
-<meta name="description" content="之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
+<meta name="description" content="写在开头之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
 ExecutorExecutor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。
-ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声明了对线">
+ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ThreadPoolExecutor源码分析">
+<meta property="og:title" content="ThreadPoolExecutor源码分析（一）">
 <meta property="og:url" content="http://alvin-mei.github.io/2016/05/11/threadpool_source/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
+<meta property="og:description" content="写在开头之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
 ExecutorExecutor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。
-ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声明了对线">
-<meta property="og:updated_time" content="2016-05-11T15:38:09.000Z">
+ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声">
+<meta property="og:updated_time" content="2016-05-11T16:15:02.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ThreadPoolExecutor源码分析">
-<meta name="twitter:description" content="之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
+<meta name="twitter:title" content="ThreadPoolExecutor源码分析（一）">
+<meta name="twitter:description" content="写在开头之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
 ExecutorExecutor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。
-ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声明了对线">
+ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声">
 
 
 
@@ -90,7 +90,7 @@ ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
   };
 </script>
 
-  <title> ThreadPoolExecutor源码分析 | 隐忍以行 </title>
+  <title> ThreadPoolExecutor源码分析（一） | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -230,7 +230,7 @@ ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
             
             
               
-                ThreadPoolExecutor源码分析
+                ThreadPoolExecutor源码分析（一）
               
             
           </h1>
@@ -295,7 +295,7 @@ ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
 
           
           
-             <span id="/2016/05/11/threadpool_source/" class="leancloud_visitors" data-flag-title="ThreadPoolExecutor源码分析">
+             <span id="/2016/05/11/threadpool_source/" class="leancloud_visitors" data-flag-title="ThreadPoolExecutor源码分析（一）">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -316,7 +316,7 @@ ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
       
 
       
-        <p>之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。</p>
+        <h2 id="写在开头"><a href="#写在开头" class="headerlink" title="写在开头"></a>写在开头</h2><p>之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。</p>
 <h4 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h4><p>Executor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。</p>
 <h4 id="ExecutorService"><a href="#ExecutorService" class="headerlink" title="ExecutorService"></a>ExecutorService</h4><p>ExecutorService继承了Executor接口，并在其基础上又声明了对线程池的各种操作，如submit、invokeAll、shutDown等方法。</p>
 <h4 id="AbstractExecutorService"><a href="#AbstractExecutorService" class="headerlink" title="AbstractExecutorService"></a>AbstractExecutorService</h4><p>AbstractExecutorService抽象类实现了ExecutorService接口中的声明方法。</p>
@@ -339,6 +339,23 @@ ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
 <li>STOP -&gt; TIDYING 当线程池没有线程工作</li>
 <li>TIDYING -&gt; TERMINATED 当使用terminated()钩子方法来完成</li>
 </ul>
+<h4 id="ThreadPoolExecutor中的属性"><a href="#ThreadPoolExecutor中的属性" class="headerlink" title="ThreadPoolExecutor中的属性"></a>ThreadPoolExecutor中的属性</h4><p>ThreadPoolExecutor中还定义了许多属性，用于在构建线程池时定义任务的缓存策略、线程存活时间、任务执行策略等</p>
+<ul>
+<li>BlockngQueue workQueue：任务缓存队列，用来存放等待执行的任务 </li>
+<li>ReentrantLock mainLock: 线程池的主要锁状态。 </li>
+<li>HashSet workers：用来存放工作集，线程池里可以立即执行的任务放在这个集合里，它本身实现了runnable接口，可以把它当成一个线程来使用。 </li>
+<li>keepAliveTime: 线程存活时间，超出该时间可以执行一些抛弃策略 </li>
+<li>boolean allowCoreThreadTimeOut: 是否允许为核心线程设置存活时间 </li>
+<li>int corePoolSize: 核心core大小 </li>
+<li>int maximumPoolSize: 线程池能够最大容忍的线程数 </li>
+<li>int poolSize: 线程池当前的线程数 </li>
+<li>RejectedExecutionHandler handler:线程池的任务拒绝策略 </li>
+<li>ThreadFactory threadFactory:线程工厂，用来创建线程 </li>
+<li>int largestPoolSize:记录线程池中曾经出现过的最大线程数 </li>
+<li>long completedTaskCount:用来记录已经执行完毕的任务个数</li>
+</ul>
+<h4 id="ThreadPoolExecutor的构造函数"><a href="#ThreadPoolExecutor的构造函数" class="headerlink" title="ThreadPoolExecutor的构造函数"></a>ThreadPoolExecutor的构造函数</h4><p>ThreadPoolExecutor共有四个构造函数，但是最基础的还是下面这个构造函数<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span><br><span class="line">                              <span class="keyword">int</span> maximumPoolSize,</span><br><span class="line">                              <span class="keyword">long</span> keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory,</span><br><span class="line">                              RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//对传入的核心core数目、最大线程池数目进行校验，若出错则抛出IllegalArgumentException异常</span></span><br><span class="line">        <span class="keyword">if</span> (corePoolSize &lt; <span class="number">0</span> ||</span><br><span class="line">            maximumPoolSize &lt;= <span class="number">0</span> ||</span><br><span class="line">            maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">            keepAliveTime &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">        <span class="comment">//校验工作队列、线程工厂、拒绝策略是否为空    </span></span><br><span class="line">        <span class="keyword">if</span> (workQueue == <span class="keyword">null</span> || threadFactory == <span class="keyword">null</span> || handler == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        <span class="comment">//设置相关必要参数    </span></span><br><span class="line">        <span class="keyword">this</span>.corePoolSize = corePoolSize;</span><br><span class="line">        <span class="keyword">this</span>.maximumPoolSize = maximumPoolSize;</span><br><span class="line">        <span class="keyword">this</span>.workQueue = workQueue;</span><br><span class="line">        <span class="keyword">this</span>.keepAliveTime = unit.toNanos(keepAliveTime);</span><br><span class="line">        <span class="keyword">this</span>.threadFactory = threadFactory;</span><br><span class="line">        <span class="keyword">this</span>.handler = handler;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>以上为ThreadPoolExecutor的基本属性介绍，下一章将深入分析ThreadPoolExecutor对任务的执行方式。</p>
 
       
     </div>
@@ -415,7 +432,7 @@ ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/05/11/threadpool_source/"
-           data-title="ThreadPoolExecutor源码分析" data-url="http://alvin-mei.github.io/2016/05/11/threadpool_source/">
+           data-title="ThreadPoolExecutor源码分析（一）" data-url="http://alvin-mei.github.io/2016/05/11/threadpool_source/">
       </div>
     
   </div>
@@ -521,7 +538,7 @@ ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Executor"><span class="nav-number">1.</span> <span class="nav-text">Executor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ExecutorService"><span class="nav-number">2.</span> <span class="nav-text">ExecutorService</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AbstractExecutorService"><span class="nav-number">3.</span> <span class="nav-text">AbstractExecutorService</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor"><span class="nav-number">4.</span> <span class="nav-text">ThreadPoolExecutor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Executors"><span class="nav-number">5.</span> <span class="nav-text">Executors</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPoolExecutor源码解析"><span class="nav-number"></span> <span class="nav-text">ThreadPoolExecutor源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程池状态"><span class="nav-number">1.</span> <span class="nav-text">线程池状态</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#写在开头"><span class="nav-number">1.</span> <span class="nav-text">写在开头</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Executor"><span class="nav-number">1.0.1.</span> <span class="nav-text">Executor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ExecutorService"><span class="nav-number">1.0.2.</span> <span class="nav-text">ExecutorService</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AbstractExecutorService"><span class="nav-number">1.0.3.</span> <span class="nav-text">AbstractExecutorService</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor"><span class="nav-number">1.0.4.</span> <span class="nav-text">ThreadPoolExecutor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Executors"><span class="nav-number">1.0.5.</span> <span class="nav-text">Executors</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPoolExecutor源码解析"><span class="nav-number">2.</span> <span class="nav-text">ThreadPoolExecutor源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程池状态"><span class="nav-number">2.0.1.</span> <span class="nav-text">线程池状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor中的属性"><span class="nav-number">2.0.2.</span> <span class="nav-text">ThreadPoolExecutor中的属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor的构造函数"><span class="nav-number">2.0.3.</span> <span class="nav-text">ThreadPoolExecutor的构造函数</span></a></li></ol></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
