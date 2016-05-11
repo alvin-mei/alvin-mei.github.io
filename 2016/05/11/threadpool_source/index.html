@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java,二叉树," />
+  <meta name="keywords" content="Java,线程池,ThreadPoolExecutor," />
 
 
 
@@ -57,16 +57,22 @@
 
 
 
-<meta name="description" content="在计算机科学中，二叉树是每个节点最多有两个子树的树结构。通常子树被称作“左子树”（left subtree）和“右子树”（right subtree）。二叉树常被用于实现二叉查找树和二叉堆。...">
+<meta name="description" content="之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
+ExecutorExecutor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。
+ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声明了对线">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二叉树的实现Java版本">
-<meta property="og:url" content="http://alvin-mei.github.io/2015/11/18/java_binarytree/index.html">
+<meta property="og:title" content="ThreadPoolExecutor源码分析">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/05/11/threadpool_source/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="在计算机科学中，二叉树是每个节点最多有两个子树的树结构。通常子树被称作“左子树”（left subtree）和“右子树”（right subtree）。二叉树常被用于实现二叉查找树和二叉堆。...">
-<meta property="og:updated_time" content="2016-03-22T07:05:08.000Z">
+<meta property="og:description" content="之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
+ExecutorExecutor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。
+ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声明了对线">
+<meta property="og:updated_time" content="2016-05-11T15:38:09.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="二叉树的实现Java版本">
-<meta name="twitter:description" content="在计算机科学中，二叉树是每个节点最多有两个子树的树结构。通常子树被称作“左子树”（left subtree）和“右子树”（right subtree）。二叉树常被用于实现二叉查找树和二叉堆。...">
+<meta name="twitter:title" content="ThreadPoolExecutor源码分析">
+<meta name="twitter:description" content="之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。
+ExecutorExecutor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。
+ExecutorServiceExecutorService继承了Executor接口，并在其基础上又声明了对线">
 
 
 
@@ -84,7 +90,7 @@
   };
 </script>
 
-  <title> 二叉树的实现Java版本 | 隐忍以行 </title>
+  <title> ThreadPoolExecutor源码分析 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -224,7 +230,7 @@
             
             
               
-                二叉树的实现Java版本
+                ThreadPoolExecutor源码分析
               
             
           </h1>
@@ -236,8 +242,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-11-18T21:19:25+08:00" content="2015-11-18">
-              2015-11-18
+            <time itemprop="dateCreated" datetime="2016-05-11T20:50:41+08:00" content="2016-05-11">
+              2016-05-11
             </time>
           </span>
 
@@ -250,8 +256,20 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
                   </a>
                 </span>
 
@@ -266,8 +284,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/11/18/java_binarytree/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/18/java_binarytree/" itemprop="commentsCount"></span>
+                <a href="/2016/05/11/threadpool_source/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/11/threadpool_source/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -277,7 +295,7 @@
 
           
           
-             <span id="/2015/11/18/java_binarytree/" class="leancloud_visitors" data-flag-title="二叉树的实现Java版本">
+             <span id="/2016/05/11/threadpool_source/" class="leancloud_visitors" data-flag-title="ThreadPoolExecutor源码分析">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -298,8 +316,30 @@
       
 
       
-        <p>在计算机科学中，二叉树是每个节点最多有两个子树的树结构。通常子树被称作“左子树”（left subtree）和“右子树”（right subtree）。二叉树常被用于实现二叉查找树和二叉堆。<br>二叉树每个节点至多有两个子节点：左子节点与右子节点。<br>二叉树的第i层最多有2^(i-1)个子节点。<br>深度为k的二叉树的所有节点数量不超过2^k-1个。<br>完全二叉树：深度为k都二叉树，除了第k层，其余各层子节点都达到上限。<br>满二叉树：深度为k的二叉树，总节点数量为2^k-1个。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.binaryTree;</span><br><span class="line"><span class="keyword">import</span> java.security.PublicKey;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * Created by Alvin on 15/11/13.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BST</span> </span>&#123;</span><br><span class="line">        <span class="comment">//二叉树个节点</span></span><br><span class="line">        <span class="keyword">private</span> Node root;</span><br><span class="line"></span><br><span class="line">         <span class="class"><span class="keyword">class</span> <span class="title">Node</span></span>&#123;</span><br><span class="line">            <span class="keyword">private</span> <span class="keyword">int</span> data;</span><br><span class="line">            <span class="keyword">private</span> Node leftChild;</span><br><span class="line">            <span class="keyword">private</span> Node rightChild;</span><br><span class="line"></span><br><span class="line">             <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(<span class="keyword">int</span> data)</span></span><br><span class="line">             </span>&#123;</span><br><span class="line">                 <span class="keyword">this</span>.data  = data;</span><br><span class="line">                 leftChild = <span class="keyword">null</span>;</span><br><span class="line">                 rightChild = <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BST</span><span class="params">()</span></span>&#123;</span><br><span class="line">        root = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> size(root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">deep</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> deep(root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">min</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> min(root).data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">int</span> data)</span></span>&#123;</span><br><span class="line">        root = put(root,data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrderBST</span><span class="params">()</span></span>&#123;</span><br><span class="line">        preOrderBST(root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">inOrderBST</span><span class="params">()</span></span>&#123;</span><br><span class="line">        inOrderBST(root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postOrderBST</span><span class="params">()</span></span>&#123;</span><br><span class="line">        postOrderBST(root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mirror</span><span class="params">()</span></span>&#123;</span><br><span class="line">        mirror(root);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//打印数据</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visit</span><span class="params">(Node node)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(node == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        System.out.println(node.data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//返回二叉树的节点数量</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> size(head.leftChild)+size(head.rightChild)+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">deep</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> leftdeep = deep(head.leftChild) + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> rightdeep = deep(head.rightChild) + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> leftdeep &gt; rightdeep ? leftdeep : rightdeep;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//找二叉树中的最小数</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Node <span class="title">min</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head.leftChild==<span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> head;</span><br><span class="line">         <span class="keyword">return</span> min(head.leftChild);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//插入数据</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Node <span class="title">put</span><span class="params">(Node head,<span class="keyword">int</span> data)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Node(data);</span><br><span class="line">        Node cur = head;</span><br><span class="line">        <span class="keyword">if</span>(cur.data &gt; data) &#123;</span><br><span class="line">            cur.leftChild = put(cur.leftChild, data);</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(cur.data &lt; data) &#123;</span><br><span class="line">            cur.rightChild = put(cur.rightChild, data);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            cur.data = data;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cur;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//先序遍历</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">preOrderBST</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        visit(head);</span><br><span class="line">        preOrderBST(head.leftChild);</span><br><span class="line">        preOrderBST(head.rightChild);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//中序遍历</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">inOrderBST</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        inOrderBST(head.leftChild);</span><br><span class="line">        visit(head);</span><br><span class="line">        inOrderBST(head.rightChild);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//后序遍历</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postOrderBST</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        postOrderBST(head.leftChild);</span><br><span class="line">        postOrderBST(head.rightChild);</span><br><span class="line">        visit(head);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//二叉树的镜像</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">mirror</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(head == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        Node temp = head.leftChild;</span><br><span class="line">        head.leftChild = head.rightChild;</span><br><span class="line">        head.rightChild = temp;</span><br><span class="line">        mirror(head.leftChild);</span><br><span class="line">        mirror(head.rightChild);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>之前写过一篇文章介绍线程池，但是只是仅限于介绍，并没有深入的了解，所以这次深入源码分析JAVA线程池，在分析之前先把线程池的代码结构再梳理一遍。</p>
+<h4 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h4><p>Executor是线程池的顶级接口，只声明了execute方法，该方法传入一个runnable对象，用于执行线程池中的任务。</p>
+<h4 id="ExecutorService"><a href="#ExecutorService" class="headerlink" title="ExecutorService"></a>ExecutorService</h4><p>ExecutorService继承了Executor接口，并在其基础上又声明了对线程池的各种操作，如submit、invokeAll、shutDown等方法。</p>
+<h4 id="AbstractExecutorService"><a href="#AbstractExecutorService" class="headerlink" title="AbstractExecutorService"></a>AbstractExecutorService</h4><p>AbstractExecutorService抽象类实现了ExecutorService接口中的声明方法。</p>
+<h4 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h4><p>ThreadPoolExecutor继承了AbstractExecutorService，它完成了对线程池的实现，是最UI最核心的一个类。</p>
+<h4 id="Executors"><a href="#Executors" class="headerlink" title="Executors"></a>Executors</h4><p>Executors是对ThreadPoolExecutor的再次封装，主要提供了各种类型线程池的工厂方法，方便我们调用。</p>
+<h2 id="ThreadPoolExecutor源码解析"><a href="#ThreadPoolExecutor源码解析" class="headerlink" title="ThreadPoolExecutor源码解析"></a>ThreadPoolExecutor源码解析</h2><h4 id="线程池状态"><a href="#线程池状态" class="headerlink" title="线程池状态"></a>线程池状态</h4><p>ThreadPoolExecutor使用runState来标示当前线程池的状态，各个状态使用static final来声明：</p>
+<ul>
+<li>RUNNING:运行状态，能够接收新的任务与执行队列中的任务</li>
+<li>SHUTDOWN:关闭状态，不再接收新的任务但是继续执行队列中的剩余任务</li>
+<li>STOP:停止状态，不接收与执行任务，若队列中还有等待执行的任务则会中断</li>
+<li>TIDYING: 等待进入TERMINATED状态，TIDYING时任务队列为空，等待调用TERMINATED的hook函数</li>
+<li>TERMINATED: 终止状态。线程池完全关闭</li>
+</ul>
+<p>那在ThreadPoolExecutor是如何表示这些状态的呢？让我们看一下下列代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用AtomicInteger来表示ThreadPoolExecutor中的线程个数与线程池的状态，因为Atomic包下的类都是使用CAS操作来保障数据的一致性与可见性，所以效率很高且能够在高并发下减少出错几率</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger ctl = <span class="keyword">new</span> AtomicInteger(ctlOf(RUNNING, <span class="number">0</span>));</span><br><span class="line"> <span class="comment">//COUNT_BITS用来计数与表示线程池的状态，其高三位表示线程池的状态，其余29位表示线程池中线程的个数，也就是最多可达2^29-1个</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> COUNT_BITS = Integer.SIZE - <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CAPACITY   = (<span class="number">1</span> &lt;&lt; COUNT_BITS) - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//运行状态111</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RUNNING    = -<span class="number">1</span> &lt;&lt; COUNT_BITS;</span><br><span class="line">    <span class="comment">//关闭状态000</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SHUTDOWN   =  <span class="number">0</span> &lt;&lt; COUNT_BITS;</span><br><span class="line">    <span class="comment">//停止状态001</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STOP       =  <span class="number">1</span> &lt;&lt; COUNT_BITS;</span><br><span class="line">    <span class="comment">//等待进入完全关闭状态010</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TIDYING    =  <span class="number">2</span> &lt;&lt; COUNT_BITS;</span><br><span class="line">    <span class="comment">//完全关闭状态011</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TERMINATED =  <span class="number">3</span> &lt;&lt; COUNT_BITS;</span><br></pre></td></tr></table></figure></p>
+<p>ThreadPoolExecutor中各个状态的转换时通过调用不同方法来完成的：</p>
+<ul>
+<li>RUNNING -&gt; SHUTDOWN 使用shutdown()方法</li>
+<li>(RUNNING or SHUTDOWN) -&gt; STOP  使用shutdownNow()方法</li>
+<li>SHUTDOWN -&gt; TIDYING 当工作队列或线程池没有任务与线程的情况下</li>
+<li>STOP -&gt; TIDYING 当线程池没有线程工作</li>
+<li>TIDYING -&gt; TERMINATED 当使用terminated()钩子方法来完成</li>
+</ul>
+
       
     </div>
 
@@ -331,7 +371,9 @@
           
             <a href="/tags/Java/" rel="tag">#Java</a>
           
-            <a href="/tags/二叉树/" rel="tag">#二叉树</a>
+            <a href="/tags/线程池/" rel="tag">#线程池</a>
+          
+            <a href="/tags/ThreadPoolExecutor/" rel="tag">#ThreadPoolExecutor</a>
           
         </div>
       
@@ -340,17 +382,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/17/java_string_exercise/" rel="next" title="笔试面试中的字符串题目思路与简单解析JAVA版本">
-                <i class="fa fa-chevron-left"></i> 笔试面试中的字符串题目思路与简单解析JAVA版本
+              <a href="/2016/05/10/blockingqueue/" rel="next" title="BlockingQueue简述">
+                <i class="fa fa-chevron-left"></i> BlockingQueue简述
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/12/12/java_binarytree_traversing/" rel="prev" title="二叉树非递归遍历实现－java版本">
-                二叉树非递归遍历实现－java版本 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -376,8 +414,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/11/18/java_binarytree/"
-           data-title="二叉树的实现Java版本" data-url="http://alvin-mei.github.io/2015/11/18/java_binarytree/">
+      <div class="ds-thread" data-thread-key="2016/05/11/threadpool_source/"
+           data-title="ThreadPoolExecutor源码分析" data-url="http://alvin-mei.github.io/2016/05/11/threadpool_source/">
       </div>
     
   </div>
@@ -483,7 +521,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Executor"><span class="nav-number">1.</span> <span class="nav-text">Executor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ExecutorService"><span class="nav-number">2.</span> <span class="nav-text">ExecutorService</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AbstractExecutorService"><span class="nav-number">3.</span> <span class="nav-text">AbstractExecutorService</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadPoolExecutor"><span class="nav-number">4.</span> <span class="nav-text">ThreadPoolExecutor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Executors"><span class="nav-number">5.</span> <span class="nav-text">Executors</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPoolExecutor源码解析"><span class="nav-number"></span> <span class="nav-text">ThreadPoolExecutor源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程池状态"><span class="nav-number">1.</span> <span class="nav-text">线程池状态</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
