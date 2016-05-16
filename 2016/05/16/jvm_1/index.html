@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java,多线程," />
+  <meta name="keywords" content="Java,JVM," />
 
 
 
@@ -57,19 +57,19 @@
 
 
 
-<meta name="description" content="一、CPU是如何执行程序的我们知道CPU是用来处理、运算计算机所有数据的功能模块，而我们的程序在运行时会将数据保存在内存中，CPU会去内存中读取计算时所使用到的数据。随着CPU运算速度的升级，出现了CPU运算速度与内存读写速度不匹配的情况，为了解决CPU在运行时总是等待从内存中读写数据从而导致CPU空闲而影响效率的问题，在CPU内部集成了一定量的寄存器与高速缓存，来提高CPU在处理数据时的效率。现">
+<meta name="description" content="一、java跨平台特性java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过">
 <meta property="og:type" content="article">
-<meta property="og:title" content="java并发原理（上）">
-<meta property="og:url" content="http://alvin-mei.github.io/2016/02/22/java_concurrency_1/index.html">
+<meta property="og:title" content="窥探JVM--Class文件结构">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/05/16/jvm_1/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="一、CPU是如何执行程序的我们知道CPU是用来处理、运算计算机所有数据的功能模块，而我们的程序在运行时会将数据保存在内存中，CPU会去内存中读取计算时所使用到的数据。随着CPU运算速度的升级，出现了CPU运算速度与内存读写速度不匹配的情况，为了解决CPU在运行时总是等待从内存中读写数据从而导致CPU空闲而影响效率的问题，在CPU内部集成了一定量的寄存器与高速缓存，来提高CPU在处理数据时的效率。现">
-<meta property="og:image" content="http://img.blog.csdn.net/20160222224343874">
-<meta property="og:image" content="http://img.blog.csdn.net/20160222224601774">
-<meta property="og:updated_time" content="2016-03-21T02:49:18.000Z">
+<meta property="og:description" content="一、java跨平台特性java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/class_unit.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/Student%E7%BC%96%E8%AF%91.png">
+<meta property="og:updated_time" content="2016-05-16T15:19:30.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="java并发原理（上）">
-<meta name="twitter:description" content="一、CPU是如何执行程序的我们知道CPU是用来处理、运算计算机所有数据的功能模块，而我们的程序在运行时会将数据保存在内存中，CPU会去内存中读取计算时所使用到的数据。随着CPU运算速度的升级，出现了CPU运算速度与内存读写速度不匹配的情况，为了解决CPU在运行时总是等待从内存中读写数据从而导致CPU空闲而影响效率的问题，在CPU内部集成了一定量的寄存器与高速缓存，来提高CPU在处理数据时的效率。现">
-<meta name="twitter:image" content="http://img.blog.csdn.net/20160222224343874">
+<meta name="twitter:title" content="窥探JVM--Class文件结构">
+<meta name="twitter:description" content="一、java跨平台特性java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/class_unit.png">
 
 
 
@@ -87,7 +87,7 @@
   };
 </script>
 
-  <title> java并发原理（上） | 隐忍以行 </title>
+  <title> 窥探JVM--Class文件结构 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -227,7 +227,7 @@
             
             
               
-                java并发原理（上）
+                窥探JVM--Class文件结构
               
             
           </h1>
@@ -239,8 +239,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-02-22T22:50:54+08:00" content="2016-02-22">
-              2016-02-22
+            <time itemprop="dateCreated" datetime="2016-05-16T20:54:41+08:00" content="2016-05-16">
+              2016-05-16
             </time>
           </span>
 
@@ -253,8 +253,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
                   </a>
                 </span>
 
@@ -265,8 +265,8 @@
 
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/多线程/" itemprop="url" rel="index">
-                    <span itemprop="name">多线程</span>
+                  <a href="/categories/java/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
                   </a>
                 </span>
 
@@ -281,8 +281,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/02/22/java_concurrency_1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/22/java_concurrency_1/" itemprop="commentsCount"></span>
+                <a href="/2016/05/16/jvm_1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/16/jvm_1/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -292,7 +292,7 @@
 
           
           
-             <span id="/2016/02/22/java_concurrency_1/" class="leancloud_visitors" data-flag-title="java并发原理（上）">
+             <span id="/2016/05/16/jvm_1/" class="leancloud_visitors" data-flag-title="窥探JVM--Class文件结构">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -313,34 +313,121 @@
       
 
       
-        <h3 id="一、CPU是如何执行程序的"><a href="#一、CPU是如何执行程序的" class="headerlink" title="一、CPU是如何执行程序的"></a>一、CPU是如何执行程序的</h3><p>我们知道CPU是用来处理、运算计算机所有数据的功能模块，而我们的程序在运行时会将数据保存在内存中，CPU会去内存中读取计算时所使用到的数据。随着CPU运算速度的升级，出现了CPU运算速度与内存读写速度不匹配的情况，为了解决CPU在运行时总是等待从内存中读写数据从而导致CPU空闲而影响效率的问题，在CPU内部集成了一定量的寄存器与高速缓存，来提高CPU在处理数据时的效率。现代CPU的架构模型虽然有多种，但是在本质上都是一样的，如下图所示：<br>            <img src="http://img.blog.csdn.net/20160222224343874" alt="这里写图片描述"><br>从上图看到，CPU从缓存中读取数据的速度远远快于从主存中读取数据的速度，所以在CPU进行计算时，会先将数据从主存中读取到缓存中，并利用缓存中的数据进行处理，然后定期将缓存中的数据刷新至主存中。</p>
-<p>在单CPU核心计算下，这样的架构并不会出现问题而且速度很快，但是在多CPU核心处理数据时，就会出现并发问题，如CPU1对主存中的A元素进行了A = A + 1 的操作，而这个操作执行完后保存在缓存中，还没有来得及刷新到主存时，CPU2获取了从主存内获取A并对其进行了A = A - 1的操作，这样就会出现数据不一致的情况。因为CPU将其内部缓存数据刷新至主存的动作并不是实时的，也就是说对于如下代码:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">   a++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>很有可能是执行一次a++就刷新至主存中，也有可能是等a++循环100次时再刷新，所以在进行多线程并发操作时，需要考虑如下三点：</p>
-<ul>
-<li>可见性：CPU1对主存中的数据的操作要对其他CPU是可见的。</li>
-<li>原子性：将所需要执行的方法视为最小执行单元。要么不执行，要执行就全部执行，不会出现执行一半的情况。</li>
-<li>有序性：代码的执行顺序是有序的。<br>上述内容是偏计算机底层，不同的平台，内存模型可能有差异，而jvm的内存模型规范是统一的，它帮我们屏蔽了底层平台的差异性。</li>
-</ul>
-<h3 id="二、java内存模型（java-memory-model：JMM）"><a href="#二、java内存模型（java-memory-model：JMM）" class="headerlink" title="二、java内存模型（java memory model：JMM）"></a>二、java内存模型（java memory model：JMM）</h3><p>  JMM其实是对底层的一个抽象。我们知道在JAVA程序运行时，所有类的实例、静态域、数组元素都是存储在堆中，而堆内存中的数据是对所有的线程共享的，在线程内部还有各自的栈、计数器，这里还有一个工作内存，用于存储当前线程在计算时从主存中读/写共享变量的一个副本，上述都是线程私有的，对其他线程不可见，如下图所示：<br>  <img src="http://img.blog.csdn.net/20160222224601774" alt="这里写图片描述"><br>  在线程读取共享变量时涉及六个操作：</p>
-<ol>
-<li>读：<ul>
-<li>read:作用于主存，从主存中获取共享变量，随后紧跟load操作。</li>
-<li>load:作用于工作内存，它将read操作从主存中获取的共享变量写入工作内存中。</li>
-<li>use:将工作内存中的共享变量副本取出，用于线程计算使用。</li>
-</ul>
-</li>
-<li>写： <ul>
-<li>asign:将处理完的共享变量存入工作内存。</li>
-<li>store:作用于工作内存，将工作内存中的共享变量刷新至主存，随后紧跟write操作。</li>
-<li>write:作用于主存，它将store操作从工作内存中的共享变量值刷新到主存变量中。</li>
-</ul>
-</li>
-</ol>
-<p>两个JAVA线程需要通信的话，包含以下两个步骤：</p>
-<ol>
-<li>线程A从主存中读取数据，存入本地工作内存中，然后从工作内存中读取数据进行计算，再将计算过的数据存入工作内存中，刷新工作内存的数据至主存中。</li>
-<li>线程B将主存中的数据更新至本地工作内存。<br>可以看到，如果两个线程需要进行通信或对同一共享变量进行操作，就必须经过主存，否则会出现并发问题。在下一章我会来说一下JAVA如何保障在多线程计算时的可见性、有序性以及原子性。</li>
-</ol>
+        <h2 id="一、java跨平台特性"><a href="#一、java跨平台特性" class="headerlink" title="一、java跨平台特性"></a>一、java跨平台特性</h2><p>java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过编译后成为class文件，运行在JVM上，而只需要针对不同的系统适配不同的jvm就能够做到“一次编译，到处运行”，而jvm的适配，都由sun公司替我们解决，我们无需关心底层，只专注于业务。</p>
+<h2 id="二、class类文件结构"><a href="#二、class类文件结构" class="headerlink" title="二、class类文件结构"></a>二、class类文件结构</h2><p>我们平时所编写的代码都是java文件，而JVM只能运行二进制字节码，所以java在编译时就会将.java文件编译成为.class文件，而class文件是运行在jvm中的，所以有着严格的格式要求，下面我们就来看一下class类文件结构.</p>
+<h3 id="class数据类型"><a href="#class数据类型" class="headerlink" title="class数据类型"></a>class数据类型</h3><p>Class文件经过编译后为一组二进制流，基于unicode进行编码，其基础单位是8位无符号字节码，所有数据都是按照java官方的class类格式紧凑的排列在class文件中，中间没有任何分隔符，在class文件中存储的数据都是程序运行的必要数据，具体数据单位如下表所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/class_unit.png" alt="class单位"><br>使用该无符号单位可以用来描述具体数据、类的引用等，下面我们来看一下class类的具体结构。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th style="text-align:center">数据名称</th>
+<th style="text-align:center">解释</th>
+<th style="text-align:right">数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>u4</td>
+<td style="text-align:center">magic</td>
+<td style="text-align:center">魔数</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">minor_version</td>
+<td style="text-align:center">次版本号</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">major_version</td>
+<td style="text-align:center">主版本号</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">constant_pool_count</td>
+<td style="text-align:center">常量池数量</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>cp_info</td>
+<td style="text-align:center">constant_pool</td>
+<td style="text-align:center">常量池结构</td>
+<td style="text-align:right">constant_pool_count - 1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">access_flags</td>
+<td style="text-align:center">访问标志</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">this_class</td>
+<td style="text-align:center">类的索引</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">super_class</td>
+<td style="text-align:center">父类的索引</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">interfaces_count</td>
+<td style="text-align:center">接口数量</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">interfaces</td>
+<td style="text-align:center">接口的索引</td>
+<td style="text-align:right">interfaces_count</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">fields_count</td>
+<td style="text-align:center">字段数量</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>field_info</td>
+<td style="text-align:center">fields</td>
+<td style="text-align:center">字段结构</td>
+<td style="text-align:right">fields_count</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">methods_count</td>
+<td style="text-align:center">方法数量</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>method_info</td>
+<td style="text-align:center">methods</td>
+<td style="text-align:center">方法结构</td>
+<td style="text-align:right">methods_count</td>
+</tr>
+<tr>
+<td>u2</td>
+<td style="text-align:center">attributes_count</td>
+<td style="text-align:center">属性数量</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>attribute_info</td>
+<td style="text-align:center">attributes</td>
+<td style="text-align:center">属性结构</td>
+<td style="text-align:right">attributes_count</td>
+</tr>
+</tbody>
+</table>
+<p>为了方便查看java文件被编译后的class文件格式，我定义了以下实例:<br>action接口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">action</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Parent父类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Parent</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> phone;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Parent</span><span class="params">(String name, <span class="keyword">int</span> phone)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.phone = phone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPhone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> phone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPhone</span><span class="params">(<span class="keyword">int</span> phone)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.phone = phone;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Student子类，其继承Parent类并且实现了action<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">extends</span> <span class="title">Parent</span> <span class="keyword">implements</span> <span class="title">action</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span>  <span class="keyword">int</span> id = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> sorce;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name, <span class="keyword">int</span> phone)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name, phone);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name, <span class="keyword">int</span> phone, String name1, <span class="keyword">int</span> age, <span class="keyword">int</span> sorce)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name, phone);</span><br><span class="line">        name = name1;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.sorce = sorce;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getSorce</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sorce;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSorce</span><span class="params">(<span class="keyword">int</span> sorce)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.sorce = sorce;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"running"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用  javac *.java  命令对多有java文件进行编译，生成class文件。将生成的Student文件通过Hex friend查看，得到如下图：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/Student%E7%BC%96%E8%AF%91.png" alt=""><br>我们可以看到class文件就是一堆二进制字符。</p>
 
       
     </div>
@@ -373,7 +460,7 @@
           
             <a href="/tags/Java/" rel="tag">#Java</a>
           
-            <a href="/tags/多线程/" rel="tag">#多线程</a>
+            <a href="/tags/JVM/" rel="tag">#JVM</a>
           
         </div>
       
@@ -382,17 +469,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/02/02/reply_java_rconcurrency_interview/" rel="next" title="JAVA多线程和并发基础面试问答（转）">
-                <i class="fa fa-chevron-left"></i> JAVA多线程和并发基础面试问答（转）
+              <a href="/2016/05/12/threadpool_source_2/" rel="next" title="ThreadPoolExecutor源码分析（二）">
+                <i class="fa fa-chevron-left"></i> ThreadPoolExecutor源码分析（二）
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/02/29/reply_java_nio_base/" rel="prev" title="Java NIO：浅析I/O模型（转）">
-                Java NIO：浅析I/O模型（转） <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -418,8 +501,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/02/22/java_concurrency_1/"
-           data-title="java并发原理（上）" data-url="http://alvin-mei.github.io/2016/02/22/java_concurrency_1/">
+      <div class="ds-thread" data-thread-key="2016/05/16/jvm_1/"
+           data-title="窥探JVM--Class文件结构" data-url="http://alvin-mei.github.io/2016/05/16/jvm_1/">
       </div>
     
   </div>
@@ -525,7 +608,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、CPU是如何执行程序的"><span class="nav-number">1.</span> <span class="nav-text">一、CPU是如何执行程序的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、java内存模型（java-memory-model：JMM）"><span class="nav-number">2.</span> <span class="nav-text">二、java内存模型（java memory model：JMM）</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、java跨平台特性"><span class="nav-number">1.</span> <span class="nav-text">一、java跨平台特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、class类文件结构"><span class="nav-number">2.</span> <span class="nav-text">二、class类文件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#class数据类型"><span class="nav-number">2.1.</span> <span class="nav-text">class数据类型</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
