@@ -65,7 +65,7 @@
 <meta property="og:description" content="一、java跨平台特性java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/class_unit.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/Student%E7%BC%96%E8%AF%91.png">
-<meta property="og:updated_time" content="2016-05-16T15:19:30.000Z">
+<meta property="og:updated_time" content="2016-05-17T13:42:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="窥探JVM--Class文件结构">
 <meta name="twitter:description" content="一、java跨平台特性java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过">
@@ -315,119 +315,295 @@
       
         <h2 id="一、java跨平台特性"><a href="#一、java跨平台特性" class="headerlink" title="一、java跨平台特性"></a>一、java跨平台特性</h2><p>java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过编译后成为class文件，运行在JVM上，而只需要针对不同的系统适配不同的jvm就能够做到“一次编译，到处运行”，而jvm的适配，都由sun公司替我们解决，我们无需关心底层，只专注于业务。</p>
 <h2 id="二、class类文件结构"><a href="#二、class类文件结构" class="headerlink" title="二、class类文件结构"></a>二、class类文件结构</h2><p>我们平时所编写的代码都是java文件，而JVM只能运行二进制字节码，所以java在编译时就会将.java文件编译成为.class文件，而class文件是运行在jvm中的，所以有着严格的格式要求，下面我们就来看一下class类文件结构.</p>
-<h3 id="class数据类型"><a href="#class数据类型" class="headerlink" title="class数据类型"></a>class数据类型</h3><p>Class文件经过编译后为一组二进制流，基于unicode进行编码，其基础单位是8位无符号字节码，所有数据都是按照java官方的class类格式紧凑的排列在class文件中，中间没有任何分隔符，在class文件中存储的数据都是程序运行的必要数据，具体数据单位如下表所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/class_unit.png" alt="class单位"><br>使用该无符号单位可以用来描述具体数据、类的引用等，下面我们来看一下class类的具体结构。</p>
-<table>
+<h3 id="class数据类型"><a href="#class数据类型" class="headerlink" title="class数据类型"></a>class数据类型</h3><p>Class文件经过编译后为一组二进制流，基于unicode进行编码，其基础单位是8位无符号字节码，所有数据都是按照java官方的class类格式紧凑的排列在class文件中，中间没有任何分隔符，对于超过基础单位8位的数据，将按照big-Endian的顺序储存（高位字节存储在低位的地址上），在class文件中存储的数据都是程序运行的必要数据，具体数据单位如下表所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/class_unit.png" alt="class单位"></p>
+<p>使用该无符号单位可以用来描述具体数据、类的引用等，下面我们来看一下class类的具体结构。</p>
+<h3 id="class文件结构"><a href="#class文件结构" class="headerlink" title="class文件结构"></a>class文件结构</h3><table>
 <thead>
 <tr>
-<th>类型</th>
+<th style="text-align:left">类型</th>
 <th style="text-align:center">数据名称</th>
 <th style="text-align:center">解释</th>
-<th style="text-align:right">数量</th>
+<th style="text-align:center">数量</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>u4</td>
+<td style="text-align:left">u4</td>
 <td style="text-align:center">magic</td>
 <td style="text-align:center">魔数</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">minor_version</td>
 <td style="text-align:center">次版本号</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">major_version</td>
 <td style="text-align:center">主版本号</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">constant_pool_count</td>
 <td style="text-align:center">常量池数量</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>cp_info</td>
+<td style="text-align:left">cp_info</td>
 <td style="text-align:center">constant_pool</td>
 <td style="text-align:center">常量池结构</td>
-<td style="text-align:right">constant_pool_count - 1</td>
+<td style="text-align:center">constant_pool_count - 1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">access_flags</td>
 <td style="text-align:center">访问标志</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">this_class</td>
 <td style="text-align:center">类的索引</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">super_class</td>
 <td style="text-align:center">父类的索引</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">interfaces_count</td>
 <td style="text-align:center">接口数量</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">interfaces</td>
 <td style="text-align:center">接口的索引</td>
-<td style="text-align:right">interfaces_count</td>
+<td style="text-align:center">interfaces_count</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">fields_count</td>
 <td style="text-align:center">字段数量</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>field_info</td>
+<td style="text-align:left">field_info</td>
 <td style="text-align:center">fields</td>
 <td style="text-align:center">字段结构</td>
-<td style="text-align:right">fields_count</td>
+<td style="text-align:center">fields_count</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">methods_count</td>
 <td style="text-align:center">方法数量</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>method_info</td>
+<td style="text-align:left">method_info</td>
 <td style="text-align:center">methods</td>
 <td style="text-align:center">方法结构</td>
-<td style="text-align:right">methods_count</td>
+<td style="text-align:center">methods_count</td>
 </tr>
 <tr>
-<td>u2</td>
+<td style="text-align:left">u2</td>
 <td style="text-align:center">attributes_count</td>
 <td style="text-align:center">属性数量</td>
-<td style="text-align:right">1</td>
+<td style="text-align:center">1</td>
 </tr>
 <tr>
-<td>attribute_info</td>
+<td style="text-align:left">attribute_info</td>
 <td style="text-align:center">attributes</td>
 <td style="text-align:center">属性结构</td>
-<td style="text-align:right">attributes_count</td>
+<td style="text-align:center">attributes_count</td>
 </tr>
 </tbody>
 </table>
 <p>为了方便查看java文件被编译后的class文件格式，我定义了以下实例:<br>action接口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">action</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>Parent父类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Parent</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> phone;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Parent</span><span class="params">(String name, <span class="keyword">int</span> phone)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.phone = phone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPhone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> phone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPhone</span><span class="params">(<span class="keyword">int</span> phone)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.phone = phone;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>Student子类，其继承Parent类并且实现了action<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">extends</span> <span class="title">Parent</span> <span class="keyword">implements</span> <span class="title">action</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span>  <span class="keyword">int</span> id = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> sorce;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name, <span class="keyword">int</span> phone)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name, phone);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name, <span class="keyword">int</span> phone, String name1, <span class="keyword">int</span> age, <span class="keyword">int</span> sorce)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name, phone);</span><br><span class="line">        name = name1;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.sorce = sorce;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getSorce</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sorce;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSorce</span><span class="params">(<span class="keyword">int</span> sorce)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.sorce = sorce;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"running"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>使用  javac *.java  命令对多有java文件进行编译，生成class文件。将生成的Student文件通过Hex friend查看，得到如下图：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/Student%E7%BC%96%E8%AF%91.png" alt=""><br>我们可以看到class文件就是一堆二进制字符。</p>
+<p>使用  javac *.java  命令对多有java文件进行编译，生成class文件。通过 javap -verbose Student.class 命令可以查看到class类的输出信息，如下所示（部分）<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line">MD5 checksum 048b4056f7d6aa0050bb1bdf26e1f186</span><br><span class="line">  Compiled from "Student.java"</span><br><span class="line">public class com.alvin.test.Student extends com.alvin.test.Parent implements com.alvin.test.action</span><br><span class="line">  minor version: 0</span><br><span class="line">  major version: 52</span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER</span><br><span class="line">Constant pool:</span><br><span class="line">   #1 = Methodref          #9.#38         // com/alvin/test/Parent."&lt;init&gt;":(Ljava/lang/String;I)V</span><br><span class="line">   #2 = Fieldref           #8.#39         // com/alvin/test/Student.age:I</span><br><span class="line">   #3 = Fieldref           #8.#40         // com/alvin/test/Student.sorce:I</span><br><span class="line">   #4 = Fieldref           #8.#41         // com/alvin/test/Student.name:Ljava/lang/String;</span><br><span class="line">   #5 = Fieldref           #42.#43        // java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">   #6 = String             #44            // running</span><br><span class="line">   #7 = Methodref          #45.#46        // java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">   #8 = Class              #47            // com/alvin/test/Student</span><br><span class="line">   #9 = Class              #48            // com/alvin/test/Parent</span><br><span class="line">  #10 = Class              #49            // com/alvin/test/action</span><br><span class="line">  #11 = Utf8               id</span><br><span class="line">  #12 = Utf8               I</span><br><span class="line">  #13 = Utf8               ConstantValue</span><br><span class="line">  #14 = Integer            1</span><br><span class="line">  #15 = Utf8               name</span><br><span class="line">  #16 = Utf8               Ljava/lang/String;</span><br><span class="line">  ………………</span><br><span class="line">&#123;</span><br><span class="line">  public static final int id;</span><br><span class="line">    descriptor: I</span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL</span><br><span class="line">    ConstantValue: int 1</span><br><span class="line"></span><br><span class="line">  public java.lang.String name;</span><br><span class="line">    descriptor: Ljava/lang/String;</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">  public int age;</span><br><span class="line">    descriptor: I</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">  public int sorce;</span><br><span class="line">    descriptor: I</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">  public com.alvin.test.Student(java.lang.String, int);</span><br><span class="line">    descriptor: (Ljava/lang/String;I)V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=3, locals=3, args_size=3</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: aload_1</span><br><span class="line">         2: iload_2</span><br><span class="line">         3: invokespecial #1                  // Method com/alvin/test/Parent."&lt;init&gt;":(Ljava/lang/String;I)V</span><br><span class="line">         6: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 14: 0</span><br><span class="line">        line 15: 6</span><br><span class="line"></span><br><span class="line">  public com.alvin.test.Student(java.lang.String, int, java.lang.String, int, int);</span><br><span class="line">    descriptor: (Ljava/lang/String;ILjava/lang/String;II)V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=3, locals=6, args_size=6</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: aload_1</span><br><span class="line">         2: iload_2</span><br><span class="line">         3: invokespecial #1                  // Method com/alvin/test/Parent."&lt;init&gt;":(Ljava/lang/String;I)V</span><br><span class="line">         6: aload_3</span><br><span class="line">         7: astore_1</span><br><span class="line">         8: aload_0</span><br><span class="line">         9: iload         4</span><br><span class="line">        11: putfield      #2                  // Field age:I</span><br><span class="line">        14: aload_0</span><br><span class="line">        15: iload         5</span><br><span class="line">        17: putfield      #3                  // Field sorce:I</span><br><span class="line">        20: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 18: 0</span><br><span class="line">        line 19: 6</span><br><span class="line">        line 20: 8</span><br><span class="line">        line 21: 14</span><br><span class="line">        line 22: 20</span><br><span class="line"></span><br><span class="line">  public java.lang.String getName();</span><br><span class="line">    descriptor: ()Ljava/lang/String;</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=1, locals=1, args_size=1</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: getfield      #4                  // Field name:Ljava/lang/String;</span><br><span class="line">         4: areturn</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 25: 0</span><br><span class="line"></span><br><span class="line">  public void setName(java.lang.String);</span><br><span class="line">    descriptor: (Ljava/lang/String;)V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=2, locals=2, args_size=2</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: aload_1</span><br><span class="line">         2: putfield      #4                  // Field name:Ljava/lang/String;</span><br><span class="line">         5: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 29: 0</span><br><span class="line">        line 30: 5</span><br><span class="line"></span><br><span class="line">  public int getAge();</span><br><span class="line">    descriptor: ()I</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=1, locals=1, args_size=1</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: getfield      #2                  // Field age:I</span><br><span class="line">         4: ireturn</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 33: 0</span><br><span class="line">…………</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看到输出的信息与class类结构顺序上相符合，那么class文件中的原始数据是怎样的呢，现在将生成的Student文件通过Hex friend查看，得到如下图：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/Student%E7%BC%96%E8%AF%91.png" alt=""><br>我们可以看到class文件就是一堆二进制字符,但是其中的各个数据都是有其含义的，严格按照上述class类格式填充。</p>
+<h3 id="class文件属性分析"><a href="#class文件属性分析" class="headerlink" title="class文件属性分析"></a>class文件属性分析</h3><h4 id="magic"><a href="#magic" class="headerlink" title="magic"></a>magic</h4><p>魔数，占用4个字节，其实在许多地方都会使用魔数，在这里表示这是一个class文件，用来校验使用。</p>
+<h4 id="minor-version"><a href="#minor-version" class="headerlink" title="minor_version"></a>minor_version</h4><p>表示该class文件的次版本号，占用2个字节，与主版本号一起确定当前java的版本</p>
+<h4 id="major-version"><a href="#major-version" class="headerlink" title="major_version"></a>major_version</h4><p>主版本号，占用2个字节，与次版本号一起确定当前java的版本，从hex friend中可以看到，我的版本号为00000034，代表了JDK1.8.0</p>
+<h4 id="constant-pool-count"><a href="#constant-pool-count" class="headerlink" title="constant_pool_count"></a>constant_pool_count</h4><p>常量池中常量的数量，占用2个字节。由于常量池中的数据数量是不固定的，所以需要这个计数器，用来记录常量池中数据的数量，计数器从1开始计数，因为0表示该类不引用任何常量池数据。</p>
+<h4 id="constant-pool"><a href="#constant-pool" class="headerlink" title="constant_pool"></a>constant_pool</h4><p>常量池数据，其实就是一个数组，元素为常量数据的类型，这里的常量池与JVM中的常量池是不同的，Class文件中的常量池主要存储了一些数据的字面量（字符串，final常量或者某个属性的初始值）与符号引用（类和接口的全限定名，字段名等），从反编译Student实例中我们也可以看到，Constant pool里面存了各种类型的数据，主要类型有以下14类：</p>
+<ul>
+<li>CONSTANT_Utf8_info      tag标志位为1,   UTF-8编码的字符串</li>
+<li>CONSTANT_Integer_info  tag标志位为3， 整形字面量   </li>
+<li>CONSTANT_Float_info     tag标志位为4， 浮点型字面量</li>
+<li>CONSTANT_Long_info     tag标志位为5， 长整形字面量</li>
+<li>CONSTANT_Double_info  tag标志位为6， 双精度字面量</li>
+<li>CONSTANT_Class_info    tag标志位为7， 类或接口的符号引用</li>
+<li>CONSTANT_String_info    tag标志位为8，字符串类型的字面量</li>
+<li>CONSTANT_Fieldref_info  tag标志位为9,  字段的符号引用</li>
+<li>CONSTANT_Methodref_info  tag标志位为10，类中方法的符号引用</li>
+<li>CONSTANT_InterfaceMethodref_info tag标志位为11, 接口中方法的符号引用</li>
+<li>CONSTANT_NameAndType_info tag 标志位为12，字段和方法的名称以及类型的符号引用</li>
+</ul>
+<h4 id="access-flags"><a href="#access-flags" class="headerlink" title="access_flags"></a>access_flags</h4><p>访问标志，占用2个字节，记录了该类或接口的访问信息，具体数值如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">标志名</th>
+<th style="text-align:center">值</th>
+<th style="text-align:center">含义</th>
+<th>设置者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ACC_PUBLIC</td>
+<td style="text-align:center">0x0001</td>
+<td style="text-align:center">public类型</td>
+</tr>
+<tr>
+<td style="text-align:left">ACC_FINAL</td>
+<td style="text-align:center">0x0010</td>
+<td style="text-align:center">类为final类型</td>
+</tr>
+<tr>
+<td style="text-align:left">ACC_SUPER</td>
+<td style="text-align:center">0x0020</td>
+<td style="text-align:center">Invokespecial是否是使用动态绑定</td>
+</tr>
+<tr>
+<td style="text-align:left">ACC_INTERFACE</td>
+<td style="text-align:center">0x0200</td>
+<td style="text-align:center">接口类型</td>
+</tr>
+<tr>
+<td style="text-align:left">ACC_ABSTRACT</td>
+<td style="text-align:center">0x0400</td>
+<td style="text-align:center">抽象类类型</td>
+</tr>
+<tr>
+<td style="text-align:left">ACC_SYNTHETIC</td>
+<td style="text-align:center">0x1000</td>
+<td style="text-align:center">是否由用户代码产生</td>
+</tr>
+<tr>
+<td style="text-align:left">ACC_ANNOTATION</td>
+<td style="text-align:center">0x2000</td>
+<td style="text-align:center">表示是否为注解</td>
+</tr>
+<tr>
+<td style="text-align:left">ACC_ENUM</td>
+<td style="text-align:center">0x4000</td>
+<td style="text-align:center">表示为枚举</td>
+</tr>
+</tbody>
+</table>
+<p>若有多个标签，那么是使用或运算来进行计算，因为我们可以看到访问标志的值为一个4位的十六进制数，而且分布在每一位的数据都是不同的，所以最终得到的值可能是一个复合状态。</p>
+<h4 id="this-class、super-class"><a href="#this-class、super-class" class="headerlink" title="this_class、super_class"></a>this_class、super_class</h4><p>类的索引与父类的索引，分别占2字节，指向常量池中的索引，在常量中的入口必须为CONSTANT_Class_info表，CONSTANT_Class_info的结构如下图所示</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:center">数据名称</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">u1</td>
+<td style="text-align:center">tag</td>
+<td style="text-align:center">标志位</td>
+</tr>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">name_index</td>
+<td style="text-align:center">类的全限定名</td>
+</tr>
+</tbody>
+</table>
+<h4 id="interfaces-count"><a href="#interfaces-count" class="headerlink" title="interfaces_count"></a>interfaces_count</h4><p>实现接口的个数，占用2个字节，该计数器包括该类自身实现个数与父类实现个数的总和</p>
+<h4 id="interfaces"><a href="#interfaces" class="headerlink" title="interfaces"></a>interfaces</h4><p>实现接口的索引数组，其中的每一项都指向常量池中CONSTANT_Class_info结构</p>
+<h4 id="fields-count"><a href="#fields-count" class="headerlink" title="fields_count"></a>fields_count</h4><p>字段描述符个数，占用2个字节，该计数器用于记录类变量和实例变量中字段的数量总和</p>
+<h4 id="fields"><a href="#fields" class="headerlink" title="fields"></a>fields</h4><p>字段描述符数组，其中的每一项都指向field_info表的索引，只有在类与接口中声明的字段（类级变量或者实例级变量）才能被记录在fields数组中，该数组中不会列出超类或父类接口继承而来的字段。下面为field_info结构</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:center">数据名称</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">access_flags</td>
+<td style="text-align:center">访问标示</td>
+</tr>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">name_index</td>
+<td style="text-align:center">字段的全限定名，为指向常量池中的索引</td>
+</tr>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">descriptor_index</td>
+<td style="text-align:center">字段描述符，为指向常量池中的索引</td>
+</tr>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">attributes_count</td>
+<td style="text-align:center">字段总的属性表的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">attribute_info</td>
+<td style="text-align:center">attributes[attributes_count]</td>
+<td style="text-align:center">属性表</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods-count"><a href="#methods-count" class="headerlink" title="methods_count"></a>methods_count</h4><p>类中声明方法的数量，占用2字节。</p>
+<h4 id="methods"><a href="#methods" class="headerlink" title="methods"></a>methods</h4><p>方法描述符数组，其中每一项都指向method_info表的索引，可以看出method_info和field_info的结构是很类似的</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:center">数据名称</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">access_flags</td>
+<td style="text-align:center">访问标示</td>
+</tr>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">name_index</td>
+<td style="text-align:center">字段的全限定名，为指向常量池中的索引</td>
+</tr>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">descriptor_index</td>
+<td style="text-align:center">字段描述符，为指向常量池中的索引</td>
+</tr>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">attributes_count</td>
+<td style="text-align:center">字段总的属性表的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">attribute_info</td>
+<td style="text-align:center">attributes[attributes_count]</td>
+<td style="text-align:center">属性表</td>
+</tr>
+</tbody>
+</table>
+<h4 id="attributes-count"><a href="#attributes-count" class="headerlink" title="attributes_count"></a>attributes_count</h4><p>类中声明属性的数量，占用2字节。</p>
+<h4 id="attributes"><a href="#attributes" class="headerlink" title="attributes"></a>attributes</h4><p>属性描述符数组，其中每一项都指向attribute_info表的索引，它给出了在类或接口所定义的属性的基本信息具体结构如下表所示：<br>| 类型       | 数据名称           |解释|<br>| :————- |:————-:|:————-:|<br>| u2     | attribute_name_index |访问标示|<br>| u4      | attribute_length  |字段的全限定名，为指向常量池中的索引|<br>| u1    | info  |指向属性信息|</p>
 
       
     </div>
@@ -608,7 +784,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、java跨平台特性"><span class="nav-number">1.</span> <span class="nav-text">一、java跨平台特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、class类文件结构"><span class="nav-number">2.</span> <span class="nav-text">二、class类文件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#class数据类型"><span class="nav-number">2.1.</span> <span class="nav-text">class数据类型</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、java跨平台特性"><span class="nav-number">1.</span> <span class="nav-text">一、java跨平台特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、class类文件结构"><span class="nav-number">2.</span> <span class="nav-text">二、class类文件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#class数据类型"><span class="nav-number">2.1.</span> <span class="nav-text">class数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#class文件结构"><span class="nav-number">2.2.</span> <span class="nav-text">class文件结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#class文件属性分析"><span class="nav-number">2.3.</span> <span class="nav-text">class文件属性分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#magic"><span class="nav-number">2.3.1.</span> <span class="nav-text">magic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#minor-version"><span class="nav-number">2.3.2.</span> <span class="nav-text">minor_version</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#major-version"><span class="nav-number">2.3.3.</span> <span class="nav-text">major_version</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#constant-pool-count"><span class="nav-number">2.3.4.</span> <span class="nav-text">constant_pool_count</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#constant-pool"><span class="nav-number">2.3.5.</span> <span class="nav-text">constant_pool</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#access-flags"><span class="nav-number">2.3.6.</span> <span class="nav-text">access_flags</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this-class、super-class"><span class="nav-number">2.3.7.</span> <span class="nav-text">this_class、super_class</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#interfaces-count"><span class="nav-number">2.3.8.</span> <span class="nav-text">interfaces_count</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#interfaces"><span class="nav-number">2.3.9.</span> <span class="nav-text">interfaces</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fields-count"><span class="nav-number">2.3.10.</span> <span class="nav-text">fields_count</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fields"><span class="nav-number">2.3.11.</span> <span class="nav-text">fields</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#methods-count"><span class="nav-number">2.3.12.</span> <span class="nav-text">methods_count</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#methods"><span class="nav-number">2.3.13.</span> <span class="nav-text">methods</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#attributes-count"><span class="nav-number">2.3.14.</span> <span class="nav-text">attributes_count</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#attributes"><span class="nav-number">2.3.15.</span> <span class="nav-text">attributes</span></a></li></ol></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
