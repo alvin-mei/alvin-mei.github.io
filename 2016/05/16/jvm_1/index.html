@@ -65,7 +65,7 @@
 <meta property="og:description" content="一、java跨平台特性java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/class_unit.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/Student%E7%BC%96%E8%AF%91.png">
-<meta property="og:updated_time" content="2016-05-17T13:42:36.000Z">
+<meta property="og:updated_time" content="2016-05-17T13:44:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="窥探JVM--Class文件结构">
 <meta name="twitter:description" content="一、java跨平台特性java语言成为当今之热门，其主要原因是它的跨平台特性，正如当初其宣传语所称“一次编译，到处运行”正是将java语言推上了热门榜，成为当今互联网开发的主力语言。那么为什么说java是具有跨平台的特性呢？我们知道对于不同的操作系统，不同的操作系统版本，其系统调用与底层结构与指令集都是大不相同的，所以程序的适配一直是一个大问题，而java使用了JVM作为运行环境，java文件经过">
@@ -455,7 +455,6 @@
 <th style="text-align:left">标志名</th>
 <th style="text-align:center">值</th>
 <th style="text-align:center">含义</th>
-<th>设置者</th>
 </tr>
 </thead>
 <tbody>
@@ -603,7 +602,33 @@
 </tbody>
 </table>
 <h4 id="attributes-count"><a href="#attributes-count" class="headerlink" title="attributes_count"></a>attributes_count</h4><p>类中声明属性的数量，占用2字节。</p>
-<h4 id="attributes"><a href="#attributes" class="headerlink" title="attributes"></a>attributes</h4><p>属性描述符数组，其中每一项都指向attribute_info表的索引，它给出了在类或接口所定义的属性的基本信息具体结构如下表所示：<br>| 类型       | 数据名称           |解释|<br>| :————- |:————-:|:————-:|<br>| u2     | attribute_name_index |访问标示|<br>| u4      | attribute_length  |字段的全限定名，为指向常量池中的索引|<br>| u1    | info  |指向属性信息|</p>
+<h4 id="attributes"><a href="#attributes" class="headerlink" title="attributes"></a>attributes</h4><p>属性描述符数组，其中每一项都指向attribute_info表的索引，它给出了在类或接口所定义的属性的基本信息具体结构如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:center">数据名称</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">u2</td>
+<td style="text-align:center">attribute_name_index</td>
+<td style="text-align:center">访问标示</td>
+</tr>
+<tr>
+<td style="text-align:left">u4</td>
+<td style="text-align:center">attribute_length</td>
+<td style="text-align:center">字段的全限定名，为指向常量池中的索引</td>
+</tr>
+<tr>
+<td style="text-align:left">u1</td>
+<td style="text-align:center">info</td>
+<td style="text-align:center">指向属性信息</td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
