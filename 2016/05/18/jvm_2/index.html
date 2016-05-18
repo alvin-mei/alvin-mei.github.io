@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java,二叉树," />
+  <meta name="keywords" content="Java,JVM,ClassLoad," />
 
 
 
@@ -57,16 +57,24 @@
 
 
 
-<meta name="description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
+<meta name="description" content="类加载器简介java的类加载器是运行与JVM之上的。当jvm加载了java文件并编译成class文件后，类加载器负责通过类的全限定名来读取java字节代码，将其字节码中的静态存储结构转换为方法区中的运行时的数据结构，并在堆中生成一个代表该类的java.lang.Class实例作为方法区中数据的访问入口。其中字节码文件的来源可以来自于文件系统、网络。在jvm中以下三种默认的类加载器：
+
+Bootst">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二叉树非递归遍历实现－java版本">
-<meta property="og:url" content="http://alvin-mei.github.io/2015/12/12/java_binarytree_traversing/index.html">
+<meta property="og:title" content="窥探JVM--类加载器简介">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/05/18/jvm_2/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
-<meta property="og:updated_time" content="2016-03-22T07:14:18.000Z">
+<meta property="og:description" content="类加载器简介java的类加载器是运行与JVM之上的。当jvm加载了java文件并编译成class文件后，类加载器负责通过类的全限定名来读取java字节代码，将其字节码中的静态存储结构转换为方法区中的运行时的数据结构，并在堆中生成一个代表该类的java.lang.Class实例作为方法区中数据的访问入口。其中字节码文件的来源可以来自于文件系统、网络。在jvm中以下三种默认的类加载器：
+
+Bootst">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/classLoad.png">
+<meta property="og:updated_time" content="2016-05-18T10:29:45.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="二叉树非递归遍历实现－java版本">
-<meta name="twitter:description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
+<meta name="twitter:title" content="窥探JVM--类加载器简介">
+<meta name="twitter:description" content="类加载器简介java的类加载器是运行与JVM之上的。当jvm加载了java文件并编译成class文件后，类加载器负责通过类的全限定名来读取java字节代码，将其字节码中的静态存储结构转换为方法区中的运行时的数据结构，并在堆中生成一个代表该类的java.lang.Class实例作为方法区中数据的访问入口。其中字节码文件的来源可以来自于文件系统、网络。在jvm中以下三种默认的类加载器：
+
+Bootst">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/classLoad.png">
 
 
 
@@ -84,7 +92,7 @@
   };
 </script>
 
-  <title> 二叉树非递归遍历实现－java版本 | 隐忍以行 </title>
+  <title> 窥探JVM--类加载器简介 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -224,7 +232,7 @@
             
             
               
-                二叉树非递归遍历实现－java版本
+                窥探JVM--类加载器简介
               
             
           </h1>
@@ -236,8 +244,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-12-12T10:52:31+08:00" content="2015-12-12">
-              2015-12-12
+            <time itemprop="dateCreated" datetime="2016-05-18T20:54:41+08:00" content="2016-05-18">
+              2016-05-18
             </time>
           </span>
 
@@ -250,8 +258,20 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
                   </a>
                 </span>
 
@@ -266,8 +286,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/12/java_binarytree_traversing/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/12/java_binarytree_traversing/" itemprop="commentsCount"></span>
+                <a href="/2016/05/18/jvm_2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/18/jvm_2/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -277,7 +297,7 @@
 
           
           
-             <span id="/2015/12/12/java_binarytree_traversing/" class="leancloud_visitors" data-flag-title="二叉树非递归遍历实现－java版本">
+             <span id="/2016/05/18/jvm_2/" class="leancloud_visitors" data-flag-title="窥探JVM--类加载器简介">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -298,7 +318,12 @@
       
 
       
-        <p>最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//二叉树非递归先序遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">preOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="comment">//先判断头节点是否为空</span></span><br><span class="line">       <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;Node&gt;();</span><br><span class="line">           <span class="comment">//先顺遍历是先父节点,然后父节点的左儿子,父节点的右儿子,</span></span><br><span class="line">           <span class="comment">//所以先要将父节点压入栈</span></span><br><span class="line">           stack.add(head);</span><br><span class="line">           <span class="comment">//只要栈不为空则表示二叉树没有遍历完成</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">               <span class="comment">//先序遍历比较简单,访问父节点弹出后立即打印</span></span><br><span class="line">               <span class="comment">//并判断是否右结点,有则入栈,然后判断是否有</span></span><br><span class="line">               <span class="comment">//左结点,有则入栈</span></span><br><span class="line">               head = stack.pop();</span><br><span class="line">               System.out.println(head.data);</span><br><span class="line">               <span class="comment">//会有人问为什么先右后左,因为父结点读取值</span></span><br><span class="line">               <span class="comment">//后不保存状态,所以先将右儿子压入栈,然后</span></span><br><span class="line">               <span class="comment">//再判断是否有左儿子,有的话下一次操作则先</span></span><br><span class="line">               <span class="comment">//对左儿子进行操作,符合先序遍历的逻辑</span></span><br><span class="line">               <span class="keyword">if</span>(<span class="keyword">null</span> != head.rightChild)</span><br><span class="line">                   stack.add(head.rightChild);</span><br><span class="line">               <span class="keyword">if</span>(<span class="keyword">null</span> != head.leftChild)</span><br><span class="line">                   stack.add(head.leftChild);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//二叉树非递归中序遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">inOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;Node&gt;();</span><br><span class="line">           <span class="comment">//中序遍历是先左儿子,父结点,右儿子,所以循环条件</span></span><br><span class="line">           <span class="comment">//是栈不为空且当前结点不为空</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty() || head != <span class="keyword">null</span>)&#123;</span><br><span class="line">               <span class="comment">//只要父结点的左儿子不为空,则进行进栈操作</span></span><br><span class="line">               <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">                   stack.push(head);</span><br><span class="line">                   head = head.leftChild;</span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   <span class="comment">//此时已经将整颗二叉树的最左端的</span></span><br><span class="line">                   <span class="comment">//左儿子压入栈,然后弹出并读值,取其右节点,</span></span><br><span class="line">                   <span class="comment">//这时候有两种情况:1.右结点存在,则进入上一个判断</span></span><br><span class="line">                   <span class="comment">//取他的左儿子2.若右结点不存在,那么继续弹出并读值</span></span><br><span class="line">                   head = stack.pop();</span><br><span class="line">                   System.out.println(head.data);</span><br><span class="line">                   head = head.rightChild;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//非递归后续遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(<span class="keyword">null</span> != head)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">           <span class="comment">//cur为stack的栈顶元素,pre为最后一个被打印的元素(初始值为根节点)</span></span><br><span class="line">           Node cur = <span class="keyword">null</span>,pre = head;</span><br><span class="line">           <span class="comment">//先将根节点押入</span></span><br><span class="line">           stack.push(pre);</span><br><span class="line">           <span class="comment">//stack为空则表示整个二叉树已遍历完</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">               <span class="comment">//cur为stack中的栈顶元素</span></span><br><span class="line">               cur = stack.peek();</span><br><span class="line">               <span class="comment">//有三种情况,1.栈顶元素的左节点不为空,而最后打印元素不等于栈顶元素的左节点与右节点,</span></span><br><span class="line">               <span class="comment">//表示栈顶元素的左节点还未遍历,则入栈</span></span><br><span class="line">               <span class="keyword">if</span>(cur.leftChild != <span class="keyword">null</span> &amp;&amp; pre != cur.leftChild &amp;&amp; pre != cur.rightChild)&#123;</span><br><span class="line">                   stack.push(cur.leftChild);</span><br><span class="line">               <span class="comment">//2.栈顶元素的右节点不为空,而最后打印元素不等于栈顶元素的右节点,</span></span><br><span class="line">               <span class="comment">//表示栈顶元素的右节点还未遍历,则入栈</span></span><br><span class="line">               &#125;<span class="keyword">else</span> <span class="keyword">if</span>(cur.rightChild != <span class="keyword">null</span> &amp;&amp; pre != cur.rightChild)&#123;</span><br><span class="line">                   stack.push(cur.rightChild);</span><br><span class="line">               <span class="comment">//3.最后,若栈顶元素的左右节点都已经被遍历或者为空,则出栈并打印,跟新最新打印节点</span></span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   System.out.println(stack.pop().data);</span><br><span class="line">                   pre = cur;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+        <h3 id="类加载器简介"><a href="#类加载器简介" class="headerlink" title="类加载器简介"></a>类加载器简介</h3><p>java的类加载器是运行与JVM之上的。当jvm加载了java文件并编译成class文件后，类加载器负责通过类的全限定名来读取java字节代码，将其字节码中的静态存储结构转换为方法区中的运行时的数据结构，并在堆中生成一个代表该类的java.lang.Class实例作为方法区中数据的访问入口。其中字节码文件的来源可以来自于文件系统、网络。在jvm中以下三种默认的类加载器：</p>
+<ul>
+<li>BootstrapClassLoad</li>
+<li>ExtensionClassLoad</li>
+<li>SystemClassLoad<br>除了以上三种默认的类加载器以外，用户可以继承java.lang.ClassLoader类来实现自己特定功能的类加载器，这四种类加载器的层级如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/classLoad.png" alt="ClassLoad"><br>可以看到BootstrapClassLoad位于顶端，那么可想而知他是所有ClassLoader的父类，然后是ExtensionClassLoad、SystemClassLoad最后是用户自身实现的ClassLoader</li>
+</ul>
 
       
     </div>
@@ -331,7 +356,9 @@
           
             <a href="/tags/Java/" rel="tag">#Java</a>
           
-            <a href="/tags/二叉树/" rel="tag">#二叉树</a>
+            <a href="/tags/JVM/" rel="tag">#JVM</a>
+          
+            <a href="/tags/ClassLoad/" rel="tag">#ClassLoad</a>
           
         </div>
       
@@ -340,17 +367,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/18/java_binarytree/" rel="next" title="二叉树的实现Java版本">
-                <i class="fa fa-chevron-left"></i> 二叉树的实现Java版本
+              <a href="/2016/05/16/jvm_1/" rel="next" title="窥探JVM--Class文件结构">
+                <i class="fa fa-chevron-left"></i> 窥探JVM--Class文件结构
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/01/19/java_initialization/" rel="prev" title="JAVA类的初始化顺序">
-                JAVA类的初始化顺序 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -376,8 +399,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/12/12/java_binarytree_traversing/"
-           data-title="二叉树非递归遍历实现－java版本" data-url="http://alvin-mei.github.io/2015/12/12/java_binarytree_traversing/">
+      <div class="ds-thread" data-thread-key="2016/05/18/jvm_2/"
+           data-title="窥探JVM--类加载器简介" data-url="http://alvin-mei.github.io/2016/05/18/jvm_2/">
       </div>
     
   </div>
@@ -483,7 +506,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器简介"><span class="nav-number">1.</span> <span class="nav-text">类加载器简介</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
