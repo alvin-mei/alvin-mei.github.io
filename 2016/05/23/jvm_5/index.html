@@ -68,7 +68,7 @@
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/generation.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/minor_gc.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/CMS.png">
-<meta property="og:updated_time" content="2016-05-24T08:32:16.000Z">
+<meta property="og:updated_time" content="2016-05-24T08:54:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="窥探JVM--垃圾回收机制">
 <meta name="twitter:description" content="垃圾回收机制简介JVM的垃圾回收机制让一大群程序猿无需再关注内存管理问题，相比于c++需要手动的关注内存释放的情景，垃圾回收机制更是降低了在开发初期的内存泄露问题。但是并不是说JVM会替我们管理内存之后，我们就不需要去了解其底层管理内存原理，因为JVM一般情况下小心使用是不会出现内存泄漏的，但是一旦出现内存泄露，那必定是不易排查的问题。所以了解了JVM垃圾回收机制，能够在系统出现瓶颈时准确定位问题">
@@ -375,7 +375,7 @@
 <li>并发清理：不需要STW，并发执行清理工作。</li>
 </ul>
 <p>具体的CMS执行流程图如下：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/CMS.png" alt=""></p>
-<p>可以看到CMS垃圾回收器是对并行多线程回收器的一个优化，它以CPU和系统资源为代价，换取GC的延迟，由于性能较为优异且STW时间较短，所以作为老年代的垃圾回收器，但是CMS垃圾回收器并不能解决内存碎片问题，所以还有新一代垃圾回收器G1。</p>
+<p>可以看到CMS垃圾回收器是对并行多线程回收器的一个优化，它以CPU和系统资源为代价，换取GC的延迟，由于性能较为优异且STW时间较短，但是CMS垃圾回收器并不能解决内存碎片问题，且会出现“Concurrent Mode Failure“的情况，因为CMS垃圾收集器并不会像其他垃圾收集器一样等到内存不够使用的情况下再进行回收，需要预留一部分空间提供并发收集时的程序运作使用。要是CMS运行期间预留的内存无法满足程序需要，就会出现一次“Concurrent Mode Failure”失败，所以在出现该情况时需要配合其他垃圾回收器一起使用。</p>
 
       
     </div>
