@@ -1,0 +1,954 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java,JVM,GC," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="垃圾回收机制简介JVM的垃圾回收机制让一大群程序猿无需再关注内存管理问题，相比于c++需要手动的关注内存释放的情景，垃圾回收机制更是降低了在开发初期的内存泄露问题。但是并不是说JVM会替我们管理内存之后，我们就不需要去了解其底层管理内存原理，因为JVM一般情况下小心使用是不会出现内存泄漏的，但是一旦出现内存泄露，那必定是不易排查的问题。所以了解了JVM垃圾回收机制，能够在系统出现瓶颈时准确定位问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="窥探JVM--垃圾回收机制">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/05/23/jvm_5/index.html">
+<meta property="og:site_name" content="隐忍以行">
+<meta property="og:description" content="垃圾回收机制简介JVM的垃圾回收机制让一大群程序猿无需再关注内存管理问题，相比于c++需要手动的关注内存释放的情景，垃圾回收机制更是降低了在开发初期的内存泄露问题。但是并不是说JVM会替我们管理内存之后，我们就不需要去了解其底层管理内存原理，因为JVM一般情况下小心使用是不会出现内存泄漏的，但是一旦出现内存泄露，那必定是不易排查的问题。所以了解了JVM垃圾回收机制，能够在系统出现瓶颈时准确定位问题">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/grabage_pric.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/swap.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/generation.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/minor_gc.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/CMS.png">
+<meta property="og:updated_time" content="2016-05-24T08:30:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="窥探JVM--垃圾回收机制">
+<meta name="twitter:description" content="垃圾回收机制简介JVM的垃圾回收机制让一大群程序猿无需再关注内存管理问题，相比于c++需要手动的关注内存释放的情景，垃圾回收机制更是降低了在开发初期的内存泄露问题。但是并不是说JVM会替我们管理内存之后，我们就不需要去了解其底层管理内存原理，因为JVM一般情况下小心使用是不会出现内存泄漏的，但是一旦出现内存泄露，那必定是不易排查的问题。所以了解了JVM垃圾回收机制，能够在系统出现瓶颈时准确定位问题">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/grabage_pric.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 窥探JVM--垃圾回收机制 | 隐忍以行 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">隐忍以行</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                窥探JVM--垃圾回收机制
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-23T20:51:32+08:00" content="2016-05-23">
+              2016-05-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/23/jvm_5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/23/jvm_5/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/05/23/jvm_5/" class="leancloud_visitors" data-flag-title="窥探JVM--垃圾回收机制">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="垃圾回收机制简介"><a href="#垃圾回收机制简介" class="headerlink" title="垃圾回收机制简介"></a>垃圾回收机制简介</h2><p>JVM的垃圾回收机制让一大群程序猿无需再关注内存管理问题，相比于c++需要手动的关注内存释放的情景，垃圾回收机制更是降低了在开发初期的内存泄露问题。但是并不是说JVM会替我们管理内存之后，我们就不需要去了解其底层管理内存原理，因为JVM一般情况下小心使用是不会出现内存泄漏的，但是一旦出现内存泄露，那必定是不易排查的问题。所以了解了JVM垃圾回收机制，能够在系统出现瓶颈时准确定位问题，根据服务场景对垃圾回收策略进行优化。</p>
+<h2 id="JVM垃圾回收机制"><a href="#JVM垃圾回收机制" class="headerlink" title="JVM垃圾回收机制"></a>JVM垃圾回收机制</h2><h3 id="什么样的数据需要被回收？"><a href="#什么样的数据需要被回收？" class="headerlink" title="什么样的数据需要被回收？"></a>什么样的数据需要被回收？</h3><p>我们知道JVM的垃圾回收绝大部分都发生在堆内存中，在堆内存中存储的是java程序在运行时生成的对象实例，但是大部分实例被方法创建后，不会在使用第二次，所以就成为了占用内存的垃圾数据，也就是需要被GC回收的内存。而垃圾数据的定义就是：没有被其他对象引用的实例数据。</p>
+<h3 id="GC是如何发现垃圾数据的？"><a href="#GC是如何发现垃圾数据的？" class="headerlink" title="GC是如何发现垃圾数据的？"></a>GC是如何发现垃圾数据的？</h3><p>其实对于GC说只需要做两件事情：</p>
+<ol>
+<li>发现垃圾对象。</li>
+<li>回收垃圾对象占用的内存空间。</li>
+</ol>
+<p>而GC在对于定位垃圾对象时需要考虑准确性与及时性，主要有以下两种标记垃圾信息的方法。</p>
+<ol>
+<li>引用计数器法<br>通过他的名字就可以知道，引用计数器法就是为每一个对象分配一个计数器。当该对象被其他对象引用时该计数器就+1，但当一个对象实例的某个引用超过了其生命周期或者被置为一个新的值时，该实例的计数器就-1,那么每次需要回收内存时，就扫描一遍所有的对象，将计数器的值为0的对象清除就可以了。虽然说这样做效率很高，但是有一个很大的缺点就是无法检测出循环引用，比如a引用b，b引用a，但是在程序中他们的生命周期早该结束，但是他们彼此的引用计数器的值恒为1，所以就变成了不会被回收的游离对象，当游离对象变多时，程序性能就会下降，从而导致oom。</li>
+<li>根集搜索法<br>还有一种发现判定对象是否存活的方法就是根集搜索法，它是通过可达性分析来判断对象是否存活的。所有的对象都起源于GC Roots，当一个对象实例被创建且被引用时，我们说他是可达的，可以通过GC Root的引用链到达该对象，而当一个对象没有任何引用链能够到达GC Roots时，就说明该对象是不可用的，需要被回收，如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/grabage_pric.png" alt=""><br>Object E与Object F虽然相连，但是到GC Roots并没有可达路径，那么他们就会被判定为可回收对象。那么哪些实体对象被认定为是不可达对象呢？一般有以下几种：<ul>
+<li>虚拟机栈中的引用对象（本地变量表）</li>
+<li>方法区中的静态属性引用对象</li>
+<li>方法区中常量的引用对象</li>
+<li>本地方法栈中的引用对象</li>
+</ul>
+</li>
+</ol>
+<p>现在主流的GC中一般都是使用根集搜索法，那么根据采用的搜索策略不同，根集搜索法也有不同的方法来发现-回收对象。</p>
+<ol>
+<li>标记-清除算法(tracing):<br>标记-清除算法在标记阶段从GC ROOT开始向下扫描，标记出可以被回收的对象。在清除阶段对堆内存中的对象从头到尾遍历，清除被标记的对象。如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/swap.png" alt=""><br>图片来源于<a href="http://www.jianshu.com/p/b0f5d21fe031" target="_blank" rel="external">标记-清除算法</a>，但是该算法有一个很大的缺点就是有一些对象占用内存小，一些对象占用内存大。因此清除了占用内存小的对象，空出了内存，但是在新建比较大的对象时无法使用这些内存，因此出现了内存碎片。</li>
+<li>复制算法(Copying)：<br>复制算法将堆内存容量分成两份，每次只使用其中一块。比如A、B两半内存，当需要GC时，先遍历A内存块，将其中所有可达对象复制到B内存块中，并重新建立地址引用。当复制完毕后，清楚A内存块中的无用信息，这样就不会有内存碎片问题。但是该算法的最大缺点就是内存折半，系统资源不能得到充分的利用。</li>
+<li>标记-整理算法<br>标记-整理算法是在Copying算法的基础上发展而来的，为了不浪费50%的内存空间，在标记时的方法一样，但是在整理时并没有将内存区划分为两块一模一样大小的内存，而是在标记之后，将存活的对象移动到需要清除的对象的地址上，也就是将所有对象整理到内存空余区的左边，重新建立内存索引，然后再进行无用内存清除，该算法虽然内存利用率上升了，也没有内存碎片问题，但是移动内存时的开销也大，所以在使用时一般会创建一个称之为OopMap的数据结构，用来标记在标记阶段已经无法到达对象的地址，这样在整理阶段根据卡片中的内存地址来进行整理，不需要在全内存区域扫描，能够提高效率。</li>
+<li><p>分代回收算法<br>由于我们知道98%的java实例都是朝生夕死，所以根据不同的对象的生命周期是不同的特性，采用分代的垃圾收回方法来回收无用实例。分代算法基于上述四项，将堆内存分成了特定的几块，根据每块内存中对象的特点，采用不同的垃圾回收算法，以提高垃圾回收的效率。不同的垃圾回收器的分代回收算法有所不同，下面以Hot Spot为例，将堆内存分成了新生代，老年代，永生带(方法区)，具体结构如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/generation.png" alt=""><br>图片来源于<a href="http://www.jianshu.com/p/778dd3848196" target="_blank" rel="external">Java垃圾回收机制</a>，下面好好说一下各个分区的区别。<br>新生代：所有新生成的对象都会存入新生代，正如上述所说，新生成的对象中98%都是朝生夕死的，一般被使用后就会变成无用对象，所以新生代的目标就是尽快的收集这些对象。在新生代回收频率会高于其他几个模块，所以在新生代采用的垃圾回收算法为copying算法，将新生代的内存分成8：1：1的区域，占用最大内存的区域就是Eden区啦，另外两个Survivor区的大小相同。当Eden区的内存不足时就会触发垃圾回收机制，我们将它称之为“minor gc”，具体minor GC过程如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/minor_gc.png" alt=""><br>当Eden区满时，垃圾回收器会将Eden区中存活的对象复制到Survivor1中，若再次触发minor GC时，就将Eden区与Survivor1中存活的对象复制到Survivor2中，以此类推，当Survivor区中的存活对象年龄到达一定数值时，就会被存入到老年区中。在这里会有个疑问，就是垃圾回收器如何知道Eden区中的内存不够了呢？其实在每次为Eden区分配内存时，垃圾回收器都会使用一个指针保持最后一个分配对象在Eden区中的位置，当要生成新对象时，只需要使用该指针来检查内存是否有剩余就可以了。</p>
+<p>老年代：从新生代垃圾回收机制可知，当对象经历过几次minor GC之后，就会在minor GC时从新生代复制到老年代中，但是老年代中的内存不够了也会触发GC，但是机制与新生代的垃圾回收算法有所不同。具体的老年代来及回收机制会在下文中分析，这里主要介绍其垃圾回收算法，在老年代中的GC频次会比新生代低很多，所以老年代的内存会比新生代大很多，一般为1：2，当老年代内存满时会触发Major GC也就是Full GC来进行垃圾回收，由于老年代的对象存活时间较长，存活率较高，所以会使用标记-整理算法来进行垃圾回收。</p>
+<h3 id="什么时候进行垃圾回收？"><a href="#什么时候进行垃圾回收？" class="headerlink" title="什么时候进行垃圾回收？"></a>什么时候进行垃圾回收？</h3><p>其实这个问题也是一直困扰我的，因为我们知道垃圾回收算法必定会经历标记阶段都会发生“Stop The World”现象，那么如果GC较为频繁，肯定会对应用有较为大的影响。那么这里我们先说标记阶段。我们知道标记其实是对栈中不活跃的对象进行标记，那么如何在栈中有那么多数据，如何得知他是指向对象的引用？如何标记已经是一个无用对象呢？在早期的GC算法中采用的是保守式GC，在标记阶段会从已知的栈中全盘扫描，对栈中的数据进行分析，检查是否是指向堆中实例的指针，在这里会涉及到上下边界检查、对齐检查之类的，所以会非常占用系统资源，且效率低下，一般还需要采用句柄的中间表来进行对象定位。所以在现在的垃圾回收器中一般都不会采用该方式，而是采用一个称之为OopMap的数据结构来存储特定时刻栈上的哪些位置为对象的引用，这样在进行标记时候直接通过访问OopMap就可以获取对象的引用，加快标记过程，减少Stop the World的时间。在这里还有一个问题，就是在程序运行过程中，引用地址变化非常多，总不能每执行一条指令，就是记录其中的引用信息吧，所以垃圾收集器还规定了几个安全点，当程序到达安全点时，才能暂停，去记录OopMap。所以安全点一般选择以下几个时刻：</p>
+</li>
+</ol>
+<ul>
+<li>循环的末尾</li>
+<li>方法临返回前 / 调用方法的call指令后</li>
+<li>可能抛异常的位置</li>
+</ul>
+<p>那么了解以上几点后，我们在来谈什么时候进行垃圾回收。答案正是到达安全点后才去进行垃圾回收，那么到达安全点后如何触发GC呢？这里有两种方法：</p>
+<ol>
+<li>抢占式中断：就是不定时的中断所有线程，如果某个线程不再安全点上，则恢复它让它跑到安全点上。听起来很扯淡吧…没有GC会采用这种方式</li>
+<li>主动式中断：当GC需要中断线程的时候，不直接对线程进行操作，仅仅简单的设计一个标志，各个线程去主动轮询该标志，发现中断标志为真时就运行到安全点然后挂起。这才是正解。</li>
+</ol>
+<p>那么有人会问：如果线程一直在阻塞状态，无法轮询该标志位怎么办呢？还有一个时刻称之为“安全区”，因为线程被阻塞了之后那势必是没有在运行，也就是说该线程的栈帧中的引用是不会被修改的，所以可以进行标记。实现起来也很简单，当一个线程要进入安全区时给自己一个标记就可以了。</p>
+<p>到这里，我们已经大致了解了虚拟机是如何进行垃圾回收的了，但是具体细节是需要根据虚拟机采用的垃圾回收器来区分的，下面介绍一下不同种类的垃圾回收器。</p>
+<h2 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><p>我们知道不同的垃圾回收器有着不同的垃圾回收算法与垃圾回收策略，是垃圾回收算法具体实现，所以不同的厂商、不同版本JVM所提供的垃圾回收器都可能会有较大的差别。下列为当前现有的垃圾回收器四种实现差别：</p>
+<ul>
+<li>单线程串行垃圾回收器</li>
+<li>多线程并发垃圾回收器</li>
+<li>多线程并发标记扫描垃圾回收器</li>
+<li>G1垃圾回收器<br>不同的垃圾回收器作用于不同的年代中，这样根据不同年代中的实例特性来选用垃圾回收器，能够效率最大化<h3 id="Serial收集器"><a href="#Serial收集器" class="headerlink" title="Serial收集器"></a>Serial收集器</h3>串行垃圾回收器，是最老、最基本的一款垃圾回收器，他是单线程回收无用对象，所以在GC时刻，必须暂停其他工作线程，直到垃圾回收完成，也就是“Stop the world”的来源。虽然说GC在进行垃圾回收时是由JVM来控制的，在单线程下性能很优异，但是在GC时必须要暂停其他线程这点让人难以接受，所以该来及回收器一般不会被服务器端采用。</li>
+</ul>
+<h3 id="Parallel回收器"><a href="#Parallel回收器" class="headerlink" title="Parallel回收器"></a>Parallel回收器</h3><p> 并行垃圾回收器，是在串行垃圾回收器上修改而来，只不过不再是单线程运行，而是多线程进行垃圾回收，在进行GC时也是独占的，也就是说所有的工作线程必须暂停，因为是并行的，所以说并行垃圾回收器的暂停时间要短于串行垃圾回收器。</p>
+<h3 id="Parallel-Scavenge回收器"><a href="#Parallel-Scavenge回收器" class="headerlink" title="Parallel Scavenge回收器"></a>Parallel Scavenge回收器</h3><p>并行多线程回收垃圾回收器，从表面上看，它和并行收集器一样都是多线程、独占式的收集器。但是，并行回收收集器有一个重要的特点：它非常关注系统的吞吐量，所谓的吞吐量就是用户代码的运行时间与CPU总的执行时间的比值，通过该比值该垃圾回收器能够自动进行调优，以便减少GC时的停顿。所以在新生代比较试用该垃圾回收器。</p>
+<h3 id="CMS垃圾回收器"><a href="#CMS垃圾回收器" class="headerlink" title="CMS垃圾回收器"></a>CMS垃圾回收器</h3><p>并发标记清除(Concurrent Mark-Sweep)垃圾回收器，从名字上就可以得知是一个并发的垃圾回收器，所以在运行时可以与用户工作线程共同运行，他是一种以牺牲吞吐量来获得最短停顿时间的垃圾回收器，主要应用在老年代。在GMS垃圾回收器运行时主要有以下几个阶段：</p>
+<ul>
+<li>初始标记：在并发标记阶段时，是会产生Stop the world的，它会暂停用户应用程序的运行。在该阶段下，只找出与GC Roots直接有关联的对象，虽然说会有STW,但是只查找GC Roots下一层，所以说很快就会完成。</li>
+<li>并发标记：在该阶段，会以初始标记得到的对象为跟对象，重新开始标记老年代中的可达对象，在这个阶段不需要暂停用户应用程序，但是也会存在问题，因为用户程序不断在运行，所以会有新的可达对象未被标记。</li>
+<li>再次标记：再次标记是为了处理在并发标记阶段未被标记的可达对象，所以需要STW，确保所有的可达对象都被标记，在阶段是并发执行的。</li>
+<li>并发清理：不需要STW，并发执行清理工作。</li>
+</ul>
+<p>具体的CMS执行流程图如下：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/CMS.png" alt=""></p>
+<p>可以看到CMS垃圾回收器是对并行多线程回收器的一个优化，它以CPU和系统资源为代价，换取GC的延迟，由于性能较为优异且STW时间较短，所以作为老年代的垃圾回收器，但是CMS垃圾回收器并不能解决内存碎片问题，所以还有新一代垃圾回收器G1。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+<div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center">
+  <div>坚持技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton", disable="enable", onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}", style="cursor: pointer; border: 0; outline: 0; border-radius: 100%; padding: 0; margin: 0; letter-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none">
+    <span onmouseover="this.style.color='rgb(236,96,0)';this.style.background='rgb(204,204,204)'" onMouseOut="this.style.color='#fff';this.style.background='rgb(236,96,0)'" style="display: inline-block; width: 70px; height: 70px; border-radius: 100%; line-height: 81px; color: #fff; font: 400 35px/75px 'microsofty'; background: rgb(236,96,0)">赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://7xtc3q.com2.z0.glb.clouddn.com/IMG_1767.png" alt="Alvin WeChat Pay" style="width: 200px; max-width: 100%; display: inline-block"/>
+        <p>微信打赏</p>
+      </div>
+    
+    
+  </div>
+<div>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag">#Java</a>
+          
+            <a href="/tags/JVM/" rel="tag">#JVM</a>
+          
+            <a href="/tags/GC/" rel="tag">#GC</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/20/jvm_4/" rel="next" title="窥探JVM--JVM模型">
+                <i class="fa fa-chevron-left"></i> 窥探JVM--JVM模型
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/05/23/jvm_5/"
+           data-title="窥探JVM--垃圾回收机制" data-url="http://alvin-mei.github.io/2016/05/23/jvm_5/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Alvin" />
+          <p class="site-author-name" itemprop="name">Alvin</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">38</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/alvin-mei" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#垃圾回收机制简介"><span class="nav-number">1.</span> <span class="nav-text">垃圾回收机制简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM垃圾回收机制"><span class="nav-number">2.</span> <span class="nav-text">JVM垃圾回收机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么样的数据需要被回收？"><span class="nav-number">2.1.</span> <span class="nav-text">什么样的数据需要被回收？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC是如何发现垃圾数据的？"><span class="nav-number">2.2.</span> <span class="nav-text">GC是如何发现垃圾数据的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么时候进行垃圾回收？"><span class="nav-number">2.3.</span> <span class="nav-text">什么时候进行垃圾回收？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#垃圾回收器"><span class="nav-number">3.</span> <span class="nav-text">垃圾回收器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial收集器"><span class="nav-number">3.1.</span> <span class="nav-text">Serial收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel回收器"><span class="nav-number">3.2.</span> <span class="nav-text">Parallel回收器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Scavenge回收器"><span class="nav-number">3.3.</span> <span class="nav-text">Parallel Scavenge回收器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS垃圾回收器"><span class="nav-number">3.4.</span> <span class="nav-text">CMS垃圾回收器</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alvin</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=0.5.0"></script>
+
+
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"alvin"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Nafa5hj9jLhqOdAziGBu1AoY-gzGzoHsz", "b5PNFA15YkvIqTlnAofym3Gz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+
+</body>
+</html>
