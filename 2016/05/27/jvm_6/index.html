@@ -66,7 +66,7 @@ JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存�
 <meta property="og:description" content="JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。
 JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存使用与垃圾回收情况。Jstat位于java的bin目录下">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/jstat.png">
-<meta property="og:updated_time" content="2016-05-28T11:48:47.000Z">
+<meta property="og:updated_time" content="2016-05-28T12:09:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM性能调优">
 <meta name="twitter:description" content="JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。
@@ -462,11 +462,14 @@ JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存�
 <tr>
 <td style="text-align:center">-XX+UseCMSCompactAtFullCollection</td>
 <td style="text-align:center">在FULL GC的时候， 对年老代的压缩</td>
-<td style="text-align:center">CMS是不会移动内存的， 因此， 这个非常容易产生碎片， 导致内存不够用， 因此， 内存的压缩这个时候就会被启用。 增加这个参数是个好习惯。</td>
+<td style="text-align:center">CMS是不会移动内存的， 因此， 这个非常容易产生碎片， 导致内存不够用， 因此， 内存的压缩这个时候就会被启用。 增加这个参数是个好习惯。可能会影响性能,但是可以消除碎片</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:CMSInitiatingPermOccupancyFraction</td>
+<td style="text-align:center">设置触发CMS垃圾回收时内存比例</td>
 </tr>
 </tbody>
 </table>
-<p>可能会影响性能,但是可以消除碎片|<br>|-XX:CMSInitiatingPermOccupancyFraction|设置触发CMS垃圾回收时内存比例||</p>
 <h2 id="GC性能建议"><a href="#GC性能建议" class="headerlink" title="GC性能建议"></a>GC性能建议</h2><p>JVM性能的目标有以下几点：</p>
 <ul>
 <li>GC的时间足够的小</li>
