@@ -66,7 +66,7 @@ JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存�
 <meta property="og:description" content="JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。
 JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存使用与垃圾回收情况。Jstat位于java的bin目录下">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/jstat.png">
-<meta property="og:updated_time" content="2016-05-28T12:09:16.000Z">
+<meta property="og:updated_time" content="2016-05-28T14:45:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM性能调优">
 <meta name="twitter:description" content="JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。
@@ -495,12 +495,24 @@ JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存�
 <li>如果出现系统停顿时间过久，那可能是GC问题，需要通过jmap等工具来查看。</li>
 </ul>
 </li>
-<li>系统崩溃前的现象<br>在这里需要阐明的是minor GC触发点是指Eden区内存满与Survivor内存满了无关，老年代满时会触发major GC，major GC会同时回收年轻代与老年代的无用对象。oom并不是指内存被耗空才抛出，而是指JVM98%的时间都在进行GC且每次GC回收的内存小于2%。<ul>
-<li>每次垃圾回收时间越来越长，正常情况下minor GC的时间为4-10ms左右，major GC的时间一般在0.3-0.7s之间，而当出现垃圾回收时间超出这些时间时，那就可能会出现系统崩溃。</li>
+<li><p>系统崩溃前的现象<br>在这里需要阐明的是minor GC触发点是指Eden区内存满与Survivor内存满了无关，老年代满时会触发major GC，major GC会同时回收年轻代与老年代的无用对象。oom并不是指内存被耗空才抛出，而是指JVM98%的时间都在进行GC且每次GC回收的内存小于2%。</p>
+<ul>
+<li>每次垃圾回收时间越来越长，正常情况下minor GC的时间为4-50ms左右，major GC的时间一般在0.3-1s之间，而当出现垃圾回收时间超出这些时间时，那就可能会出现系统崩溃。</li>
 <li>major GC的频次增加。</li>
 <li>老年代内存中的存活对象越来越多，并且每次major GC之后老年代的内存都没有释放。</li>
 </ul>
+<p>但是并没有完美的方案，需要通过不断的观察系统数据来进行调优。如果应用存在大量的临时变量，那么应该选择更大的年轻代；如果存在相对较多的持久对象，那么老年代应该适当增大。</p>
+<ol>
+<li>更大的年轻代必然导致更小的年老代，大的年轻代会延长普通GC的周期，但会增加每次GC的时间；小的年老代会导致更频繁的Full GC</li>
+</ol>
 </li>
+<li>更小的年轻代必然导致更大年老代，小的年轻代会导致普通GC很频繁，但每次的GC时间会更短；大的年老代会减少Full GC的频率</li>
+</ol>
+<h2 id="GC调优方法"><a href="#GC调优方法" class="headerlink" title="GC调优方法"></a>GC调优方法</h2><ol>
+<li>使用工具监控GC状态</li>
+<li>分析结果判断是否需要优化。查看系统日志，观察GC频率，GC耗时。比如minor GC执行不频繁，约10秒一次。major GC不低于10分钟1次都是正常现象。</li>
+<li>调整GC类型和内存分配。</li>
+<li>不断的调整，直到适合应用特点。</li>
 </ol>
 
       
@@ -684,7 +696,7 @@ JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存�
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM调试工具"><span class="nav-number">1.</span> <span class="nav-text">JVM调试工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Jstat"><span class="nav-number">1.1.</span> <span class="nav-text">Jstat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JMap"><span class="nav-number">1.2.</span> <span class="nav-text">JMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MAT"><span class="nav-number">1.3.</span> <span class="nav-text">MAT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BTree"><span class="nav-number">1.4.</span> <span class="nav-text">BTree</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM参数"><span class="nav-number">2.</span> <span class="nav-text">JVM参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本设置参数"><span class="nav-number">2.1.</span> <span class="nav-text">基本设置参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行回收器设置"><span class="nav-number">2.2.</span> <span class="nav-text">并行回收器设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS垃圾回收器设置"><span class="nav-number">2.3.</span> <span class="nav-text">CMS垃圾回收器设置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC性能建议"><span class="nav-number">3.</span> <span class="nav-text">GC性能建议</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM调试工具"><span class="nav-number">1.</span> <span class="nav-text">JVM调试工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Jstat"><span class="nav-number">1.1.</span> <span class="nav-text">Jstat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JMap"><span class="nav-number">1.2.</span> <span class="nav-text">JMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MAT"><span class="nav-number">1.3.</span> <span class="nav-text">MAT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BTree"><span class="nav-number">1.4.</span> <span class="nav-text">BTree</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM参数"><span class="nav-number">2.</span> <span class="nav-text">JVM参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本设置参数"><span class="nav-number">2.1.</span> <span class="nav-text">基本设置参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行回收器设置"><span class="nav-number">2.2.</span> <span class="nav-text">并行回收器设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS垃圾回收器设置"><span class="nav-number">2.3.</span> <span class="nav-text">CMS垃圾回收器设置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC性能建议"><span class="nav-number">3.</span> <span class="nav-text">GC性能建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC调优方法"><span class="nav-number">4.</span> <span class="nav-text">GC调优方法</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
