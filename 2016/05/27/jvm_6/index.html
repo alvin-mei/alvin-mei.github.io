@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java,二叉树," />
+  <meta name="keywords" content="Java,JVM,JVM性能调优," />
 
 
 
@@ -57,16 +57,21 @@
 
 
 
-<meta name="description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
+<meta name="description" content="JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。
+JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存使用与垃圾回收情况。Jstat位于java的bin目录下">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二叉树非递归遍历实现－java版本">
-<meta property="og:url" content="http://alvin-mei.github.io/2015/12/12/java_binarytree_traversing/index.html">
+<meta property="og:title" content="JVM性能调优">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/05/27/jvm_6/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
-<meta property="og:updated_time" content="2016-03-22T07:14:18.000Z">
+<meta property="og:description" content="JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。
+JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存使用与垃圾回收情况。Jstat位于java的bin目录下">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/jstat.png">
+<meta property="og:updated_time" content="2016-05-28T11:48:47.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="二叉树非递归遍历实现－java版本">
-<meta name="twitter:description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
+<meta name="twitter:title" content="JVM性能调优">
+<meta name="twitter:description" content="JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。
+JVM调试工具JstatJstat是JVM自带的监视工具，用于监控堆中内存使用与垃圾回收情况。Jstat位于java的bin目录下">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/jstat.png">
 
 
 
@@ -84,7 +89,7 @@
   };
 </script>
 
-  <title> 二叉树非递归遍历实现－java版本 | 隐忍以行 </title>
+  <title> JVM性能调优 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -224,7 +229,7 @@
             
             
               
-                二叉树非递归遍历实现－java版本
+                JVM性能调优
               
             
           </h1>
@@ -236,8 +241,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-12-12T10:52:31+08:00" content="2015-12-12">
-              2015-12-12
+            <time itemprop="dateCreated" datetime="2016-05-27T14:39:32+08:00" content="2016-05-27">
+              2016-05-27
             </time>
           </span>
 
@@ -250,8 +255,20 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
                   </a>
                 </span>
 
@@ -266,8 +283,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/12/java_binarytree_traversing/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/12/java_binarytree_traversing/" itemprop="commentsCount"></span>
+                <a href="/2016/05/27/jvm_6/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/jvm_6/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -277,7 +294,7 @@
 
           
           
-             <span id="/2015/12/12/java_binarytree_traversing/" class="leancloud_visitors" data-flag-title="二叉树非递归遍历实现－java版本">
+             <span id="/2016/05/27/jvm_6/" class="leancloud_visitors" data-flag-title="JVM性能调优">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -298,7 +315,190 @@
       
 
       
-        <p>最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//二叉树非递归先序遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">preOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="comment">//先判断头节点是否为空</span></span><br><span class="line">       <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;Node&gt;();</span><br><span class="line">           <span class="comment">//先顺遍历是先父节点,然后父节点的左儿子,父节点的右儿子,</span></span><br><span class="line">           <span class="comment">//所以先要将父节点压入栈</span></span><br><span class="line">           stack.add(head);</span><br><span class="line">           <span class="comment">//只要栈不为空则表示二叉树没有遍历完成</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">               <span class="comment">//先序遍历比较简单,访问父节点弹出后立即打印</span></span><br><span class="line">               <span class="comment">//并判断是否右结点,有则入栈,然后判断是否有</span></span><br><span class="line">               <span class="comment">//左结点,有则入栈</span></span><br><span class="line">               head = stack.pop();</span><br><span class="line">               System.out.println(head.data);</span><br><span class="line">               <span class="comment">//会有人问为什么先右后左,因为父结点读取值</span></span><br><span class="line">               <span class="comment">//后不保存状态,所以先将右儿子压入栈,然后</span></span><br><span class="line">               <span class="comment">//再判断是否有左儿子,有的话下一次操作则先</span></span><br><span class="line">               <span class="comment">//对左儿子进行操作,符合先序遍历的逻辑</span></span><br><span class="line">               <span class="keyword">if</span>(<span class="keyword">null</span> != head.rightChild)</span><br><span class="line">                   stack.add(head.rightChild);</span><br><span class="line">               <span class="keyword">if</span>(<span class="keyword">null</span> != head.leftChild)</span><br><span class="line">                   stack.add(head.leftChild);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//二叉树非递归中序遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">inOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;Node&gt;();</span><br><span class="line">           <span class="comment">//中序遍历是先左儿子,父结点,右儿子,所以循环条件</span></span><br><span class="line">           <span class="comment">//是栈不为空且当前结点不为空</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty() || head != <span class="keyword">null</span>)&#123;</span><br><span class="line">               <span class="comment">//只要父结点的左儿子不为空,则进行进栈操作</span></span><br><span class="line">               <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">                   stack.push(head);</span><br><span class="line">                   head = head.leftChild;</span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   <span class="comment">//此时已经将整颗二叉树的最左端的</span></span><br><span class="line">                   <span class="comment">//左儿子压入栈,然后弹出并读值,取其右节点,</span></span><br><span class="line">                   <span class="comment">//这时候有两种情况:1.右结点存在,则进入上一个判断</span></span><br><span class="line">                   <span class="comment">//取他的左儿子2.若右结点不存在,那么继续弹出并读值</span></span><br><span class="line">                   head = stack.pop();</span><br><span class="line">                   System.out.println(head.data);</span><br><span class="line">                   head = head.rightChild;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//非递归后续遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(<span class="keyword">null</span> != head)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">           <span class="comment">//cur为stack的栈顶元素,pre为最后一个被打印的元素(初始值为根节点)</span></span><br><span class="line">           Node cur = <span class="keyword">null</span>,pre = head;</span><br><span class="line">           <span class="comment">//先将根节点押入</span></span><br><span class="line">           stack.push(pre);</span><br><span class="line">           <span class="comment">//stack为空则表示整个二叉树已遍历完</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">               <span class="comment">//cur为stack中的栈顶元素</span></span><br><span class="line">               cur = stack.peek();</span><br><span class="line">               <span class="comment">//有三种情况,1.栈顶元素的左节点不为空,而最后打印元素不等于栈顶元素的左节点与右节点,</span></span><br><span class="line">               <span class="comment">//表示栈顶元素的左节点还未遍历,则入栈</span></span><br><span class="line">               <span class="keyword">if</span>(cur.leftChild != <span class="keyword">null</span> &amp;&amp; pre != cur.leftChild &amp;&amp; pre != cur.rightChild)&#123;</span><br><span class="line">                   stack.push(cur.leftChild);</span><br><span class="line">               <span class="comment">//2.栈顶元素的右节点不为空,而最后打印元素不等于栈顶元素的右节点,</span></span><br><span class="line">               <span class="comment">//表示栈顶元素的右节点还未遍历,则入栈</span></span><br><span class="line">               &#125;<span class="keyword">else</span> <span class="keyword">if</span>(cur.rightChild != <span class="keyword">null</span> &amp;&amp; pre != cur.rightChild)&#123;</span><br><span class="line">                   stack.push(cur.rightChild);</span><br><span class="line">               <span class="comment">//3.最后,若栈顶元素的左右节点都已经被遍历或者为空,则出栈并打印,跟新最新打印节点</span></span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   System.out.println(stack.pop().data);</span><br><span class="line">                   pre = cur;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+        <p>JVM性能调优非常重要，当发现我们的应用越来越慢时，那就需要对我们的应用进行一次健康检查，查看性能瓶颈出现在什么地方。本文的内容都来自于作者平时阅读的文章，因为我还没有接触到这一层面，但是万一指不定哪一天碰到了相关问题呢？书到用时方恨少啊，所以先总结一下学习到的概念。</p>
+<h2 id="JVM调试工具"><a href="#JVM调试工具" class="headerlink" title="JVM调试工具"></a>JVM调试工具</h2><h3 id="Jstat"><a href="#Jstat" class="headerlink" title="Jstat"></a>Jstat</h3><p>Jstat是JVM自带的监视工具，用于监控堆中内存使用与垃圾回收情况。Jstat位于java的bin目录下，如果在HOME_JAVA中配置了bin就直接可以在命令行使用了。下面为Jstat的命令结构:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]</span><br></pre></td></tr></table></figure></p>
+<p>具体的使用方法可以看一下jstat help，下面就是一个jstat的使用例子：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/jstat.png" alt=""></p>
+<p>使用jstat -gcutil 命令能够查看当前的gc情况，s0,s1分别为Survivor0，1区域的内存使用情况,E为整个Eden区，O为老年代，YGC为从程序启动到输入命令时新生代的gc次数，FGC为fullGC的次数啦。</p>
+<h3 id="JMap"><a href="#JMap" class="headerlink" title="JMap"></a>JMap</h3><p>JMap是JDK自带的工具，用来查看java进程内部内存映射情况，也就是堆内存的详情啦，一般使用 jmap -histo pid 来查看堆内存的使用情况，统计堆内实例存活个数等，一般需要导出到本地文件来查看，因为数量较多。</p>
+<h3 id="MAT"><a href="#MAT" class="headerlink" title="MAT"></a>MAT</h3><p>MAT(Memory Analyzer Tool)工具其实是一个插件，以视图化形式查看JVM堆内存中的使用情况，为开发人员提供更好的定位、分析问题的工具。MAT与上面介绍的Jmap命令配合使用，将Jmap输出的dump文件载入至MAT工具中，能够更加形象的查看内存情况。</p>
+<h3 id="BTree"><a href="#BTree" class="headerlink" title="BTree"></a>BTree</h3><p>BTree可以动态地跟踪java运行程序，通过hotswap技术，动态的将跟踪字节码注入到运行类中，对运行代码侵入较小，所以性能影响可以忽略不计。个人感觉如果在代码中有足够的log支撑的话，可以不选择使用BTree，毕竟是通过代码入侵的方式来进行问题定位，实在是万不得已才使用。</p>
+<h2 id="JVM参数"><a href="#JVM参数" class="headerlink" title="JVM参数"></a>JVM参数</h2><h3 id="基本设置参数"><a href="#基本设置参数" class="headerlink" title="基本设置参数"></a>基本设置参数</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名称</th>
+<th style="text-align:center">参数含义</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">-Xms</td>
+<td style="text-align:center">初始堆大小</td>
+<td style="text-align:center">默认情况下为物理内存的1/64</td>
+</tr>
+<tr>
+<td style="text-align:center">-Xmx</td>
+<td style="text-align:center">最大堆大小</td>
+<td style="text-align:center">默认情况下为物理内存的1/4</td>
+</tr>
+<tr>
+<td style="text-align:center">-Xmn</td>
+<td style="text-align:center">年轻代堆大小</td>
+<td style="text-align:center">这里是指eden+两个survivor区的大小</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:NewSize</td>
+<td style="text-align:center">设置年轻代大小</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:MaxNewSize</td>
+<td style="text-align:center">设置年轻代的最大值</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:PermSize</td>
+<td style="text-align:center">设置老年代初始值</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:MaxPermSize</td>
+<td style="text-align:center">设置老年代的最大值</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">-Xss</td>
+<td style="text-align:center">设置每个线程堆栈大小</td>
+<td style="text-align:center">一般默认为1M，减小这个值能够增加系统中的线程数目，但是也不能无线设置，一般为3000~5000左右</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:ThreadStackSize</td>
+<td style="text-align:center">设置线程栈的大小</td>
+<td style="text-align:center">设置为0表示使用默认大小</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:NewRatio</td>
+<td style="text-align:center">年轻代与老年代大小比例</td>
+<td style="text-align:center">1表是1：1，2表示1：2</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:SurvivorRatio</td>
+<td style="text-align:center">年轻代中survivor与EdenS大小比值</td>
+<td style="text-align:center">默认为8，也就是2：8，survivor为2，Eden为8</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:MaxTenuringThreshold</td>
+<td style="text-align:center">垃圾最大年龄</td>
+<td style="text-align:center">设置为0的话，年轻代对象不经过survivor直接进入老年代</td>
+</tr>
+</tbody>
+</table>
+<h3 id="并行回收器设置"><a href="#并行回收器设置" class="headerlink" title="并行回收器设置"></a>并行回收器设置</h3><p>由于串行回收器一般情况下不再会使用，因为串行回收器只适用于小型项目，所以在这里不再介绍。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数名称</th>
+<th style="text-align:center">参数含义</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">-XX:+UseParallelGC</td>
+<td style="text-align:center">年轻代使用并行收集器</td>
+<td style="text-align:center">无法与CMS一起使用</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:+UseParNewGC</td>
+<td style="text-align:center">年轻代使用并行收集器</td>
+<td style="text-align:center">可以与CMS一起使用，是UseParallelGC的升级版本，所以有更好的性能</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:ParallelGCThreads</td>
+<td style="text-align:center">设置并行收集器的线程数</td>
+<td style="text-align:center">可以设置与处理器数相等</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:+UseParallelOldGC</td>
+<td style="text-align:center">老年代使用并行收集器</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:MaxGCPauseMillis</td>
+<td style="text-align:center">年轻代垃圾回收时STW的最大时间</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:+UseAdaptiveSizePolicy</td>
+<td style="text-align:center">自动选择年轻代区大小和相应的Survivor区比例</td>
+<td style="text-align:center">设置此选项后,并行收集器会自动选择年轻代区大小和相应的Survivor区比例,以达到目标系统规定的最低相应时间或者收集频率等,此值建议使用并行收集器时,一直打开.</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:GCTimeRatio</td>
+<td style="text-align:center">设置垃圾回收时间占程序运行时间的百分比</td>
+<td style="text-align:center">公式为1/(1+n)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="CMS垃圾回收器设置"><a href="#CMS垃圾回收器设置" class="headerlink" title="CMS垃圾回收器设置"></a>CMS垃圾回收器设置</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名称</th>
+<th style="text-align:center">参数含义</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">-XX:+UseConcMarkSweepGC</td>
+<td style="text-align:center">使用CMS内存收集</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">-XX:CMSFullGCsBeforeCompaction</td>
+<td style="text-align:center">多少次后进行内存压缩</td>
+<td style="text-align:center">由于并发收集器不对内存空间进行压缩,整理,所以运行一段时间以后会产生”碎片”,使得运行效率降低.此值设置运行多少次GC以后对内存空间进行压缩,整理</td>
+</tr>
+<tr>
+<td style="text-align:center">-XX+UseCMSCompactAtFullCollection</td>
+<td style="text-align:center">在FULL GC的时候， 对年老代的压缩</td>
+<td style="text-align:center">CMS是不会移动内存的， 因此， 这个非常容易产生碎片， 导致内存不够用， 因此， 内存的压缩这个时候就会被启用。 增加这个参数是个好习惯。</td>
+</tr>
+</tbody>
+</table>
+<p>可能会影响性能,但是可以消除碎片|<br>|-XX:CMSInitiatingPermOccupancyFraction|设置触发CMS垃圾回收时内存比例||</p>
+<h2 id="GC性能建议"><a href="#GC性能建议" class="headerlink" title="GC性能建议"></a>GC性能建议</h2><p>JVM性能的目标有以下几点：</p>
+<ul>
+<li>GC的时间足够的小</li>
+<li>GC的次数足够的少</li>
+<li>发生major GC的周期足够的长</li>
+</ul>
+<p>那么就有以下几点需注意</p>
+<ol>
+<li>堆大小设置<br>在服务器端一般有以下设置规则：<ul>
+<li>内存越大越好</li>
+<li>Xms与Xmx设为一样的值，因为若虚拟机初始化内存很小，此时又有许多对象需要分配，会消耗无畏的性能在添加堆内存上。</li>
+<li>CPU核心数量应与内存成比例。</li>
+</ul>
+</li>
+<li>新生代内存设置<br>在应用程序运行阶段，新生代能存的GC性能影响着应用的用户体验，新生代内存越大，minor GC数量越少，且在堆内存固定的情况下，新生代内存越大，老年代越小，会触发major GC的次数也越多。在参数设置过程中，NewRatio反应了新生代内存与老年代内存的比例，NewSize与MaxNewSize反正了新生代内存大小的上限与下限。<ul>
+<li>先决定堆内存的大小，然后在考虑新生代与老年代的比例，一般情况下，老年代需要留有10%-20%的预留空间。</li>
+<li>对于响应优先的应用，新生代内存尽可能的设大，直到接近系统的最低相应时间限制，在这种情况下minor GC的发生频率也是最小的，同时也能够减少到达老年代的对象数量。</li>
+<li>如果新生代内存设置过小会导致minor GC频次增加，并且过多的对象进入老年代，从而触发major GC。</li>
+</ul>
+</li>
+<li>老年代内存设置<br>对于响应优先的应用，老年代使用并发收集器，所以老年代内存大小必须小心设置，一般需要考虑的亮点为线程并发数量和线程保持时间等参数，所以在优化时需要根据并发垃圾收集器的手机信息、老年代并发收集次数与年轻代与老年代垃圾回收比例来得出参数。<ul>
+<li>吞吐量优先应用，年轻代大于老年代，这样能够尽可能回收大部分朝生夕灭的对象。</li>
+<li>如果出现系统停顿时间过久，那可能是GC问题，需要通过jmap等工具来查看。</li>
+</ul>
+</li>
+<li>系统崩溃前的现象<br>在这里需要阐明的是minor GC触发点是指Eden区内存满与Survivor内存满了无关，老年代满时会触发major GC，major GC会同时回收年轻代与老年代的无用对象。oom并不是指内存被耗空才抛出，而是指JVM98%的时间都在进行GC且每次GC回收的内存小于2%。<ul>
+<li>每次垃圾回收时间越来越长，正常情况下minor GC的时间为4-10ms左右，major GC的时间一般在0.3-0.7s之间，而当出现垃圾回收时间超出这些时间时，那就可能会出现系统崩溃。</li>
+<li>major GC的频次增加。</li>
+<li>老年代内存中的存活对象越来越多，并且每次major GC之后老年代的内存都没有释放。</li>
+</ul>
+</li>
+</ol>
 
       
     </div>
@@ -331,7 +531,9 @@
           
             <a href="/tags/Java/" rel="tag">#Java</a>
           
-            <a href="/tags/二叉树/" rel="tag">#二叉树</a>
+            <a href="/tags/JVM/" rel="tag">#JVM</a>
+          
+            <a href="/tags/JVM性能调优/" rel="tag">#JVM性能调优</a>
           
         </div>
       
@@ -340,17 +542,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/18/java_binarytree/" rel="next" title="二叉树的实现Java版本">
-                <i class="fa fa-chevron-left"></i> 二叉树的实现Java版本
+              <a href="/2016/05/23/jvm_5/" rel="next" title="窥探JVM--垃圾回收机制">
+                <i class="fa fa-chevron-left"></i> 窥探JVM--垃圾回收机制
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/01/19/java_initialization/" rel="prev" title="JAVA类的初始化顺序">
-                JAVA类的初始化顺序 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -376,8 +574,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/12/12/java_binarytree_traversing/"
-           data-title="二叉树非递归遍历实现－java版本" data-url="http://alvin-mei.github.io/2015/12/12/java_binarytree_traversing/">
+      <div class="ds-thread" data-thread-key="2016/05/27/jvm_6/"
+           data-title="JVM性能调优" data-url="http://alvin-mei.github.io/2016/05/27/jvm_6/">
       </div>
     
   </div>
@@ -483,7 +681,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM调试工具"><span class="nav-number">1.</span> <span class="nav-text">JVM调试工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Jstat"><span class="nav-number">1.1.</span> <span class="nav-text">Jstat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JMap"><span class="nav-number">1.2.</span> <span class="nav-text">JMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MAT"><span class="nav-number">1.3.</span> <span class="nav-text">MAT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BTree"><span class="nav-number">1.4.</span> <span class="nav-text">BTree</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM参数"><span class="nav-number">2.</span> <span class="nav-text">JVM参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本设置参数"><span class="nav-number">2.1.</span> <span class="nav-text">基本设置参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行回收器设置"><span class="nav-number">2.2.</span> <span class="nav-text">并行回收器设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS垃圾回收器设置"><span class="nav-number">2.3.</span> <span class="nav-text">CMS垃圾回收器设置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC性能建议"><span class="nav-number">3.</span> <span class="nav-text">GC性能建议</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">

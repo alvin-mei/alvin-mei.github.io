@@ -65,7 +65,7 @@
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description" content="Redis简介什么是RedisRedis是现在比较流行的Nosql之一，作为一个高速缓存系统，Redis使用key-value形式来存储数据。Redis支持的数据格式很多，能够储存String、Object、List、Set、Hash等数据类型，并且具有持久化功能，使用Redis能够提高我们系统对于常用不可变数据的读取效率，减轻关系型数据库的访问压力。
 为什么要使用Redis由于现在的系统面对的用">
-<meta property="og:updated_time" content="2016-05-09T12:59:39.000Z">
+<meta property="og:updated_time" content="2016-05-27T03:23:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Jedis操控Redis">
 <meta name="twitter:description" content="Redis简介什么是RedisRedis是现在比较流行的Nosql之一，作为一个高速缓存系统，Redis使用key-value形式来存储数据。Redis支持的数据格式很多，能够储存String、Object、List、Set、Hash等数据类型，并且具有持久化功能，使用Redis能够提高我们系统对于常用不可变数据的读取效率，减轻关系型数据库的访问压力。
@@ -315,7 +315,8 @@
       
         <h2 id="Redis简介"><a href="#Redis简介" class="headerlink" title="Redis简介"></a>Redis简介</h2><h3 id="什么是Redis"><a href="#什么是Redis" class="headerlink" title="什么是Redis"></a>什么是Redis</h3><p>Redis是现在比较流行的Nosql之一，作为一个高速缓存系统，Redis使用key-value形式来存储数据。Redis支持的数据格式很多，能够储存String、Object、List、Set、Hash等数据类型，并且具有持久化功能，使用Redis能够提高我们系统对于常用不可变数据的读取效率，减轻关系型数据库的访问压力。</p>
 <h3 id="为什么要使用Redis"><a href="#为什么要使用Redis" class="headerlink" title="为什么要使用Redis"></a>为什么要使用Redis</h3><p>由于现在的系统面对的用户数量都是百万、千万级别的，但是我们的服务中大多数的应用场景都面临着读多写少的情况（二八法则）。Redis是将数据存储在内存中，所以读写速度非常快，若所有的业务数据直接与数据库相关，则会给数据库带来巨大的压力，而Redis正是能够缓解数据库的压力而存在，我们可以将一些常用的，变化不大的数据存入Redis中，在需要时直接从Redis中读取，提高我们系统的效率与稳定性，并且Redis支持多种数据类型，有着非常好的灵活性。在使用过程中，Redis提供了可选的数据持久化，能够在系统崩溃后，快速重新加载缓存，还提供了主从复制功能，可以实现高可用的分布式Cache系统。</p>
-<h3 id="Redis常用数据类型"><a href="#Redis常用数据类型" class="headerlink" title="Redis常用数据类型"></a>Redis常用数据类型</h3><ol>
+<h3 id="Redis常用数据类型"><a href="#Redis常用数据类型" class="headerlink" title="Redis常用数据类型"></a>Redis常用数据类型</h3><p>在Redis中是适用一个redisObject对象来表示所有的key与valuew的，其中最主要的就是type与value对象，type代表着数据类型，value表示要存储的value。</p>
+<ol>
 <li>key:<br> key的值是二进制安全的，所以任何二进制序列都可以作为key的值。所以key适合存储一些短小的数据，比如我们第三方应用的一些token、一些常用配置的数据等。</li>
 <li>String:<br> String类型是二进制安全的，可以包含任何数据，如图片或者是序列化对象，也可以是数字。</li>
 <li>Hash:<br> Redis支持hash方式存储数据，我们可以使用该特性来读取一些用户数据，如用户Id为key，value为用户的姓名、年龄、性别等信息并且计算hash后存入。</li>
@@ -356,6 +357,16 @@
 <li>hget(key, value): 返回名称为key的hash的值</li>
 <li>hexists(key, value): 查看名称为key的hash值是否有值</li>
 </ul>
+<h3 id="Redis常用场景"><a href="#Redis常用场景" class="headerlink" title="Redis常用场景"></a>Redis常用场景</h3><ol>
+<li><p>显示最新的消息列表<br>比如某些文章、朋友圈状态，有最新回复后，就添加入redis的list中，当用户查看后就把该list清空。</p>
+</li>
+<li><p>排行榜<br>比如微信运动的排行榜，可以适用redis的sorted set来进行排序去重，每个用户的好友都是不同的，所以每个用户都有自身的微信运动排行榜。</p>
+</li>
+<li><p>计数<br>redis中有原子计数器，在进行增减时都是原子操作，所以不定担心会有并发问题。</p>
+</li>
+<li><p>常用用户信息存储<br>有些用户信息是不常更新的,所以我们可以根据用户信息制定出合适的key，然后将该信息存入redis的hashMap中，在查询的时候可以直接查询Redis，而不用去关联一堆表到mysql中查询。</p>
+</li>
+</ol>
 
       
     </div>
@@ -479,7 +490,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">39</span>
+              <span class="site-state-item-count">40</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -496,7 +507,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -540,7 +551,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis简介"><span class="nav-number">1.</span> <span class="nav-text">Redis简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Redis"><span class="nav-number">1.1.</span> <span class="nav-text">什么是Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用Redis"><span class="nav-number">1.2.</span> <span class="nav-text">为什么要使用Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis常用数据类型"><span class="nav-number">1.3.</span> <span class="nav-text">Redis常用数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Jedis简介"><span class="nav-number">2.</span> <span class="nav-text">Jedis简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Jedis作用"><span class="nav-number">2.1.</span> <span class="nav-text">Jedis作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jedis使用"><span class="nav-number">2.2.</span> <span class="nav-text">Jedis使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#jedisPool的使用"><span class="nav-number">2.2.1.</span> <span class="nav-text">jedisPool的使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用ShardedJedisPool构建分布式集群"><span class="nav-number">2.3.</span> <span class="nav-text">使用ShardedJedisPool构建分布式集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用jedis操控Pipeline"><span class="nav-number">2.4.</span> <span class="nav-text">使用jedis操控Pipeline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jedis开启事务"><span class="nav-number">2.5.</span> <span class="nav-text">jedis开启事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jedis常用方法"><span class="nav-number">2.6.</span> <span class="nav-text">jedis常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#string"><span class="nav-number">2.6.1.</span> <span class="nav-text">string</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list"><span class="nav-number">2.6.2.</span> <span class="nav-text">list</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set"><span class="nav-number">2.6.3.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hash"><span class="nav-number">2.6.4.</span> <span class="nav-text">hash</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis简介"><span class="nav-number">1.</span> <span class="nav-text">Redis简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Redis"><span class="nav-number">1.1.</span> <span class="nav-text">什么是Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用Redis"><span class="nav-number">1.2.</span> <span class="nav-text">为什么要使用Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis常用数据类型"><span class="nav-number">1.3.</span> <span class="nav-text">Redis常用数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Jedis简介"><span class="nav-number">2.</span> <span class="nav-text">Jedis简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Jedis作用"><span class="nav-number">2.1.</span> <span class="nav-text">Jedis作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jedis使用"><span class="nav-number">2.2.</span> <span class="nav-text">Jedis使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#jedisPool的使用"><span class="nav-number">2.2.1.</span> <span class="nav-text">jedisPool的使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用ShardedJedisPool构建分布式集群"><span class="nav-number">2.3.</span> <span class="nav-text">使用ShardedJedisPool构建分布式集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用jedis操控Pipeline"><span class="nav-number">2.4.</span> <span class="nav-text">使用jedis操控Pipeline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jedis开启事务"><span class="nav-number">2.5.</span> <span class="nav-text">jedis开启事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jedis常用方法"><span class="nav-number">2.6.</span> <span class="nav-text">jedis常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#string"><span class="nav-number">2.6.1.</span> <span class="nav-text">string</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list"><span class="nav-number">2.6.2.</span> <span class="nav-text">list</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set"><span class="nav-number">2.6.3.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hash"><span class="nav-number">2.6.4.</span> <span class="nav-text">hash</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis常用场景"><span class="nav-number">2.7.</span> <span class="nav-text">Redis常用场景</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
