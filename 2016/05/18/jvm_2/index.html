@@ -68,7 +68,7 @@ Bootst">
 
 Bootst">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/classLoad.png">
-<meta property="og:updated_time" content="2016-05-19T09:28:56.000Z">
+<meta property="og:updated_time" content="2016-05-28T15:00:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="窥探JVM--类加载器简介">
 <meta name="twitter:description" content="类加载器简介java的类加载器是运行与JVM之上的。当jvm加载了java文件并编译成class文件后，类加载器负责通过类的全限定名来读取java字节代码，将其字节码中的静态存储结构转换为方法区中的运行时的数据结构，并在堆中生成一个代表该类的java.lang.Class实例作为方法区中数据的访问入口。其中字节码文件的来源可以来自于文件系统、网络。在jvm中以下三种默认的类加载器：
@@ -322,10 +322,11 @@ Bootst">
 <ul>
 <li>BootstrapClassLoad</li>
 <li>ExtensionClassLoad</li>
-<li><p>SystemClassLoad<br>除了以上三种默认的类加载器以外，用户可以继承java.lang.ClassLoader类来实现自己特定功能的类加载器，这四种类加载器的层级如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/classLoad.png" alt="ClassLoad"><br>可以看到BootstrapClassLoad位于顶端，那么可想而知他是所有ClassLoader的父类，然后是ExtensionClassLoad、SystemClassLoad最后是用户自身实现的ClassLoader，以下是这三个classLoader的详细信息:</p>
-</li>
-<li><p>BootstrapClassLoad:启动类加载器是所有类加载器的父加载器，它自身没有父类，是嵌套在JVM中，随着JVM的启动而启动。BootstrapClassLoad负责在JVM启动时将<java_home>/lib目录中的class加载入JVM。</java_home></p>
-</li>
+<li>SystemClassLoad</li>
+</ul>
+<p>除了以上三种默认的类加载器以外，用户可以继承java.lang.ClassLoader类来实现自己特定功能的类加载器，这四种类加载器的层级如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/classLoad.png" alt="ClassLoad"><br>可以看到BootstrapClassLoad位于顶端，那么可想而知他是所有ClassLoader的父类，然后是ExtensionClassLoad、SystemClassLoad最后是用户自身实现的ClassLoader，以下是这三个classLoader的详细信息:</p>
+<ul>
+<li>BootstrapClassLoad:启动类加载器是所有类加载器的父加载器，它自身没有父类，是嵌套在JVM中，随着JVM的启动而启动。BootstrapClassLoad负责在JVM启动时将<java_home>/lib目录中的class加载入JVM。</java_home></li>
 <li>ExtensionClassLoad:扩展类加载器负责加载<java_home>/lib/ext目录中的class，JVM的实现会提供一个扩展库目录，该类加载器会在此目录里面查找。</java_home></li>
 <li>SystemClassLoad:系统类加载器，它根据java应用的类路径来加载JAVA类，一般来说，java应用的类都是由它来完成加载的。</li>
 <li>ApplicationClassLoad:用户自定义的加载器，通过继承ClassLoader来实现，以满足自身的业务要求。<h3 id="类加载器的特性"><a href="#类加载器的特性" class="headerlink" title="类加载器的特性"></a>类加载器的特性</h3><h4 id="双亲委托制"><a href="#双亲委托制" class="headerlink" title="双亲委托制"></a>双亲委托制</h4>当JVM需要加载一个类时，当前的类加载器会先判断该类有没有被加载过，若没有加载过，那么他会把需要加载的类委托给其父类加载。也就是说比如我有一个Student类由SystemClassLoad加载，SystemClassLoad本身并不会去加载该类，而是先查看自身有没有父类，若有则传递给ExtensionClassLoad加载，而ExtensionClassLoad加载时也是如此。只有当父类无法加载时，则父类会委托给其子类加载器加载。是不是很奇怪，为什么要使用这种机制呢？<br>因为类加载器是有层次的，使用双亲委托机制能够防止内存中出现多分同样的字节码，虽然不同的类加载器加载后生成的对象并不是同一个对象，但是其内容是相同的。所以每次在加载时都委托给父类，直到父类无法加载时才让子类加载，这样能够避免多次加载同样的class文件。</li>
@@ -455,7 +456,7 @@ Bootst">
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">40</span>
+              <span class="site-state-item-count">41</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -463,7 +464,7 @@ Bootst">
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">19</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -472,7 +473,7 @@ Bootst">
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
