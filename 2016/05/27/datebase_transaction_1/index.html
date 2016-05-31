@@ -67,7 +67,7 @@
 <meta property="og:description" content="什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
 
 为数据库操作提供了从失败恢复">
-<meta property="og:updated_time" content="2016-05-30T15:43:44.000Z">
+<meta property="og:updated_time" content="2016-05-31T12:14:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库事务简介">
 <meta name="twitter:description" content="什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
@@ -406,6 +406,67 @@
 </tbody>
 </table>
 <p>我们可以看到T1执行了两次相同的查询操作，但是得到的结果却不一样，这就是幻读。</p>
+<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>为了防止上述几种数据异常线程，在数据库操作中，为了有效保证数据的一致性，所以提出了事务的隔离级别。在数据库中的锁，也是为了构建这些隔离级别而存在的。</p>
+<h3 id="未提交读-Read-Uncommitted"><a href="#未提交读-Read-Uncommitted" class="headerlink" title="未提交读(Read Uncommitted)"></a>未提交读(Read Uncommitted)</h3><p>从名字就可以了解到，在该隔离级别下，所有事务都可以读取到其他未提交事务未提交的数据，会产生脏读现象。原因是在该隔离级别下，未提交读时数据库锁情况如下：</p>
+<ul>
+<li>事务在读数据的时候不会对数据加锁</li>
+<li>事务在修改数据的时候只对数据加行级共享锁</li>
+</ul>
+<p>由于事务在修改时对数据添加的是共享锁，所以其他事务在读取数据时还是能获取到该共享锁并得到被修改未提交的数据。</p>
+<h3 id="提交读-Read-Committed"><a href="#提交读-Read-Committed" class="headerlink" title="提交读(Read Committed)"></a>提交读(Read Committed)</h3><p>在提交读隔离级别下，一个事务只能看到其他事务提交后的内容，该隔离级别能够有效防止脏读，但是无法阻止不可重复读现象。那么我们来看一下提交读的数据库锁情况：</p>
+<ul>
+<li>事务对向前被读取的数据加 行级共享锁，一旦读完该行，立即释放该行级共享所</li>
+<li>事务在更新数据时，毕竟先对其增加 行级排他锁， 直到事务结束才释放。</li>
+</ul>
+<p>由于在更新数据时会添加排他锁，所以在该事务执行时，其他事务是无法读取到此记录的，所以能够避免脏读现象。</p>
+<h3 id="可重复读-Repeatable-Read"><a href="#可重复读-Repeatable-Read" class="headerlink" title="可重复读(Repeatable Read)"></a>可重复读(Repeatable Read)</h3><p>可重复读是Mysql的默认隔离级别，在该隔离级别下能够确保同一事务内所有的数据都能够保持一致性，虽然说还是会能够产生幻读现象，但是在mysql中，使用MVCC多版本控制加上间隙锁，在RR隔离级别下就能够防止幻读出现。</p>
+<ul>
+<li>事务在读取某数据时必须先对其加 行级共享锁，直到事务结束才释放</li>
+<li>事务在更新某数据时必须先对其加 行级排他锁，直到事务结束才释放。</li>
+</ul>
+<h3 id="序列化-Serializable"><a href="#序列化-Serializable" class="headerlink" title="序列化(Serializable)"></a>序列化(Serializable)</h3><p>序列化是最高的隔离级别，通过名字就可以得知其意，所有的事务都串行执行，当然不会出现任何数据错误，但是效率可想而知。</p>
+<ul>
+<li>事务在读取数据时必须先对其加 表级共享锁 ，直到事务结束才释放。</li>
+<li>事务在更新数据时必须先对其加 表级排他锁 ，直到事务结束才释放。</li>
+</ul>
+<p>下面就是隔离级别与各数据错误之间的关系：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">隔离级别</th>
+<th style="text-align:center">脏读</th>
+<th style="text-align:center">不可重复读</th>
+<th style="text-align:center">幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">未提交读</td>
+<td style="text-align:center">会</td>
+<td style="text-align:center">会</td>
+<td style="text-align:center">会</td>
+</tr>
+<tr>
+<td style="text-align:center">提交读</td>
+<td style="text-align:center">不会</td>
+<td style="text-align:center">会</td>
+<td style="text-align:center">会</td>
+</tr>
+<tr>
+<td style="text-align:center">可重复读</td>
+<td style="text-align:center">不会</td>
+<td style="text-align:center">不会</td>
+<td style="text-align:center">会</td>
+</tr>
+<tr>
+<td style="text-align:center">序列化</td>
+<td style="text-align:center">不会</td>
+<td style="text-align:center">不会</td>
+<td style="text-align:center">不会</td>
+</tr>
+</tbody>
+</table>
+<p>这四个事务隔离级别从低到高，但是并发性能也是随之降低，因此在开发时需要选择合适的隔离级别来控制事务并发问题，但也要兼顾系统的效率。</p>
 
       
     </div>
@@ -447,13 +508,17 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/05/27/jvm_6/" rel="next" title="窥探JVM--性能调优">
-                <i class="fa fa-chevron-left"></i> 窥探JVM--性能调优
+              <a href="/2016/05/23/jvm_5/" rel="next" title="窥探JVM--垃圾回收机制">
+                <i class="fa fa-chevron-left"></i> 窥探JVM--垃圾回收机制
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/27/jvm_6/" rel="prev" title="窥探JVM--性能调优">
+                窥探JVM--性能调优 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -586,7 +651,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是事务？"><span class="nav-number">1.</span> <span class="nav-text">什么是事务？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务的特征"><span class="nav-number">2.</span> <span class="nav-text">事务的特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库中的几种操作数据异常现象"><span class="nav-number">3.</span> <span class="nav-text">数据库中的几种操作数据异常现象</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是事务？"><span class="nav-number">1.</span> <span class="nav-text">什么是事务？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务的特征"><span class="nav-number">2.</span> <span class="nav-text">事务的特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库中的几种操作数据异常现象"><span class="nav-number">3.</span> <span class="nav-text">数据库中的几种操作数据异常现象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务的隔离级别"><span class="nav-number">4.</span> <span class="nav-text">事务的隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#未提交读-Read-Uncommitted"><span class="nav-number">4.1.</span> <span class="nav-text">未提交读(Read Uncommitted)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提交读-Read-Committed"><span class="nav-number">4.2.</span> <span class="nav-text">提交读(Read Committed)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可重复读-Repeatable-Read"><span class="nav-number">4.3.</span> <span class="nav-text">可重复读(Repeatable Read)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#序列化-Serializable"><span class="nav-number">4.4.</span> <span class="nav-text">序列化(Serializable)</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
