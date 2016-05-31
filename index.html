@@ -227,7 +227,7 @@
               
                 
                 <a class="post-title-link" href="/2016/05/27/datebase_transaction_1/" itemprop="url">
-                  数据库事务原理
+                  数据库事务简介
                 </a>
               
             
@@ -293,7 +293,7 @@
 
           
           
-             <span id="/2016/05/27/datebase_transaction_1/" class="leancloud_visitors" data-flag-title="数据库事务原理">
+             <span id="/2016/05/27/datebase_transaction_1/" class="leancloud_visitors" data-flag-title="数据库事务简介">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -316,8 +316,10 @@
       
         
           
-          
-          
+          什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
+
+为数据库操作提供了从失败恢复
+          ...
 
           <div class="post-more-link text-center">
             <a class="btn" href="/2016/05/27/datebase_transaction_1/#more" rel="contents">

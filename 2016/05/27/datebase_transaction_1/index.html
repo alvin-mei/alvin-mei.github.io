@@ -57,16 +57,22 @@
 
 
 
-<meta name="description">
+<meta name="description" content="什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
+
+为数据库操作提供了从失败恢复">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数据库事务原理">
+<meta property="og:title" content="数据库事务简介">
 <meta property="og:url" content="http://alvin-mei.github.io/2016/05/27/datebase_transaction_1/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description">
-<meta property="og:updated_time" content="2016-05-29T05:22:19.000Z">
+<meta property="og:description" content="什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
+
+为数据库操作提供了从失败恢复">
+<meta property="og:updated_time" content="2016-05-30T15:43:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数据库事务原理">
-<meta name="twitter:description">
+<meta name="twitter:title" content="数据库事务简介">
+<meta name="twitter:description" content="什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
+
+为数据库操作提供了从失败恢复">
 
 
 
@@ -84,7 +90,7 @@
   };
 </script>
 
-  <title> 数据库事务原理 | 隐忍以行 </title>
+  <title> 数据库事务简介 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -224,7 +230,7 @@
             
             
               
-                数据库事务原理
+                数据库事务简介
               
             
           </h1>
@@ -289,7 +295,7 @@
 
           
           
-             <span id="/2016/05/27/datebase_transaction_1/" class="leancloud_visitors" data-flag-title="数据库事务原理">
+             <span id="/2016/05/27/datebase_transaction_1/" class="leancloud_visitors" data-flag-title="数据库事务简介">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -310,7 +316,97 @@
       
 
       
-        
+        <h2 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h2><p>我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：</p>
+<ol>
+<li>为数据库操作提供了从失败恢复到正常状态的方法，同时能够保障数据库在异常状态时的数据一致性。</li>
+<li>为多个应用程序提供在并发访问数据库时的隔离机制，防止应用之间对数据库操作时出现数据不一致的情况。</li>
+</ol>
+<h2 id="事务的特征"><a href="#事务的特征" class="headerlink" title="事务的特征"></a>事务的特征</h2><p>事务的特性就是大家平时常说的ACID啦，就是数据库管理系统中的事务所包含的特性：</p>
+<ol>
+<li>原子性(Atomicity)：原子性就是说事务中的所有操作对外都会被看成是一个不可分割的逻辑执行单元，他的执行结果只有成功与失败，没有任何中间状态。</li>
+<li>一致性(Consistency)：事务在完成前后，所有的数据必须都保持一致性。也就是说事务执行的结果必须是使数据库从一个一致性状态到另一个一致性状态，一次事务处理不会有一些数据已经修改，而一些数据没有修改的情况。</li>
+<li>隔离性(Isolation)：多个事务并发执行时，一个事务的执行不应影响其他事务的执行。事务查看数据时数据所处的状态，要么是另一并发事务修改它之前的状态，要么是另一事务修改它之后的状态，事务不会查看中间状态的数据。</li>
+<li>持久性(Durability)：在事务完成以后，该事务对数据库所作的更改便持久的保存在数据库之中，并不会被回滚。</li>
+</ol>
+<h2 id="数据库中的几种操作数据异常现象"><a href="#数据库中的几种操作数据异常现象" class="headerlink" title="数据库中的几种操作数据异常现象"></a>数据库中的几种操作数据异常现象</h2><ul>
+<li>脏读：<br>脏读的意思从字面上就可以理解，就是从数据库中读取到无效数据。那么什么是无效数据呢？就是本该持久化到数据库中，但是因为事务失败，从而回滚的数据。通俗的将就是当一个事务T1正在访问数据库中的A数据，此时A数据被该事务修改后，还未提交入数据库中，这时另一个事务T2读到了这个数据，而此时T1执行失败回滚了，那么T2读到被修改的数据A与数据库中现存的数据A其实是不一致的，也就是脏数据了，例子如下：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">事务T1</th>
+<th style="text-align:center">事务T2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">/<em> QueryT2 </em>/ <br>UPDATE money_table SET price = 200 WHERE id = 1  <br>            /<em> id = 1 price = 200 /</em></td>
+</tr>
+<tr>
+<td style="text-align:center">/<em> QueryT1 </em>/<br>SELECT price FROM money_table WHERE id=1       <br>      /<em> id = 1 price = 200 </em>/</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">/<em>QueryT2</em>/<br>ROLLBACK<br>/<em> id = 1 price = 100 </em>/</td>
+</tr>
+</tbody>
+</table>
+<p>此时T1中读到的pric=200就是脏数据了，因为系统中的id=1的price应该为100，这就产生了脏读。</p>
+<ul>
+<li>不可重复读：<br>不可重复读是指在数据库访问过程中，一个事务范围内两个相同的查询却返回了不同的数据，这是由于查询时由其他事务提交并修改了系统中的数据引起的数据不一致问题，例子如下：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">事务T1</th>
+<th style="text-align:center">事务T2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/<em> QueryT1 </em>/<br>SELECT price FROM money_table WHERE id=1       <br>      /<em> id = 1 price = 100 </em>/</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">/<em> QueryT2 </em>/ <br>UPDATE money_table SET price = 200 WHERE id = 1  <br>   COMMIT<br>         /<em> id = 1 price = 200 /</em></td>
+</tr>
+<tr>
+<td style="text-align:center">/<em> QueryT1 </em>/<br>SELECT price FROM money_table WHERE id=1       <br>      /<em> id = 1 price = 200 </em>/</td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+<p>在这个例子中，事务T1两次读取到的数据不一致是因为在第一次读取数据之后事务T2对id=1的price修改后已经对事务T1可见了，所以这时事务T1读取到的id=1的price为另一个值。</p>
+<ul>
+<li>幻读：<br>患读是指，在一个事务范围内两次读取相同查询条件数据的结果不一致的情况，一般情况下是由事务T1读取一定范围内的数据，此时事务T2在该条件范围内插入了一条数据，从而使事务T1两次读取到的数据不一样，从而产生了幻觉，例子如下：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">事务T1</th>
+<th style="text-align:center">事务T2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/<em> QueryT1 </em>/<br>SELECT price FROM money_table WHERE price &lt; 500       <br>      /<em> id = 1 price = 100 name = 小明</em>/<br>/<em> id = 2 price = 400 name = 小红</em>/</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">/<em> QueryT2 </em>/ <br>INSERT INTO money_table SET(id,name,price) VALUES(3,‘小王’,300)  <br>   COMMIT</td>
+</tr>
+<tr>
+<td style="text-align:center">/<em> QueryT1 </em>/<br>SELECT price FROM money_table WHERE price &lt; 500       <br>/<em> id = 1 price = 100 name = 小明</em>/<br>/<em> id = 2 price = 400 name = 小红</em>/<br>/<em> id = 3 price = 400 name = 小王</em>/</td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+<p>我们可以看到T1执行了两次相同的查询操作，但是得到的结果却不一样，这就是幻读。</p>
+
       
     </div>
 
@@ -384,7 +480,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/05/27/datebase_transaction_1/"
-           data-title="数据库事务原理" data-url="http://alvin-mei.github.io/2016/05/27/datebase_transaction_1/">
+           data-title="数据库事务简介" data-url="http://alvin-mei.github.io/2016/05/27/datebase_transaction_1/">
       </div>
     
   </div>
@@ -490,7 +586,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是事务？"><span class="nav-number">1.</span> <span class="nav-text">什么是事务？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务的特征"><span class="nav-number">2.</span> <span class="nav-text">事务的特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库中的几种操作数据异常现象"><span class="nav-number">3.</span> <span class="nav-text">数据库中的几种操作数据异常现象</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
