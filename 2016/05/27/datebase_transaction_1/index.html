@@ -67,7 +67,7 @@
 <meta property="og:description" content="什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
 
 为数据库操作提供了从失败恢复">
-<meta property="og:updated_time" content="2016-05-31T12:14:20.000Z">
+<meta property="og:updated_time" content="2016-05-31T12:16:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库事务简介">
 <meta name="twitter:description" content="什么是事务？我们知道在单机单核情况下是不会出现共享数据竞争问题，而事务也是在多线程对共享数据访问情况下才有的名词。每个人对事务的理解都是不同的，而我认为事务是指“在并发控制中的最小单位，是不可分割的，它是一系列操作的组合，我们可以将这些组合看成一个原子操作，这一原子操作要么执行成功，要么执行失败，不会有中间状态，所以能够维护数据的一致性”。所以事务包含以下两个目的：
@@ -381,7 +381,7 @@
 </table>
 <p>在这个例子中，事务T1两次读取到的数据不一致是因为在第一次读取数据之后事务T2对id=1的price修改后已经对事务T1可见了，所以这时事务T1读取到的id=1的price为另一个值。</p>
 <ul>
-<li>幻读：<br>患读是指，在一个事务范围内两次读取相同查询条件数据的结果不一致的情况，一般情况下是由事务T1读取一定范围内的数据，此时事务T2在该条件范围内插入了一条数据，从而使事务T1两次读取到的数据不一样，从而产生了幻觉，例子如下：</li>
+<li>幻读：<br>幻读是指，在一个事务范围内两次读取相同查询条件数据的结果不一致的情况，一般情况下是由事务T1读取一定范围内的数据，此时事务T2在该条件范围内插入了一条数据，从而使事务T1两次读取到的数据不一样，从而产生了幻觉，例子如下：</li>
 </ul>
 <table>
 <thead>
@@ -508,17 +508,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/05/23/jvm_5/" rel="next" title="窥探JVM--垃圾回收机制">
-                <i class="fa fa-chevron-left"></i> 窥探JVM--垃圾回收机制
+              <a href="/2016/05/27/jvm_6/" rel="next" title="窥探JVM--性能调优">
+                <i class="fa fa-chevron-left"></i> 窥探JVM--性能调优
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/05/27/jvm_6/" rel="prev" title="窥探JVM--性能调优">
-                窥探JVM--性能调优 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
