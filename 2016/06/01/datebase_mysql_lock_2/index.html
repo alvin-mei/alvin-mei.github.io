@@ -57,19 +57,16 @@
 
 
 
-<meta name="description" content="在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。
-Mysql中的锁机制在Mysql数据">
+<meta name="description" content="InnoDB存储引擎锁机制">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mysql事务原理">
-<meta property="og:url" content="http://alvin-mei.github.io/2016/05/31/datebase_mysql_lock/index.html">
+<meta property="og:title" content="Mysql事务原理(二)">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/06/01/datebase_mysql_lock_2/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。
-Mysql中的锁机制在Mysql数据">
-<meta property="og:updated_time" content="2016-05-31T15:27:34.000Z">
+<meta property="og:description" content="InnoDB存储引擎锁机制">
+<meta property="og:updated_time" content="2016-06-01T14:35:03.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Mysql事务原理">
-<meta name="twitter:description" content="在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。
-Mysql中的锁机制在Mysql数据">
+<meta name="twitter:title" content="Mysql事务原理(二)">
+<meta name="twitter:description" content="InnoDB存储引擎锁机制">
 
 
 
@@ -87,7 +84,7 @@ Mysql中的锁机制在Mysql数据">
   };
 </script>
 
-  <title> Mysql事务原理 | 隐忍以行 </title>
+  <title> Mysql事务原理(二) | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -227,7 +224,7 @@ Mysql中的锁机制在Mysql数据">
             
             
               
-                Mysql事务原理
+                Mysql事务原理(二)
               
             
           </h1>
@@ -239,8 +236,8 @@ Mysql中的锁机制在Mysql数据">
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-31T22:31:47+08:00" content="2016-05-31">
-              2016-05-31
+            <time itemprop="dateCreated" datetime="2016-06-01T22:35:47+08:00" content="2016-06-01">
+              2016-06-01
             </time>
           </span>
 
@@ -281,8 +278,8 @@ Mysql中的锁机制在Mysql数据">
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/31/datebase_mysql_lock/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/31/datebase_mysql_lock/" itemprop="commentsCount"></span>
+                <a href="/2016/06/01/datebase_mysql_lock_2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/01/datebase_mysql_lock_2/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -292,7 +289,7 @@ Mysql中的锁机制在Mysql数据">
 
           
           
-             <span id="/2016/05/31/datebase_mysql_lock/" class="leancloud_visitors" data-flag-title="Mysql事务原理">
+             <span id="/2016/06/01/datebase_mysql_lock_2/" class="leancloud_visitors" data-flag-title="Mysql事务原理(二)">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -313,24 +310,7 @@ Mysql中的锁机制在Mysql数据">
       
 
       
-        <p>在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。</p>
-<h2 id="Mysql中的锁机制"><a href="#Mysql中的锁机制" class="headerlink" title="Mysql中的锁机制"></a>Mysql中的锁机制</h2><p>在Mysql数据库中是通过不同的存储引擎来支持不同的锁机制，如MyISAM是通过表锁来进行粗颗粒的管理，而InnoDB则是通过行锁来进行高并发读写控制，在这里先介绍一下Mysql中的锁</p>
-<h3 id="根据锁的范围"><a href="#根据锁的范围" class="headerlink" title="根据锁的范围"></a>根据锁的范围</h3><ol>
-<li><p>表锁<br>表锁的锁定范围是数据库中的表，是系统开销最低的一种锁策略。当一个事务T1对数据库中的某张表添加读锁时，那么其他事务就无法对该表进行写操作；若是添加写锁，那么其他事务就无法对该表上任何锁。表锁的实现原理较为简单，是粗颗粒的锁，所以不会出现死锁问题，但是由于表锁会对整张表进行锁定，所以并发情况下的效率就相当低下了，比较适合读多写少的场景。</p>
-</li>
-<li><p>页锁<br>页锁是Mysql中比较独特的锁，锁定的颗粒度比表锁更加细颗粒一点，所以能够提升系统效率，但是页锁会出现死锁问题，在实际使用中也比较少见，所以本文就不做讨论了。</p>
-</li>
-<li><p>行锁<br>行锁的意思就是针对表中的某一行进行锁定，也就是对某个数据进行锁定，是一种细颗粒度的锁。在读写并发量较高的情况下，出现资源竞争的概率也最小，虽然说要进行行锁的系统开销大，但是在高并发情况下的效率非常可观，但是使用不慎及其容易出现死锁。</p>
-</li>
-</ol>
-<h3 id="根据锁的方式"><a href="#根据锁的方式" class="headerlink" title="根据锁的方式"></a>根据锁的方式</h3><ol>
-<li><p>排他锁<br>常称之为x锁，也就是写锁。当一个事务T对某对像数据加上x锁时，那么事务T可以读取该数据也可以修改该数据，其他事务就不能在对该数据添加任何锁，也就无法操作该数据，直到事务T释放该数据的x锁为止，一般在对数据进行修改时需要添加x锁。</p>
-</li>
-<li><p>共享锁<br>常称之为s锁，也就是读锁。当一个事务T对某对象数据加上s锁时，那么该事务T能够读取该数据但不能修改该数据，其他事务也可同通过对该数据添加s锁来进行读取访问，但是若是需要加上x锁，那么就得等事务T释放s锁后，才能添加x锁。</p>
-</li>
-</ol>
-<p>从上面几种锁类型可以看到，每一种锁都有其特点，我们也很难说哪一种锁好，哪一种锁不好，只能根据我们的具体应用特点来选择适合应用的锁。</p>
-
+        <h2 id="InnoDB存储引擎锁机制"><a href="#InnoDB存储引擎锁机制" class="headerlink" title="InnoDB存储引擎锁机制"></a>InnoDB存储引擎锁机制</h2>
       
     </div>
 
@@ -371,8 +351,8 @@ Mysql中的锁机制在Mysql数据">
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/05/27/datebase_transaction_1/" rel="next" title="数据库事务简介">
-                <i class="fa fa-chevron-left"></i> 数据库事务简介
+              <a href="/2016/05/31/datebase_mysql_lock_1/" rel="next" title="Mysql事务原理(一)">
+                <i class="fa fa-chevron-left"></i> Mysql事务原理(一)
               </a>
             
           </div>
@@ -403,8 +383,8 @@ Mysql中的锁机制在Mysql数据">
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/05/31/datebase_mysql_lock/"
-           data-title="Mysql事务原理" data-url="http://alvin-mei.github.io/2016/05/31/datebase_mysql_lock/">
+      <div class="ds-thread" data-thread-key="2016/06/01/datebase_mysql_lock_2/"
+           data-title="Mysql事务原理(二)" data-url="http://alvin-mei.github.io/2016/06/01/datebase_mysql_lock_2/">
       </div>
     
   </div>
@@ -449,7 +429,7 @@ Mysql中的锁机制在Mysql数据">
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">42</span>
+              <span class="site-state-item-count">43</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -510,7 +490,7 @@ Mysql中的锁机制在Mysql数据">
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql中的锁机制"><span class="nav-number">1.</span> <span class="nav-text">Mysql中的锁机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#根据锁的范围"><span class="nav-number">1.1.</span> <span class="nav-text">根据锁的范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根据锁的方式"><span class="nav-number">1.2.</span> <span class="nav-text">根据锁的方式</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB存储引擎锁机制"><span class="nav-number">1.</span> <span class="nav-text">InnoDB存储引擎锁机制</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">

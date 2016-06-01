@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java,二叉树," />
+  <meta name="keywords" content="mysql,transaction," />
 
 
 
@@ -57,16 +57,25 @@
 
 
 
-<meta name="description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
+<meta name="description" content="在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。
+Mysql中的锁机制在Mysql数据">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二叉树非递归遍历实现－java版本">
-<meta property="og:url" content="http://alvin-mei.github.io/2015/12/12/java_binarytree_traversing/index.html">
+<meta property="og:title" content="Mysql事务原理(一)">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/05/31/datebase_mysql_lock_1/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
-<meta property="og:updated_time" content="2016-03-22T07:14:18.000Z">
+<meta property="og:description" content="在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。
+Mysql中的锁机制在Mysql数据">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/read.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/read2.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/read3.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/write1.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/write2.png">
+<meta property="og:updated_time" content="2016-06-01T14:34:06.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="二叉树非递归遍历实现－java版本">
-<meta name="twitter:description" content="最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出....">
+<meta name="twitter:title" content="Mysql事务原理(一)">
+<meta name="twitter:description" content="在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。
+Mysql中的锁机制在Mysql数据">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/read.png">
 
 
 
@@ -84,7 +93,7 @@
   };
 </script>
 
-  <title> 二叉树非递归遍历实现－java版本 | 隐忍以行 </title>
+  <title> Mysql事务原理(一) | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -224,7 +233,7 @@
             
             
               
-                二叉树非递归遍历实现－java版本
+                Mysql事务原理(一)
               
             
           </h1>
@@ -236,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-12-12T10:52:31+08:00" content="2015-12-12">
-              2015-12-12
+            <time itemprop="dateCreated" datetime="2016-05-31T22:31:47+08:00" content="2016-05-31">
+              2016-05-31
             </time>
           </span>
 
@@ -250,8 +259,20 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/DataBase/" itemprop="url" rel="index">
+                    <span itemprop="name">DataBase</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/DataBase/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
                   </a>
                 </span>
 
@@ -266,8 +287,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/12/12/java_binarytree_traversing/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/12/java_binarytree_traversing/" itemprop="commentsCount"></span>
+                <a href="/2016/05/31/datebase_mysql_lock_1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/31/datebase_mysql_lock_1/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -277,7 +298,7 @@
 
           
           
-             <span id="/2015/12/12/java_binarytree_traversing/" class="leancloud_visitors" data-flag-title="二叉树非递归遍历实现－java版本">
+             <span id="/2016/05/31/datebase_mysql_lock_1/" class="leancloud_visitors" data-flag-title="Mysql事务原理(一)">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -298,7 +319,87 @@
       
 
       
-        <p>最近看了一下二叉树非递归遍历的实现，现在将思路写出来，若有不对，希望大家能够指出<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//二叉树非递归先序遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">preOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="comment">//先判断头节点是否为空</span></span><br><span class="line">       <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;Node&gt;();</span><br><span class="line">           <span class="comment">//先顺遍历是先父节点,然后父节点的左儿子,父节点的右儿子,</span></span><br><span class="line">           <span class="comment">//所以先要将父节点压入栈</span></span><br><span class="line">           stack.add(head);</span><br><span class="line">           <span class="comment">//只要栈不为空则表示二叉树没有遍历完成</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">               <span class="comment">//先序遍历比较简单,访问父节点弹出后立即打印</span></span><br><span class="line">               <span class="comment">//并判断是否右结点,有则入栈,然后判断是否有</span></span><br><span class="line">               <span class="comment">//左结点,有则入栈</span></span><br><span class="line">               head = stack.pop();</span><br><span class="line">               System.out.println(head.data);</span><br><span class="line">               <span class="comment">//会有人问为什么先右后左,因为父结点读取值</span></span><br><span class="line">               <span class="comment">//后不保存状态,所以先将右儿子压入栈,然后</span></span><br><span class="line">               <span class="comment">//再判断是否有左儿子,有的话下一次操作则先</span></span><br><span class="line">               <span class="comment">//对左儿子进行操作,符合先序遍历的逻辑</span></span><br><span class="line">               <span class="keyword">if</span>(<span class="keyword">null</span> != head.rightChild)</span><br><span class="line">                   stack.add(head.rightChild);</span><br><span class="line">               <span class="keyword">if</span>(<span class="keyword">null</span> != head.leftChild)</span><br><span class="line">                   stack.add(head.leftChild);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//二叉树非递归中序遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">inOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;Node&gt;();</span><br><span class="line">           <span class="comment">//中序遍历是先左儿子,父结点,右儿子,所以循环条件</span></span><br><span class="line">           <span class="comment">//是栈不为空且当前结点不为空</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty() || head != <span class="keyword">null</span>)&#123;</span><br><span class="line">               <span class="comment">//只要父结点的左儿子不为空,则进行进栈操作</span></span><br><span class="line">               <span class="keyword">if</span>(head != <span class="keyword">null</span>)&#123;</span><br><span class="line">                   stack.push(head);</span><br><span class="line">                   head = head.leftChild;</span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   <span class="comment">//此时已经将整颗二叉树的最左端的</span></span><br><span class="line">                   <span class="comment">//左儿子压入栈,然后弹出并读值,取其右节点,</span></span><br><span class="line">                   <span class="comment">//这时候有两种情况:1.右结点存在,则进入上一个判断</span></span><br><span class="line">                   <span class="comment">//取他的左儿子2.若右结点不存在,那么继续弹出并读值</span></span><br><span class="line">                   head = stack.pop();</span><br><span class="line">                   System.out.println(head.data);</span><br><span class="line">                   head = head.rightChild;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//非递归后续遍历</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postOrderBSTByUnRecur</span><span class="params">(Node head)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(<span class="keyword">null</span> != head)&#123;</span><br><span class="line">           Stack&lt;Node&gt; stack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line">           <span class="comment">//cur为stack的栈顶元素,pre为最后一个被打印的元素(初始值为根节点)</span></span><br><span class="line">           Node cur = <span class="keyword">null</span>,pre = head;</span><br><span class="line">           <span class="comment">//先将根节点押入</span></span><br><span class="line">           stack.push(pre);</span><br><span class="line">           <span class="comment">//stack为空则表示整个二叉树已遍历完</span></span><br><span class="line">           <span class="keyword">while</span>(!stack.isEmpty())&#123;</span><br><span class="line">               <span class="comment">//cur为stack中的栈顶元素</span></span><br><span class="line">               cur = stack.peek();</span><br><span class="line">               <span class="comment">//有三种情况,1.栈顶元素的左节点不为空,而最后打印元素不等于栈顶元素的左节点与右节点,</span></span><br><span class="line">               <span class="comment">//表示栈顶元素的左节点还未遍历,则入栈</span></span><br><span class="line">               <span class="keyword">if</span>(cur.leftChild != <span class="keyword">null</span> &amp;&amp; pre != cur.leftChild &amp;&amp; pre != cur.rightChild)&#123;</span><br><span class="line">                   stack.push(cur.leftChild);</span><br><span class="line">               <span class="comment">//2.栈顶元素的右节点不为空,而最后打印元素不等于栈顶元素的右节点,</span></span><br><span class="line">               <span class="comment">//表示栈顶元素的右节点还未遍历,则入栈</span></span><br><span class="line">               &#125;<span class="keyword">else</span> <span class="keyword">if</span>(cur.rightChild != <span class="keyword">null</span> &amp;&amp; pre != cur.rightChild)&#123;</span><br><span class="line">                   stack.push(cur.rightChild);</span><br><span class="line">               <span class="comment">//3.最后,若栈顶元素的左右节点都已经被遍历或者为空,则出栈并打印,跟新最新打印节点</span></span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   System.out.println(stack.pop().data);</span><br><span class="line">                   pre = cur;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+        <p>在上篇文章中介绍了数据库事务原理，从中我们可以了解到任何数据库在并发情况下对共享数据的操作都应遵循事务的四大特性，而为了保障其事务特性又有了隔离等级来防止在事务在并发情况下对数据操作从而带来的可见性的问题，那么为了实现事务隔离机制必定会涉及到锁机制。本文就针对Mysql数据库中的锁机制来展开分析其内部原理，了解Mysql到底是如何通过锁机制来保障数据的一致性。</p>
+<h2 id="Mysql中的锁机制"><a href="#Mysql中的锁机制" class="headerlink" title="Mysql中的锁机制"></a>Mysql中的锁机制</h2><p>在Mysql数据库中是通过不同的存储引擎来支持不同的锁机制，如MyISAM是通过表锁来进行粗颗粒的管理，而InnoDB则是通过行锁来进行高并发读写控制，在这里先介绍一下Mysql中的锁</p>
+<h3 id="根据锁的范围"><a href="#根据锁的范围" class="headerlink" title="根据锁的范围"></a>根据锁的范围</h3><ol>
+<li><p>表锁<br>表锁的锁定范围是数据库中的表，是系统开销最低的一种锁策略。当一个事务T1对数据库中的某张表添加读锁时，那么其他事务就无法对该表进行写操作；若是添加写锁，那么其他事务就无法对该表上任何锁。表锁的实现原理较为简单，是粗颗粒的锁，所以不会出现死锁问题，但是由于表锁会对整张表进行锁定，所以并发情况下的效率就相当低下了，比较适合读多写少的场景。</p>
+</li>
+<li><p>页锁<br>页锁是Mysql中比较独特的锁，锁定的颗粒度比表锁更加细颗粒一点，所以能够提升系统效率，但是页锁会出现死锁问题，在实际使用中也比较少见，所以本文就不做讨论了。</p>
+</li>
+<li><p>行锁<br>行锁的意思就是针对表中的某一行进行锁定，也就是对某个数据进行锁定，是一种细颗粒度的锁。在读写并发量较高的情况下，出现资源竞争的概率也最小，虽然说要进行行锁的系统开销大，但是在高并发情况下的效率非常可观，但是使用不慎及其容易出现死锁。</p>
+</li>
+</ol>
+<h3 id="根据锁的方式"><a href="#根据锁的方式" class="headerlink" title="根据锁的方式"></a>根据锁的方式</h3><ol>
+<li><p>排他锁<br>常称之为x锁，也就是写锁。当一个事务T对某对像数据加上x锁时，那么事务T可以读取该数据也可以修改该数据，其他事务就不能在对该数据添加任何锁，也就无法操作该数据，直到事务T释放该数据的x锁为止，一般在对数据进行修改时需要添加x锁。</p>
+</li>
+<li><p>共享锁<br>常称之为s锁，也就是读锁。当一个事务T对某对象数据加上s锁时，那么该事务T能够读取该数据但不能修改该数据，其他事务也可同通过对该数据添加s锁来进行读取访问，但是若是需要加上x锁，那么就得等事务T释放s锁后，才能添加x锁。</p>
+</li>
+</ol>
+<p>从上面几种锁类型可以看到，每一种锁都有其特点，我们也很难说哪一种锁好，哪一种锁不好，只能根据我们的具体应用特点来选择适合应用的锁。</p>
+<h2 id="MyISAM存储引擎锁机制"><a href="#MyISAM存储引擎锁机制" class="headerlink" title="MyISAM存储引擎锁机制"></a>MyISAM存储引擎锁机制</h2><h3 id="MyISAM锁"><a href="#MyISAM锁" class="headerlink" title="MyISAM锁"></a>MyISAM锁</h3><p>MyISAM存储引擎是非事务引擎，所以只支持表锁，所以有两种表级锁模式：表共享读锁和表独占写锁：</p>
+<ul>
+<li>MyISAM的读操作，不会阻塞其他事务对同一表的读请求，但是会阻塞对同一表的写请求。</li>
+<li>MyISAM的写操作，会阻塞其他事务对同一表的读和写操作。<br>下表为两种锁之间的兼容性：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">锁模式</th>
+<th style="text-align:center">读锁</th>
+<th style="text-align:center">写锁</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">读锁</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">写锁</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table>
+<p>所以当一个事务获得一张表的写锁之后，只有持有该锁的事务可以对该表进行更新操作，而其他事务的读、写都会进行阻塞，直到该事务提交后为止。</p>
+<h3 id="MyISAM锁原理"><a href="#MyISAM锁原理" class="headerlink" title="MyISAM锁原理"></a>MyISAM锁原理</h3><p>MyISAM在执行Sql语句时会自动给设计到的表添加锁，主要有以下两种</p>
+<ul>
+<li>执行SELECT查询操作时，会给涉及到的表添加读锁。</li>
+<li>执行UPDATE、DELETE、INSERT等更新语句时会自动给涉及到的表添加写锁。</li>
+</ul>
+<p>在整个加锁过程对于用户是隐式不可见的操作，而我们也可以显示的使用Lock Table命令来给表加锁模拟并发情况下MyISAM的锁机制，可以查看以下示例：</p>
+<h4 id="对表添加读锁"><a href="#对表添加读锁" class="headerlink" title="对表添加读锁"></a>对表添加读锁</h4><p>左边为可以看成是线程T1，右边为线程T2。当T1对test_myisam，添加了读锁之后，T1与T2同样都能够读取表中的数据，如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/read.png" alt=""></p>
+<p>而当T2想要修改表中的数据时，我们发现这时他会被阻塞，如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/read2.png" alt=""><br>当T1事务执行完毕，释放锁后，T2才能够正常执行sql，如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/read3.png" alt=""></p>
+<h4 id="对表添加写锁"><a href="#对表添加写锁" class="headerlink" title="对表添加写锁"></a>对表添加写锁</h4><p>左边为可以看成是线程T1，右边为线程T2与T3。当T1对test_myisam，添加了写锁之后，只有T1能够操作test_myisam表中的数据，T2与T3的读写操作都会被阻塞，如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/write1.png" alt=""><br>当T1事务执行完毕，释放锁后，T2与T3才能够正常执行sql，如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/write2.png" alt=""><br>通过上述实例我们可以看到，MyISAM存储引擎在对数据库中的表进行操作时，总是一次拿到所有的锁，而相互不兼容的锁在对该表进行操作时就会被阻塞，所以各个操作都是读写串行的，所以不会出现资源相互占用而等待的情况，也就不会发生死锁现象。</p>
+<h4 id="并发锁"><a href="#并发锁" class="headerlink" title="并发锁"></a>并发锁</h4><p>为了提高MyISAM读写时的并发能力，在MyISAM存储引擎有有一个系统变量为concurrent_insert，配置不同的数值能够进行相对的并发操作：</p>
+<ul>
+<li>当concurrent_insert设置为0时，不允许并发插入。</li>
+<li>当concurrent_insert设置为1时，如果MyISAM表中的数据之间没有间隔，那么允许在一个县城读表的同时，另一个线程在表尾插入数据。</li>
+<li>当concurrent_insert设置为2时，无论MyISAM表中的数据之间有没有间隔，都允许在表尾并发插入数据。</li>
+</ul>
+<p>介绍了上述知识之后，我们来看一下MyISAM中如何来控制读写锁的并发访问，也就是表锁是如何实现的。在MySQL中，主要通过四个队列来维护这写锁与读锁：</p>
+<ol>
+<li>Current read-lock queue (lock-&gt;read)</li>
+<li>Pending read-lock queue (lock-&gt;read_wait)</li>
+<li>Current write-lock queue (lock-&gt;write)</li>
+<li>Pending write-lock queue (lock-&gt;write_wait)</li>
+</ol>
+<p>当前持有读锁的所有线程的想干信息都存储在Current read-lock queue中，队列中的信息按照获取到锁的时间来存放，而正在等待锁定数据释放的线程信息存放在Pending read-lock queue中，另外两个对垒存放写锁信息也是按照上述规则来存放的，那么我们来看一下MyISAM是如何锁定数据库数据的。</p>
+<h4 id="读锁定"><a href="#读锁定" class="headerlink" title="读锁定"></a>读锁定</h4><p>当一个新的线程需要申请获取某张表的读锁时，需要满足两个条件：</p>
+<ul>
+<li>需要读取的表当前没有写锁定。</li>
+<li>写锁定等待队列中没有更高优先级的写锁定等待。</li>
+</ul>
+<p>当这两个条件满足后，就能够被立即通过，并将线程相关信息存入Current read-lock queue中，若其中任何一个条件木有满足，那么就会进入Pending read-lock queue等待需要读取的表被占用的线程释放。</p>
+<h4 id="写锁定"><a href="#写锁定" class="headerlink" title="写锁定"></a>写锁定</h4><p>当一个新的线程需要申请获取某张表的写锁时，需要按顺序满足下面4个条件：</p>
+<ul>
+<li>Current write-lock中没有任何线程存在，也就是当前该表没有被其他线程上写锁，若有则当前线程进入Pending write-lock等待。</li>
+<li>Pending write-lock中没有任何线程存在，也就是没有任何线程等待获取该表的写锁，若有则当前线程进入该队列等待。</li>
+<li>Current read-lock queue中没有任何线程存在，也就是当前线程没有被读锁占用,若有同上。</li>
+<li>最后检查Pending read-lock queue中是否有线程等待获取该表读锁，若有同上。</li>
+</ul>
+<p>我们可以看到MyISAM的获取锁机制完全是按照串行化来的，由于读锁是共享锁，写锁是排他锁，所以比较适用在高并发读多写少的情景下，但是若是有大量写操作的话，会有较为严重的线程阻塞情况，所以需要按场景来选择。</p>
 
       
     </div>
@@ -329,9 +430,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag">#Java</a>
+            <a href="/tags/mysql/" rel="tag">#mysql</a>
           
-            <a href="/tags/二叉树/" rel="tag">#二叉树</a>
+            <a href="/tags/transaction/" rel="tag">#transaction</a>
           
         </div>
       
@@ -340,16 +441,16 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/18/java_binarytree/" rel="next" title="二叉树的实现Java版本">
-                <i class="fa fa-chevron-left"></i> 二叉树的实现Java版本
+              <a href="/2016/05/27/datebase_transaction_1/" rel="next" title="数据库事务简介">
+                <i class="fa fa-chevron-left"></i> 数据库事务简介
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/01/19/java_initialization/" rel="prev" title="JAVA类的初始化顺序">
-                JAVA类的初始化顺序 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/06/01/datebase_mysql_lock_2/" rel="prev" title="Mysql事务原理(二)">
+                Mysql事务原理(二) <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -376,8 +477,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/12/12/java_binarytree_traversing/"
-           data-title="二叉树非递归遍历实现－java版本" data-url="http://alvin-mei.github.io/2015/12/12/java_binarytree_traversing/">
+      <div class="ds-thread" data-thread-key="2016/05/31/datebase_mysql_lock_1/"
+           data-title="Mysql事务原理(一)" data-url="http://alvin-mei.github.io/2016/05/31/datebase_mysql_lock_1/">
       </div>
     
   </div>
@@ -483,7 +584,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql中的锁机制"><span class="nav-number">1.</span> <span class="nav-text">Mysql中的锁机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#根据锁的范围"><span class="nav-number">1.1.</span> <span class="nav-text">根据锁的范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根据锁的方式"><span class="nav-number">1.2.</span> <span class="nav-text">根据锁的方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM存储引擎锁机制"><span class="nav-number">2.</span> <span class="nav-text">MyISAM存储引擎锁机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MyISAM锁"><span class="nav-number">2.1.</span> <span class="nav-text">MyISAM锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MyISAM锁原理"><span class="nav-number">2.2.</span> <span class="nav-text">MyISAM锁原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#对表添加读锁"><span class="nav-number">2.2.1.</span> <span class="nav-text">对表添加读锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对表添加写锁"><span class="nav-number">2.2.2.</span> <span class="nav-text">对表添加写锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发锁"><span class="nav-number">2.2.3.</span> <span class="nav-text">并发锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#读锁定"><span class="nav-number">2.2.4.</span> <span class="nav-text">读锁定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写锁定"><span class="nav-number">2.2.5.</span> <span class="nav-text">写锁定</span></a></li></ol></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
