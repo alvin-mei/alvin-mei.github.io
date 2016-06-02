@@ -57,16 +57,24 @@
 
 
 
-<meta name="description" content="InnoDB存储引擎锁机制">
+<meta name="description" content="InnoDB存储引擎事务原理InnoDB存储引擎是事务型存储引擎，它从行级别对数据库中的数据进行上锁，所以具有较高的并发性能，接下来会深入的解释InnoDB的锁定特性。
+InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它能够在RR级别下排除幻读情况，这与它的锁特性有着极大的关系，它在锁定过程中使行级锁和表级锁共存，所以能够更好的处理并发情况下锁争用资源的情况。
+行锁Inn">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql事务原理(二)">
 <meta property="og:url" content="http://alvin-mei.github.io/2016/06/01/datebase_mysql_lock_2/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="InnoDB存储引擎锁机制">
-<meta property="og:updated_time" content="2016-06-01T14:35:03.000Z">
+<meta property="og:description" content="InnoDB存储引擎事务原理InnoDB存储引擎是事务型存储引擎，它从行级别对数据库中的数据进行上锁，所以具有较高的并发性能，接下来会深入的解释InnoDB的锁定特性。
+InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它能够在RR级别下排除幻读情况，这与它的锁特性有着极大的关系，它在锁定过程中使行级锁和表级锁共存，所以能够更好的处理并发情况下锁争用资源的情况。
+行锁Inn">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/innodb.png">
+<meta property="og:updated_time" content="2016-06-02T08:23:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql事务原理(二)">
-<meta name="twitter:description" content="InnoDB存储引擎锁机制">
+<meta name="twitter:description" content="InnoDB存储引擎事务原理InnoDB存储引擎是事务型存储引擎，它从行级别对数据库中的数据进行上锁，所以具有较高的并发性能，接下来会深入的解释InnoDB的锁定特性。
+InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它能够在RR级别下排除幻读情况，这与它的锁特性有着极大的关系，它在锁定过程中使行级锁和表级锁共存，所以能够更好的处理并发情况下锁争用资源的情况。
+行锁Inn">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/innodb.png">
 
 
 
@@ -310,7 +318,113 @@
       
 
       
-        <h2 id="InnoDB存储引擎锁机制"><a href="#InnoDB存储引擎锁机制" class="headerlink" title="InnoDB存储引擎锁机制"></a>InnoDB存储引擎锁机制</h2>
+        <h2 id="InnoDB存储引擎事务原理"><a href="#InnoDB存储引擎事务原理" class="headerlink" title="InnoDB存储引擎事务原理"></a>InnoDB存储引擎事务原理</h2><p>InnoDB存储引擎是事务型存储引擎，它从行级别对数据库中的数据进行上锁，所以具有较高的并发性能，接下来会深入的解释InnoDB的锁定特性。</p>
+<h3 id="InnoDB中的锁"><a href="#InnoDB中的锁" class="headerlink" title="InnoDB中的锁"></a>InnoDB中的锁</h3><p>InnoDB是Mysql数据库中使用较为广泛的存储引擎，它能够在RR级别下排除幻读情况，这与它的锁特性有着极大的关系，它在锁定过程中使行级锁和表级锁共存，所以能够更好的处理并发情况下锁争用资源的情况。</p>
+<h4 id="行锁"><a href="#行锁" class="headerlink" title="行锁"></a>行锁</h4><p>InnoDB的行锁是通过索引上的索引项来实现的，若需要进行update与delete操作时条件中没有索引或者索引失效，那么久会全表锁定，具有很强的灵活性，其中行锁都是具有读锁与写锁两种基本类型。</p>
+<ol>
+<li>记录锁(Record Lock)：索引记录上的锁。</li>
+<li>间隙锁(Gap Lock)：索引记录之间间隙上的锁，能够锁定一个范围区间，但是并不包含记录本身。</li>
+<li>下一键锁(Next-key-Lock)：索引的记录锁以及索引记录之间间隙上的锁(Record Lock+Gap Lock)。</li>
+</ol>
+<p>例如索引列有1，2，3，6，8五条记录，若需要读取1-6内的数据，那么记录锁会对1，2，3，6这四条记录上锁，而间隙锁会锁住(-∞,1)、（1，2）、（2，3）、（3，6）、（6，8）、（8，+∞）的区间，而下一键锁会锁定(-∞,1)、（1，8），（8，+∞）之间的间隙与实际记录索引。在这里有一些需要注意的地方：</p>
+<ul>
+<li>如果表中没有索引，那么InnoDB会自动创建一个隐式的聚合索引，并使用该索引来加记录锁。</li>
+<li>主键索引或唯一索引只能上记录锁，无法生成间隙锁。</li>
+<li>间隙锁中存在插入意向锁，在insert操作时会产生。</li>
+</ul>
+<h4 id="意向锁"><a href="#意向锁" class="headerlink" title="意向锁"></a>意向锁</h4><p>在InnoDB中还多了意向锁，在每次对数据库中的数据加上行锁前，InnoDB都会在相关表上添加意向锁。它是为了方便检测表锁和行锁之间的冲突，用于减少加锁时锁检查的工作量，支持多颗粒度的锁定，共有以下两种意向锁：</p>
+<ol>
+<li>意向共享锁(IS)：若事务打算给数据库中的某行数据加上行级共享锁，那么该事务必须先给该数据所属的表上添加IS锁。</li>
+<li>意向独占锁(XS)：若事务打算给数据库中的某行数据加上行级排他锁，那么该书屋必须先给该数据所属的表上添加IX锁。</li>
+</ol>
+<p>那么意向锁与行锁之间的兼容性如何呢，请看下表数据：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">锁</th>
+<th style="text-align:center">行级共享锁</th>
+<th style="text-align:center">行级排他锁</th>
+<th style="text-align:center">意向共享锁</th>
+<th style="text-align:center">意向排他锁</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">行级共享锁</td>
+<td style="text-align:center">兼容</td>
+<td style="text-align:center">冲突</td>
+<td style="text-align:center">兼容</td>
+<td style="text-align:center">冲突</td>
+</tr>
+<tr>
+<td style="text-align:center">行级排他锁</td>
+<td style="text-align:center">冲突</td>
+<td style="text-align:center">冲突</td>
+<td style="text-align:center">冲突</td>
+<td style="text-align:center">冲突</td>
+</tr>
+<tr>
+<td style="text-align:center">意向共享锁</td>
+<td style="text-align:center">兼容</td>
+<td style="text-align:center">冲突</td>
+<td style="text-align:center">兼容</td>
+<td style="text-align:center">兼容</td>
+</tr>
+<tr>
+<td style="text-align:center">意向排他锁</td>
+<td style="text-align:center">冲突</td>
+<td style="text-align:center">冲突</td>
+<td style="text-align:center">兼容</td>
+<td style="text-align:center">兼容</td>
+</tr>
+</tbody>
+</table>
+<p>如果一个事务请求的锁模式与当前的锁模式兼容，那么InnoDB就会授予该事务相应的锁，反正，若两者都不兼容，那么该事务就需要等待锁释放。</p>
+<h3 id="InnoDB中事务详解"><a href="#InnoDB中事务详解" class="headerlink" title="InnoDB中事务详解"></a>InnoDB中事务详解</h3><p>我们知道InnoDB存储引擎是事务型存储引擎，它在实现事务时并没有直接使用锁，因为仅仅依赖锁是不够的，还通过MVCC(Multiversion Concurrency Control)与锁机制的相互结合来提高数据库的并发能力。</p>
+<h4 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h4><p>我们知道InnoDb使用的是行锁，锁的颗粒度很细，一般情况下是不会发生并发问题，所以MVCC是通过使用无锁事务的思想来实现的，MVCC主要是为了解决两个问题：写不阻塞读与读一致性。</p>
+<p>那么什么是MVCC呢？MVCC提供了每行数据基于某个时间点的快照，不论这个事务的步骤多么复杂，MVCC都会记录其中数据改变的情况，所以同一行数据会在不同的时间点经过不同的操作后会有多个版本。而对于事务来说，它总是可以拿到事务开始时刻时的初始数据，以便事务回滚。下面我们来看下Mysql中的MVCC实现。</p>
+<p>在Innodb中的每行数据中会有三个隐藏字段,如下图所示:<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/innodb.png" alt=""></p>
+<ul>
+<li>TRX_ID：长6字节，该字段用于标记最新更新这条记录的事务ID，每处理一条事务，其值会自动+1.</li>
+<li>ROLL_ID：长7字节，该字段用于指向当前记录项中的undo log中的额记录，也就是该语句执行之前该行数据的状态。</li>
+<li>DELETE BIT：长6字节，用于表示该记录是否被删除，只是标记，真正删除在事务结束commit中。</li>
+</ul>
+<p>有了以上字段，可以实现无锁并发，我们来看一下各个操作是怎样实现的，先看一下整个事务的过程：</p>
+<ol>
+<li>首先开始事务</li>
+<li>选择合适的锁，若是查询则对数据行上共享锁，若是更新删除则上排他锁。</li>
+<li>记录redo log</li>
+<li>记录undo log</li>
+<li>进行各种操作，更换TRX_ID、将ROLL_ID编号指向undo log中上一个操作的数据地址</li>
+<li>commit</li>
+</ol>
+<p>上述只是一个大致过程，那么看一下各个操作是如何执行的：</p>
+<ol>
+<li><p>SELECT操作<br>当需要通过SELECT操作读取某行数据时，只需要满足以下两个条件就能读取：</p>
+<ul>
+<li>待查找行的TRX_ID小于或等于当前事务的ID。</li>
+<li>DELETE BIT为空或者大于当前事务版本号的记录行。</li>
+</ul>
+</li>
+<li><p>INSERT操作<br>INSERT操作只需要在插入之后将数据的TRX_ID更换成当前事务ID</p>
+</li>
+<li><p>DELETE操作<br>DELETE操作值需要在需要将删除的数据DELETE BIT更换成当前事务ID</p>
+</li>
+<li><p>UPDATE操作<br>UPDATE操作时将需要操作的数据复制一行，然后更新TRX_ID，在更新之前的数据中的DELETE BIT中写入当前事务的ID。</p>
+</li>
+</ol>
+<p>我们可以看到每次进行修改数据时，都会进行redo log与undo log的插入，那么这两个日志到底有什么用呢？</p>
+<ol>
+<li>redo log<br>redo log是用来实现事务的持久性的。redo记录的是物理日志，所有数据的最新备份都会记录在redo log中，当事务commit时，值需要将redo log持久化就可以了。</li>
+<li>undo log<br>undo log是用来实现事务的一致性与原子性，主要用来进行回滚作用的。在操作任何数据之前，老的数据就会记录入到undo中，然后新数据的ROLL_ID就指向undo log中的相关数据段地址，万一发生回滚，那么就将该事务修改的逻辑全部取消，并查找到最初记录的undo 数据片段。当然除了回滚作用，还能够实现MVCC读取，若有用户读取一行记录，但是该记录被其他事务占用，那么可以通过undo信息读取之前的行版本信息。</li>
+</ol>
+<h4 id="InnoDB中的事务机制"><a href="#InnoDB中的事务机制" class="headerlink" title="InnoDB中的事务机制"></a>InnoDB中的事务机制</h4><p>而我们看一下Innodb中使用锁与MVCC相结合实现：</p>
+<ul>
+<li>事务以排他锁的形式修改原始数据</li>
+<li>把修改前的数据存放于undo log，通过回滚指针与主数据关联</li>
+<li>修改成功（commit）啥都不做，失败则恢复undo log中的数据（rollback）</li>
+</ul>
+
       
     </div>
 
@@ -490,7 +604,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB存储引擎锁机制"><span class="nav-number">1.</span> <span class="nav-text">InnoDB存储引擎锁机制</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB存储引擎事务原理"><span class="nav-number">1.</span> <span class="nav-text">InnoDB存储引擎事务原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB中的锁"><span class="nav-number">1.1.</span> <span class="nav-text">InnoDB中的锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#行锁"><span class="nav-number">1.1.1.</span> <span class="nav-text">行锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#意向锁"><span class="nav-number">1.1.2.</span> <span class="nav-text">意向锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB中事务详解"><span class="nav-number">1.2.</span> <span class="nav-text">InnoDB中事务详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MVCC"><span class="nav-number">1.2.1.</span> <span class="nav-text">MVCC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB中的事务机制"><span class="nav-number">1.2.2.</span> <span class="nav-text">InnoDB中的事务机制</span></a></li></ol></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">

@@ -316,8 +316,10 @@
       
         
           
-          InnoDB存储引擎锁机制
-          
+          InnoDB存储引擎事务原理InnoDB存储引擎是事务型存储引擎，它从行级别对数据库中的数据进行上锁，所以具有较高的并发性能，接下来会深入的解释InnoDB的锁定特性。
+InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它能够在RR级别下排除幻读情况，这与它的锁特性有着极大的关系，它在锁定过程中使行级锁和表级锁共存，所以能够更好的处理并发情况下锁争用资源的情况。
+行锁Inn
+          ...
 
           <div class="post-more-link text-center">
             <a class="btn" href="/2016/06/01/datebase_mysql_lock_2/#more" rel="contents">
