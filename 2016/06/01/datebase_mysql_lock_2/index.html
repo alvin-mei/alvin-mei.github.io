@@ -68,7 +68,7 @@ InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它
 InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它能够在RR级别下排除幻读情况，这与它的锁特性有着极大的关系，它在锁定过程中使行级锁和表级锁共存，所以能够更好的处理并发情况下锁争用资源的情况。
 行锁Inn">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/innodb.png">
-<meta property="og:updated_time" content="2016-06-02T08:23:43.000Z">
+<meta property="og:updated_time" content="2016-06-02T08:26:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql事务原理(二)">
 <meta name="twitter:description" content="InnoDB存储引擎事务原理InnoDB存储引擎是事务型存储引擎，它从行级别对数据库中的数据进行上锁，所以具有较高的并发性能，接下来会深入的解释InnoDB的锁定特性。
@@ -424,7 +424,7 @@ InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它
 <li>把修改前的数据存放于undo log，通过回滚指针与主数据关联</li>
 <li>修改成功（commit）啥都不做，失败则恢复undo log中的数据（rollback）</li>
 </ul>
-
+<h3 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h3>
       
     </div>
 
@@ -604,7 +604,7 @@ InnoDB中的锁InnoDB是Mysql数据库中使用较为广泛的存储引擎，它
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB存储引擎事务原理"><span class="nav-number">1.</span> <span class="nav-text">InnoDB存储引擎事务原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB中的锁"><span class="nav-number">1.1.</span> <span class="nav-text">InnoDB中的锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#行锁"><span class="nav-number">1.1.1.</span> <span class="nav-text">行锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#意向锁"><span class="nav-number">1.1.2.</span> <span class="nav-text">意向锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB中事务详解"><span class="nav-number">1.2.</span> <span class="nav-text">InnoDB中事务详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MVCC"><span class="nav-number">1.2.1.</span> <span class="nav-text">MVCC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB中的事务机制"><span class="nav-number">1.2.2.</span> <span class="nav-text">InnoDB中的事务机制</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB存储引擎事务原理"><span class="nav-number">1.</span> <span class="nav-text">InnoDB存储引擎事务原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB中的锁"><span class="nav-number">1.1.</span> <span class="nav-text">InnoDB中的锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#行锁"><span class="nav-number">1.1.1.</span> <span class="nav-text">行锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#意向锁"><span class="nav-number">1.1.2.</span> <span class="nav-text">意向锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB中事务详解"><span class="nav-number">1.2.</span> <span class="nav-text">InnoDB中事务详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MVCC"><span class="nav-number">1.2.1.</span> <span class="nav-text">MVCC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB中的事务机制"><span class="nav-number">1.2.2.</span> <span class="nav-text">InnoDB中的事务机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#未完待续"><span class="nav-number">1.3.</span> <span class="nav-text">未完待续</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
