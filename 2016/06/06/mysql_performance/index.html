@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java,初始化," />
+  <meta name="keywords" content="mysql,性能," />
 
 
 
@@ -57,18 +57,21 @@
 
 
 
-<meta name="description" content="java类的初始化顺序是面试中常问到的一个问题，下面通过一个加载例子就可以让我们深入了解java类的加载顺序，而不是死记硬背....">
+<meta name="description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
+数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JAVA类的初始化顺序">
-<meta property="og:url" content="http://alvin-mei.github.io/2016/01/19/java_initialization/index.html">
+<meta property="og:title" content="Mysql性能调优">
+<meta property="og:url" content="http://alvin-mei.github.io/2016/06/06/mysql_performance/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="java类的初始化顺序是面试中常问到的一个问题，下面通过一个加载例子就可以让我们深入了解java类的加载顺序，而不是死记硬背....">
-<meta property="og:image" content="http://img.blog.csdn.net/20160119222354405">
-<meta property="og:updated_time" content="2016-03-22T07:13:39.000Z">
+<meta property="og:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
+数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png">
+<meta property="og:updated_time" content="2016-06-06T10:29:51.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JAVA类的初始化顺序">
-<meta name="twitter:description" content="java类的初始化顺序是面试中常问到的一个问题，下面通过一个加载例子就可以让我们深入了解java类的加载顺序，而不是死记硬背....">
-<meta name="twitter:image" content="http://img.blog.csdn.net/20160119222354405">
+<meta name="twitter:title" content="Mysql性能调优">
+<meta name="twitter:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
+数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png">
 
 
 
@@ -86,7 +89,7 @@
   };
 </script>
 
-  <title> JAVA类的初始化顺序 | 隐忍以行 </title>
+  <title> Mysql性能调优 | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -226,7 +229,7 @@
             
             
               
-                JAVA类的初始化顺序
+                Mysql性能调优
               
             
           </h1>
@@ -238,8 +241,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-01-19T22:24:03+08:00" content="2016-01-19">
-              2016-01-19
+            <time itemprop="dateCreated" datetime="2016-06-06T11:15:47+08:00" content="2016-06-06">
+              2016-06-06
             </time>
           </span>
 
@@ -252,8 +255,20 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/DataBase/" itemprop="url" rel="index">
+                    <span itemprop="name">DataBase</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/DataBase/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
                   </a>
                 </span>
 
@@ -268,8 +283,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/01/19/java_initialization/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/19/java_initialization/" itemprop="commentsCount"></span>
+                <a href="/2016/06/06/mysql_performance/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/06/mysql_performance/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -279,7 +294,7 @@
 
           
           
-             <span id="/2016/01/19/java_initialization/" class="leancloud_visitors" data-flag-title="JAVA类的初始化顺序">
+             <span id="/2016/06/06/mysql_performance/" class="leancloud_visitors" data-flag-title="Mysql性能调优">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -300,14 +315,82 @@
       
 
       
-        <p>java类的初始化顺序是面试中常问到的一个问题，下面通过一个加载例子就可以让我们深入了解java类的加载顺序，而不是死记硬背。<br>先定义一个父类Father</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String str1 = <span class="string">"Father静态字符串"</span>;</span><br><span class="line">    <span class="keyword">public</span> String str2 = <span class="string">"Father普通字符串"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(str1);</span><br><span class="line">        System.out.println(<span class="string">"Father 静态代码块2"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"Father 静态代码块1"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(str2);</span><br><span class="line">        System.out.println(<span class="string">"Father 代码块2"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"Father 代码块1"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Father</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Father 构造器"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后定义一个子类child并继承父类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">child</span> <span class="keyword">extends</span> <span class="title">Father</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String str1 = <span class="string">"Child静态字符串"</span>;</span><br><span class="line">    <span class="keyword">public</span> String str2 = <span class="string">"Child普通字符串"</span>;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(str1);</span><br><span class="line">        System.out.println(<span class="string">"Child 静态代码块2"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"Child 静态代码块1"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(str2);</span><br><span class="line">        System.out.println(<span class="string">"Child 代码块2"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"Child 代码块1"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">child</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Child 构造器"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>测试函数</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Father a= <span class="keyword">new</span> child();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>测试结果<br><img src="http://img.blog.csdn.net/20160119222354405" alt="这里写图片描述"></p>
-<p>下面就讲解一下背后的原理<br>1.main方法启动后，类加载器就会加载child.class类，在加载过程中发现他有父类，则会先加载父类。加载完后先去执行father的静态代码区，执行完后再执行子类的静态代码区。静态代码区按顺序执行。<br>2.当静态代码区执行完后，开始创建对象，new对象（在方法区中为对象分配空间）。由于子类中含有this.super()方法，所以先创建父类对象，在创建时会加载父类的非静态区的对象与方法，加载完后再加载父类的构造方法。<br>3.加载完父类的构造方法后再加载子类的非静态对象与方法，最后执行子类构造器。</p>
-<p>所以总结一下，java初始化顺序：<br>父类静态对象与静态代码块<br>子类静态对象与静态代码块<br>父类非静态对象与非静态代码块<br>父类构造器<br>子类非静态对象与非静态代码块<br>子类构造器</p>
+        <p>在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。</p>
+<h2 id="数据存储消耗"><a href="#数据存储消耗" class="headerlink" title="数据存储消耗"></a>数据存储消耗</h2><p>我们来看一下计算机在处理的时候性能，这里讨论远程调用时的性能消耗，具体过程如下图所示：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png" alt=""></p>
+<p>我们可以看到每次操作数据库中的数据都会经过CPU-Cache-memory-hhd-newwork，那么其性能损耗也主要在这几个部分之中，先来看看每块硬件所做的工作：</p>
+<ul>
+<li>CPU与内存：缓存数据访问、比较、排序、事务检测、SQL解析、函数或逻辑运算</li>
+<li>硬盘：数据访问、数据写入、日志记录、大数据排序、大表连接</li>
+<li>网络：结束过去传输、SQL请求、远程数据库访问</li>
+</ul>
+<p>那么根据这几点我们可以得知数据库优化可以从以下几个方面入手：</p>
+<ol>
+<li>减少数据访问（减少磁盘访问）</li>
+<li>返回更少的数据（减少王略传输或磁盘访问）</li>
+<li>减少交互次数（减少网络传输）</li>
+<li>减少服务器CPU开销</li>
+<li>利用更多资源</li>
+</ol>
+<p>根据一位前辈的文章中指出，每一次的优化法则都是解决其对应硬件的性能问题,所以带来的性能提升比例也不一样。根据经验做法，针对低速设备的优化手段更多，而且优化成本也低，带来的性能提升效果也大，所以我们针对任何一个SQL的性能优化都应该按这个规则来由上到下的步骤，一步步的进行优化。</p>
+<h2 id="数据库性能优化"><a href="#数据库性能优化" class="headerlink" title="数据库性能优化"></a>数据库性能优化</h2><h3 id="减少数据访问"><a href="#减少数据访问" class="headerlink" title="减少数据访问"></a>减少数据访问</h3><ol>
+<li><p>创建并正确使用索引<br>mysql中的innoDB存储引擎，我们知道innoDB的数据与索引是存储在一起的，通过利用其B+tree的特性能够减少磁盘I/O次数，大大提高检索数据效率。由于创建索引是需要消耗大量磁盘空间的，那么我们在什么样的字段上创建索引呢？</p>
+<ul>
+<li>可以作为查询的字段</li>
+<li>该字段被查询的频率较高</li>
+<li>通过该字段能够筛选出足够少的数据</li>
+<li>比如主键、外键、有对象或者身份表示意义的字段</li>
+</ul>
+<p>哪些字段不适合创建索引？</p>
+<ul>
+<li>不经常使用的列，很占内存</li>
+<li>逻辑性的字段，也就是布尔值，若表过于庞大，那么就等于全表扫描</li>
+<li>若是是长文本，那么也不适合做索引</li>
+<li>比如日期、状态标志、类型、区域、操作人员、数值、长字符</li>
+</ul>
+<p>如何正确使用索引呢？<br>以下情况会使用索引：</p>
+<ul>
+<li>INDEX_COLUMN = ?</li>
+<li>INDEX_COLUMN &gt; ?</li>
+<li>INDEX_COLUMN &gt;= ?</li>
+<li>INDEX_COLUMN &lt; ?</li>
+<li>INDEX_COLUMN &lt;= ?</li>
+<li>INDEX_COLUMN between ? and ?</li>
+<li>INDEX_COLUMN in (?,?,…,?)</li>
+<li>INDEX_COLUMN like ?||’%’（后导模糊查询）</li>
+<li>T1. INDEX_COLUMN=T2. COLUMN1（两个表通过索引字段关联）</li>
+</ul>
+<p>哪些操作不走索引？</p>
+</li>
+</ol>
+<ul>
+<li>在包含有null值的列上建立索引</li>
+<li>对索引列使用sql函数或者进行运算后无法走索引</li>
+<li>不等于操作不能使用索引</li>
+<li>前导模糊查询的Like语法不能使用索引</li>
+</ul>
+<ol>
+<li>优化SQL执行计划<br>如果对于某张表，我们在查询时只使用其中几个字段，那么我们可以将这几个字段建立起组合索引，这样能够在查询时直接走索引，同时也能减少为每个单个字段建立索引带来的磁盘空间损耗。<h3 id="返回更少的数据"><a href="#返回更少的数据" class="headerlink" title="返回更少的数据"></a>返回更少的数据</h3></li>
+<li>数据分页</li>
+<li>不要返回*</li>
+</ol>
+<h3 id="减少交互次数"><a href="#减少交互次数" class="headerlink" title="减少交互次数"></a>减少交互次数</h3><ol>
+<li>批量执行SQL</li>
+<li>in List</li>
+<li>设置fetch size</li>
+<li>使用存储过程</li>
+<li>优化业务逻辑</li>
+</ol>
+<h3 id="减少服务器CPU运算"><a href="#减少服务器CPU运算" class="headerlink" title="减少服务器CPU运算"></a>减少服务器CPU运算</h3><ol>
+<li>使用绑定变量</li>
+<li>合并使用排序</li>
+<li>减少比较操作</li>
+<li>大量复杂运算在客户端处理</li>
+</ol>
+<h3 id="利用更多资源"><a href="#利用更多资源" class="headerlink" title="利用更多资源"></a>利用更多资源</h3><ol>
+<li>客户端多进程并行访问</li>
+<li>数据库并行处理</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p> <a href="http://blog.csdn.net/yzsind/article/details/6059209" target="_blank" rel="external">面向程序员的数据库访问性能优化法则</a></p>
 
       
     </div>
@@ -338,9 +421,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag">#Java</a>
+            <a href="/tags/mysql/" rel="tag">#mysql</a>
           
-            <a href="/tags/初始化/" rel="tag">#初始化</a>
+            <a href="/tags/性能/" rel="tag">#性能</a>
           
         </div>
       
@@ -349,17 +432,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/12/java_binarytree_traversing/" rel="next" title="二叉树非递归遍历实现－java版本">
-                <i class="fa fa-chevron-left"></i> 二叉树非递归遍历实现－java版本
+              <a href="/2016/06/01/datebase_mysql_lock_2/" rel="next" title="Mysql事务原理(二)">
+                <i class="fa fa-chevron-left"></i> Mysql事务原理(二)
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/01/22/reply_java_recommend/" rel="prev" title="Java 7之基础 - 强引用、弱引用、软引用、虚引用（转）">
-                Java 7之基础 - 强引用、弱引用、软引用、虚引用（转） <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -385,8 +464,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/01/19/java_initialization/"
-           data-title="JAVA类的初始化顺序" data-url="http://alvin-mei.github.io/2016/01/19/java_initialization/">
+      <div class="ds-thread" data-thread-key="2016/06/06/mysql_performance/"
+           data-title="Mysql性能调优" data-url="http://alvin-mei.github.io/2016/06/06/mysql_performance/">
       </div>
     
   </div>
@@ -492,7 +571,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据存储消耗"><span class="nav-number">1.</span> <span class="nav-text">数据存储消耗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库性能优化"><span class="nav-number">2.</span> <span class="nav-text">数据库性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#减少数据访问"><span class="nav-number">2.1.</span> <span class="nav-text">减少数据访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回更少的数据"><span class="nav-number">2.2.</span> <span class="nav-text">返回更少的数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少交互次数"><span class="nav-number">2.3.</span> <span class="nav-text">减少交互次数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少服务器CPU运算"><span class="nav-number">2.4.</span> <span class="nav-text">减少服务器CPU运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用更多资源"><span class="nav-number">2.5.</span> <span class="nav-text">利用更多资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
