@@ -66,7 +66,7 @@
 <meta property="og:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
 数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png">
-<meta property="og:updated_time" content="2016-06-07T01:59:28.000Z">
+<meta property="og:updated_time" content="2016-06-07T05:44:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql性能调优">
 <meta name="twitter:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
@@ -380,14 +380,11 @@
 </ol>
 <h3 id="减少交互次数"><a href="#减少交互次数" class="headerlink" title="减少交互次数"></a>减少交互次数</h3><p>减少与数据库的交互次数，因为若是需要往数据库中插入几百万条数据，如果每次都建立一个连接，然后提交数据，这样与服务器的交互次数为几百万次且需要重复传输许多大量重复sql，造成网络上的延时开销。所以在编写sql时，可以从以下几点去考虑。</p>
 <ol>
-<li>批量执行SQL</li>
-<li>in List</li>
-<li>设置fetch size</li>
-<li>使用存储过程</li>
-<li>优化业务逻辑</li>
+<li>批量执行SQL<br>这个就不多说啦，我们在插入、更新、删除数据时都推荐使用批量方式，而且通过批量方式提交sql带来的性能提高是非常显著的。</li>
+<li>in List<br>也算是批量查询的一种，也是通过减少sql请求的数量来提高性能。</li>
 </ol>
 <h3 id="减少服务器CPU运算"><a href="#减少服务器CPU运算" class="headerlink" title="减少服务器CPU运算"></a>减少服务器CPU运算</h3><ol>
-<li>使用绑定变量</li>
+<li>使用绑定变量<br>在数据库中所有语句是有缓存的，若是使用绑定变量，那么提交的sql只需要解析相关参数就行了，也就是软解析。若不使用变量，而是把参数直接写入sql中，那么数据库会认为是另一条sql（hash值不同），会对该sql重新进行硬解析，会消耗CPU资源。使用绑定变量还能够防止SQL注入，所以这是非常需要注意的。</li>
 <li>合并使用排序</li>
 <li>减少比较操作</li>
 <li>大量复杂运算在客户端处理</li>
