@@ -60,7 +60,7 @@
 <meta name="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="隐忍以行">
-<meta property="og:url" content="http://alvin-mei.github.io/categories/Spring/index.html">
+<meta property="og:url" content="http://alvin-mei.github.io/categories/spring/index.html">
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
@@ -83,7 +83,7 @@
   };
 </script>
 
-  <title> 分类: Spring | 隐忍以行 </title>
+  <title> 分类: spring | 隐忍以行 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -205,7 +205,7 @@
   <section id="posts" class="posts-collapse">
     <div class="collection-title">
       <h2 >
-        Spring
+        spring
         <small>分类</small>
       </h2>
     </div>
@@ -218,37 +218,9 @@
 
       <h1 class="post-title">
         
-            <a class="post-title-link" href="/2015/09/09/SSMdev_2/" itemprop="url">
+            <a class="post-title-link" href="/2016/06/12/ioc_di/" itemprop="url">
               
-                <span itemprop="name">菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（下）</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2015-09-09T18:25:34+08:00"
-              content="2015-09-09" >
-          09-09
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2015/09/08/SSMdev_1/" itemprop="url">
-              
-                <span itemprop="name">菜鸟级SpringMvc＋Spring＋Mybatis整合开发用户登录功能（上）</span>
+                <span itemprop="name">IOC与DI详解</span>
               
             </a>
         
@@ -256,9 +228,9 @@
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
-              datetime="2015-09-08T21:13:34+08:00"
-              content="2015-09-08" >
-          09-08
+              datetime="2016-06-12T12:58:32+08:00"
+              content="2016-06-12" >
+          06-12
         </time>
       </div>
 
@@ -309,7 +281,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">44</span>
+              <span class="site-state-item-count">45</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -317,7 +289,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -326,7 +298,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-count">43</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -558,6 +530,37 @@
             newcounter.set("time", 1);
             newcounter.save(null, {
               success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+
+</body>
+</html>
+    success: function(newcounter) {
                 var $element = $(document.getElementById(url));
                 $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
               },

@@ -66,7 +66,7 @@
 <meta property="og:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
 数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png">
-<meta property="og:updated_time" content="2016-06-07T05:44:37.000Z">
+<meta property="og:updated_time" content="2016-06-12T04:56:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql性能调优">
 <meta name="twitter:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
@@ -371,10 +371,15 @@
 <p>哪些操作可以优化？</p>
 <ul>
 <li>使用exists代替in</li>
-<li>对于连续的数值匹配，那就使用between不要使用in   </li>
+<li>对于连续的数值匹配，那就使用between不要使用in</li>
+<li>对于符合索引，把使用最频繁的列作为前导列。这里需要注意的是使用复合索引查询时若前导列不再查询条件中时，则该符合索引不会被使用。   </li>
 </ul>
 <ol>
-<li>优化SQL执行计划<br>如果对于某张表，我们在查询时只使用其中几个字段，那么我们可以将这几个字段建立起组合索引，这样能够在查询时直接走索引，同时也能减少为每个单个字段建立索引带来的磁盘空间损耗。<h3 id="返回更少的数据"><a href="#返回更少的数据" class="headerlink" title="返回更少的数据"></a>返回更少的数据</h3></li>
+<li>优化SQL执行计划<ul>
+<li>如果对于某张表，我们在查询时只使用其中几个字段，那么我们可以将这几个字段建立起组合索引，这样能够在查询时直接走索引，同时也能减少为每个单个字段建立索引带来的磁盘空间损耗。</li>
+<li>多表关联查询时，要选择合适的表作为内标，连接条件需充分考虑带有索引的表、行数多的表，尽量的降低笛卡尔积。<h3 id="返回更少的数据"><a href="#返回更少的数据" class="headerlink" title="返回更少的数据"></a>返回更少的数据</h3></li>
+</ul>
+</li>
 <li>数据分页<br>每次查库都只返回固定数量的数据，而不是将所有数据拉倒本地，这样能够节约带宽，节省系统内存。分页分为服务器分页与数据库分页，一般数据库分页用的比较多。</li>
 <li>不要返回*<br>每次查库只返回所需要的字段，而不是将查到的所有字段都返回，因为很多无用数据会占用网络带宽与服务器内存</li>
 </ol>
@@ -442,6 +447,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/12/ioc_di/" rel="prev" title="IOC与DI详解">
+                IOC与DI详解 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -513,7 +522,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">44</span>
+              <span class="site-state-item-count">45</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -521,7 +530,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -530,7 +539,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-count">43</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
