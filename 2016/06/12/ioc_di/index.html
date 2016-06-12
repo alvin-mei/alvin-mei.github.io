@@ -63,10 +63,13 @@
 <meta property="og:url" content="http://alvin-mei.github.io/2016/06/12/ioc_di/index.html">
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description" content="Spring是一个于2003年兴起的一个轻量级的Java开发框架，经过十三年的演变与发展，目前Spring已经全面的模块化。那么为什么Spring能够那么火？我们知道互联网行业中的技术是高速发展的，几乎每天都有着新的框架，新鲜的技术的出现，而Spring正是凭借其独特的IOC与AOP的特性牢牢占据市场。在后续版本的不断改进之中，各种框架都开始与spring相集成，这使spring的生态圈更加的丰富">
-<meta property="og:updated_time" content="2016-06-12T05:05:39.000Z">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/spring.png">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/spring_Ioc_res_new.png">
+<meta property="og:updated_time" content="2016-06-12T08:46:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IOC与DI详解">
 <meta name="twitter:description" content="Spring是一个于2003年兴起的一个轻量级的Java开发框架，经过十三年的演变与发展，目前Spring已经全面的模块化。那么为什么Spring能够那么火？我们知道互联网行业中的技术是高速发展的，几乎每天都有着新的框架，新鲜的技术的出现，而Spring正是凭借其独特的IOC与AOP的特性牢牢占据市场。在后续版本的不断改进之中，各种框架都开始与spring相集成，这使spring的生态圈更加的丰富">
+<meta name="twitter:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/spring.png">
 
 
 
@@ -311,6 +314,33 @@
 
       
         <p>Spring是一个于2003年兴起的一个轻量级的Java开发框架，经过十三年的演变与发展，目前Spring已经全面的模块化。那么为什么Spring能够那么火？我们知道互联网行业中的技术是高速发展的，几乎每天都有着新的框架，新鲜的技术的出现，而Spring正是凭借其独特的IOC与AOP的特性牢牢占据市场。在后续版本的不断改进之中，各种框架都开始与spring相集成，这使spring的生态圈更加的丰富，也使Spring占据其王者地位。</p>
+<h3 id="IOC-amp-DI"><a href="#IOC-amp-DI" class="headerlink" title="IOC&amp;DI"></a>IOC&amp;DI</h3><p>我们知道Spring其强大之处在于其IOC容器，能够帮我们管理我们所有的bean，能够降低应用程序的耦合性，那么我们思考下，为什么我们需要IOC容器？IOC容器究竟为我们带来了什么好处？这两个问题一直困扰着我，因为我一直感觉使不使用spirng其实对我来说没有什么差别，但是后来我发现这是因为我自己所做的项目规模过小的缘故，有很多问题都没能体现出来，那么下面我们来看一下为什么我们需要IOC容器。</p>
+<p>如果不使用IOC容器，那么我们创建对象时，所有的对象都是由程序来主动创建，在小规模的项目中也许不会出现什么大问题，但是当我们有几百几千个类，而这些类的关系又错综复杂时，如下图所示:</p>
+<p><img src="http://7xtc3q.com1.z0.glb.clouddn.com/spring.png" alt=""></p>
+<p>有没有感觉非常的混乱，这时若其中有一个业务的模块需要修改，有些类的方法需要更新与去除，那么这时可能会带来灾难性的问题：</p>
+<ul>
+<li>类与类之间耦合过于严重，若对系统不熟悉，没有全部修改或者修改代码错误，那么会导致系统无法起来</li>
+<li>测试困难，有时修改正确后，有的问题是隐式的，难以在当前复现，但是这是一个定时炸弹，因为我们不知道它在什么时候会让系统宕机</li>
+</ul>
+<h4 id="如何理解IOC？"><a href="#如何理解IOC？" class="headerlink" title="如何理解IOC？"></a>如何理解IOC？</h4><p>我们知道IOC的意思是控制反转，那么什么是控制？什么是反转呢？我们先看一下下图：<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/spring_Ioc_res_new.png" alt=""></p>
+<p>对比下上图我们就能感觉到，这时类之间的关系都非常的清晰，应用程序通过IOC容器这个“第三方”去获取锁需要的实例。那么上述的两个问题就都能解决啦。</p>
+<ul>
+<li>控制：在没有使用IOC时，实例的生成与管理都是由应用程序自己完成。而使用IOC容器后，实例的生成、生命周期管理等等全部由IOC来完成。</li>
+<li>反转：应用程序不再是自己主动去创建实例，而是需要实例时，IOC容器会通过“注入(DI)”的方式动态的为应用程序创建实例。</li>
+</ul>
+<p>这样Spring IOC的概念我们就很好理解啦：系统资源不由使用资源的双方管理，而是由不使用资源的Spirng IOC容器来管理，这样能够带来以下几点好处：</p>
+<ol>
+<li>降低使用资源双方的耦合性，当应用程序需要使用资源时才会与相关资源有关联。所以应用程序在不使用该类时，若类出现问题则不会影响应用程序的运行。</li>
+<li>资源集中管理，资源由IOC容器管理，实现再远的可配置和易管理</li>
+<li>提高了模块的可复用性</li>
+</ol>
+<h4 id="如何理解DI？"><a href="#如何理解DI？" class="headerlink" title="如何理解DI？"></a>如何理解DI？</h4><p>DI是依赖注入的意思，那它和IOC是什么关系呢?其实可以这样理解，IOC只是一个概念，而依赖注入是IOC的具体实现方式。从上述IOC得到的结论我们可以对“依赖”与“注入”有以下几个观念：</p>
+<ul>
+<li>依赖是指应用程序对IOC容器依赖，因为现在类与应用程序解耦了，应用程序需要使用到类时是需要IOC容器来进行装配的。</li>
+<li>注入能就是IOC容器将应用程序需要的资源通过反射来生成到应用程序中。</li>
+<li>DI能够提高系统中组件的重用概率，并提升系统的灵活性与可扩展性。</li>
+</ul>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>Spring IOC的核心思想是资源部由使用资源的双方管理，而由不使用资源的IOC管理，这样可以解耦和统一管理bean资源。</p>
 
       
     </div>
@@ -493,7 +523,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#IOC-amp-DI"><span class="nav-number">1.</span> <span class="nav-text">IOC&DI</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#如何理解IOC？"><span class="nav-number">1.1.</span> <span class="nav-text">如何理解IOC？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何理解DI？"><span class="nav-number">1.2.</span> <span class="nav-text">如何理解DI？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">1.3.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
