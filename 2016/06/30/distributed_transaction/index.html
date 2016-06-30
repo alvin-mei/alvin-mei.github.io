@@ -64,7 +64,8 @@
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/server.png">
-<meta property="og:updated_time" content="2016-06-30T09:46:15.000Z">
+<meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/tow_step.png">
+<meta property="og:updated_time" content="2016-06-30T14:33:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于分布式事务的思考">
 <meta name="twitter:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
@@ -336,25 +337,73 @@
 </ul>
 <p>我们可以看到BASE理论与我们传统的ACID是相反的，因为ACID是一味追求强一致性，而BASE理论是在分布式环境下，允许损失一部分一致性，只需要保证最终一致性从而来获得高可用性。</p>
 <h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><p>通过上述内容，我们知道在分布式系统架构设计中，往往会针对系统的可用性与数据一致性之间进行权衡，那么最终在BASE理论的指导下，我们只需要保证数据最终的一致性即可。为了保证数据最终一致性，在分布式事务设计过程中诞生了许多经典的一致性算法，来保证分布式事务的原子性。</p>
-<h3 id="二阶段提交"><a href="#二阶段提交" class="headerlink" title="二阶段提交"></a>二阶段提交</h3><p>二阶段协议常常用来保证分布式事务的数据一致性，英文缩写为2PC。在分布式系统中，每一个节点都会知道自身的事务执行成功与否，但是不知道其他节点的执行情况，所以二阶段提交协议定义了两种角色，一个是事务管理者DM，一个是资源管理者RM，DM一般为中间件，而RM一般为各节点的数据库，而对分布式事务处理的过程也分为两个阶段：</p>
+<h3 id="二阶段提交"><a href="#二阶段提交" class="headerlink" title="二阶段提交"></a>二阶段提交</h3><p>二阶段协议常常用来保证分布式事务的数据一致性，英文缩写为2PC。在分布式系统中，每一个节点都会知道自身的事务执行成功与否，但是不知道其他节点的执行情况，所以二阶段提交协议定义了两种角色，一个是事务管理者DM，一个是资源管理者RM，DM一般为中间件，而RM一般为各节点的数据库，而对分布式事务处理的过程也分为两个阶段，整个二阶段提交过程如下图所示：</p>
+<p><img src="http://7xtc3q.com1.z0.glb.clouddn.com/tow_step.png" alt=""></p>
 <ol>
 <li><p>第一阶段：提交事务请求，也称之为投票阶段</p>
 <ul>
-<li>DM向其他RM节点发送是否可以执行提交操作的询问，然后等待RM给DM的响应</li>
+<li>DM向其他RM节点发送是否可以执行提交操作的询问(prepare)，然后等待RM给DM的响应</li>
 <li>RM在接收到DM的询问后，开始执行各自的事务，并记录redo与undo</li>
-<li>若执RM执行事务成功，则此时会返回给DM一个类似于“yes”的确认，若失败则发送一个“No”，但是在此时各RM的事务只是执行了但是未提交。</li>
+<li>若执RM执行事务成功，则此时会返回给DM一个类似于“yes”的确认，若失败则发送一个“No”，可以看成是一个投票的过程，但是在此时各RM的事务只是执行了但是未提交。</li>
 </ul>
 </li>
 <li><p>第二阶段：DM进行决策</p>
-</li>
-</ol>
 <ul>
 <li>DM在收到所有RM发来的回应后，会进行决策，若所有的RM节点都回复了“Yes”，那么DM就向RM发送提交请求，RM接收到后进行事务提交,并向DM反馈确认消息，DM收到确认消息后完成事务。</li>
 <li>若DM收到了“No”，那么就说明有的RM执行失败了，DM就像RM发送回滚请求，RM收到后根据Undo记录的日志进行回滚，RM回滚后向DM发送确认消息，DM收到确认消息后完成事务。</li>
 </ul>
+</li>
+</ol>
 <p>我们可以看到二阶段提交协议比单机中的事务处理起来麻烦多了，而且还是有一些弊病的，比如DM与RM之间的请求是同步阻塞的，这样会有性能问题，还有因为网络的延迟导致DM发送的消息RM没有接收到的问题，还有若是DM挂了，那就出现了单点问题，整个事务就无法进行下去了。虽然说可以引入异步消息机制、超时重试机制，但是DM的单点问题是一个大问题。</p>
-<h3 id="三阶段提交"><a href="#三阶段提交" class="headerlink" title="三阶段提交"></a>三阶段提交</h3><p>三阶段提交协议简称3PC，它是对二阶段协议的补充与改进。它将二阶段提交中的第一阶段投票阶段进行了拆分</p>
-
+<h3 id="三阶段提交"><a href="#三阶段提交" class="headerlink" title="三阶段提交"></a>三阶段提交</h3><p>三阶段提交协议简称3PC，它是对二阶段协议的补充与改进。它将二阶段提交中的第一阶段投票阶段进行了拆分,分成了canCommit的询问与PreCommit的锁资源，而第二阶段没有改变。</p>
+<ol>
+<li>CanCommit<ul>
+<li>DM向所有的RM发送一个包含事务内容的canCommit询问，RM对DM进行回应，是否能够顺利执行事务，能够执行就回复“Yes”并进入预备状态，否则就为“No”</li>
+</ul>
+</li>
+<li>PreCommit<ul>
+<li>若全部RM回复的都为“yes”，那么表示RM都做好了准备，进入事务预提交阶段。</li>
+<li>DM向RM发送preCommit请求，RM接受到preCommit请求后进行事务处理，并记录Undo与Redo日志</li>
+<li>RM执行完毕后都会给DM发送一个相应，成功为“commit”，失败为“abort”</li>
+<li>若CanCommit阶段有一个RM响应了“No”或者响应超时，那么DM就会中断事务</li>
+</ul>
+</li>
+<li>doCommit<ul>
+<li>DM接受到所有的RM发来的“commit”响应后，就会向所有RM发送doCommit请求</li>
+<li>RM接收到后进行事务提交，并向DM响应确认消息</li>
+<li>DM收到所有的确认消息后，完成事务</li>
+<li>若PreCommit阶段有一个RM响应了“abort”或者响应超时，那么DM就会中断事务</li>
+</ul>
+</li>
+</ol>
+<p>我们可以看到三阶段协议的核心是，在询问的时候并不会锁定资源，除非所有的RM都同一了，才开始锁资源，而且若CanCommit阶段所有的RM都回复了DM的话，那么事务执行成功的盖旭非常大。但是三阶段提交协议带来的复杂性也是可想而知的，RM与DM之间更多的交互也必然带来更多的通信成本与延迟。</p>
+<h3 id="Paxos算法"><a href="#Paxos算法" class="headerlink" title="Paxos算法"></a>Paxos算法</h3><p>Paxos算法是用来解决在分布式系统中若有节点出现问题，如何让剩余节点就某个事件达成一致的算法。它用来保证无论何时何种异常情况下，都不会破坏对某个值决议的一致性，也就是最大Commit原则。在Paxos算法中有两个角色：</p>
+<ul>
+<li>Proposer：提议的发起者，用来处理客户端的请求，并把客户端的请求分发到集群中</li>
+<li>Acceptor：提议的批准者，用来处理接收到提议，他们的回复就是一次投票，并以k-v结构存储提议的状态。</li>
+</ul>
+<p>在看Paxos算法之前我们需要明白以下几点：</p>
+<ul>
+<li>有可能有多个提案被提出，但是只有一个会被选定</li>
+<li>一个提案只有一个值会被选定</li>
+<li>如果一个提案被选定了，那么当前节点应该能够获取到被选定的提案信息</li>
+</ul>
+<p>Paxos算法的证明过程这里就忽略了，直接说其协议内容，由于Paxos是一个两阶段的通信协议，所以分为prepare和accept两个阶段：</p>
+<ol>
+<li>Prepare</li>
+</ol>
+<ul>
+<li>Proposer生成一个全局提案Id Mn，向集群中的所有Acceptor发送提案编号为Mn的提案</li>
+<li>Acceptor收到提案为Mn的请求后，会检查编号Mn是否大于所有已经响应过的prepare请求的编号，若是那么久会将已经批准过的最大的编号的提案Id的值返回给Proposer，并承诺不再批准任何编号小于Mn提案Id的提案与不再批准提案Id小于Mn提案Id的题案。若没有则返回空值</li>
+</ul>
+<ol>
+<li>Accept</li>
+</ol>
+<ul>
+<li>如果Proposer接受到了来自一半以上应答的Mn编号的值，那么它就会向所有的Acceptor发送一个针对Mn与其值的接受请求</li>
+<li>Acceptor接收到这个针对Mn提案后，只要他们没有为Proposer承诺比Mn提案Id大的提案，就能够对这个接受请求作出响应，通过这个题案。</li>
+</ul>
+<h2 id="如何保障分布式事务？"><a href="#如何保障分布式事务？" class="headerlink" title="如何保障分布式事务？"></a>如何保障分布式事务？</h2><h3 id="使用事务协调器"><a href="#使用事务协调器" class="headerlink" title="使用事务协调器"></a>使用事务协调器</h3><h3 id="使用消息队列"><a href="#使用消息队列" class="headerlink" title="使用消息队列"></a>使用消息队列</h3>
       
     </div>
 
@@ -534,7 +583,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务的起源"><span class="nav-number">1.</span> <span class="nav-text">分布式事务的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAP-amp-BASE"><span class="nav-number">2.</span> <span class="nav-text">CAP & BASE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAP"><span class="nav-number">2.1.</span> <span class="nav-text">CAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BASE"><span class="nav-number">2.2.</span> <span class="nav-text">BASE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性协议"><span class="nav-number">3.</span> <span class="nav-text">一致性协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二阶段提交"><span class="nav-number">3.1.</span> <span class="nav-text">二阶段提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三阶段提交"><span class="nav-number">3.2.</span> <span class="nav-text">三阶段提交</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务的起源"><span class="nav-number">1.</span> <span class="nav-text">分布式事务的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAP-amp-BASE"><span class="nav-number">2.</span> <span class="nav-text">CAP & BASE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAP"><span class="nav-number">2.1.</span> <span class="nav-text">CAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BASE"><span class="nav-number">2.2.</span> <span class="nav-text">BASE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性协议"><span class="nav-number">3.</span> <span class="nav-text">一致性协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二阶段提交"><span class="nav-number">3.1.</span> <span class="nav-text">二阶段提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三阶段提交"><span class="nav-number">3.2.</span> <span class="nav-text">三阶段提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Paxos算法"><span class="nav-number">3.3.</span> <span class="nav-text">Paxos算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保障分布式事务？"><span class="nav-number">4.</span> <span class="nav-text">如何保障分布式事务？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用事务协调器"><span class="nav-number">4.1.</span> <span class="nav-text">使用事务协调器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用消息队列"><span class="nav-number">4.2.</span> <span class="nav-text">使用消息队列</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
