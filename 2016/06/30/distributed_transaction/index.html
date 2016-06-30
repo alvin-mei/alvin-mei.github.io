@@ -64,7 +64,7 @@
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/server.png">
-<meta property="og:updated_time" content="2016-06-30T06:54:01.000Z">
+<meta property="og:updated_time" content="2016-06-30T09:46:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于分布式事务的思考">
 <meta name="twitter:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
@@ -328,7 +328,32 @@
 <li>分区容错性(Partition tolerance)：分布式系统在遇到任何网络分区故障的时候，仍然需要能够保证对外提供满足一致性和可用性的服务。</li>
 </ul>
 <p>通过CAP理论我们知道这三点我们最多只能满足两点，那么我们该舍弃谁呢？其实没有一个完美的定义，而且需要根据我们实际的应用场景来判断，如一些对数据不是很敏感场景但是对服务可靠性的场景下，那么我们会舍弃C，因为在多应用，部署分散、集群规模大的情况下，节点故障、网络故障是常态，我们对于服务的可用性用N个9来进行评估，所以保证A与P，从而保证C为最终一致性即可，不需要保证其强一致性。而对于涉及到金钱的场景，如一些银行的转账应用，我们必须得保证C，而出现故障我们可以暂停服务，但是若是金钱数目出现了问题，那么一定会引起用户的不满还有可能惹上官司，所以可以舍弃分区容错性保证CA两点。</p>
-<h3 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h3><p>BASE理论是对CAP理论的延伸，其核心思想是我们的应用即使无法做到强一致性，但是可以采用合适的方式到达最终一致性。所以BASE理论提倡的是基本可用的思想，就是分布式系统出现不可预知故障的时候，允许损失部分可用性。</p>
+<h3 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h3><p>BASE理论是对CAP理论的延伸，它是对CAP中一致性和可用性权衡的结果，其核心思想是我们的应用即使无法做到强一致性，但是可以采用合适的方式到达最终一致性。所以BASE理论提倡的是基本可用的思想，就是分布式系统出现不可预知故障的时候，允许损失部分可用性。</p>
+<ul>
+<li>基本可用(Basically Available):分布式系统中若有节点出现故障，那么允许损失部分可用性，保证核心功能可用就行。相关损失为时间上损失与响应损失。</li>
+<li>软状态(Soft State):在对数据进行修改时允许数据出现中间状态，该中间状态的存在不会影响系统的整体可用性。</li>
+<li>最终一致性(Eventual Consistency):系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致状态。</li>
+</ul>
+<p>我们可以看到BASE理论与我们传统的ACID是相反的，因为ACID是一味追求强一致性，而BASE理论是在分布式环境下，允许损失一部分一致性，只需要保证最终一致性从而来获得高可用性。</p>
+<h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><p>通过上述内容，我们知道在分布式系统架构设计中，往往会针对系统的可用性与数据一致性之间进行权衡，那么最终在BASE理论的指导下，我们只需要保证数据最终的一致性即可。为了保证数据最终一致性，在分布式事务设计过程中诞生了许多经典的一致性算法，来保证分布式事务的原子性。</p>
+<h3 id="二阶段提交"><a href="#二阶段提交" class="headerlink" title="二阶段提交"></a>二阶段提交</h3><p>二阶段协议常常用来保证分布式事务的数据一致性，英文缩写为2PC。在分布式系统中，每一个节点都会知道自身的事务执行成功与否，但是不知道其他节点的执行情况，所以二阶段提交协议定义了两种角色，一个是事务管理者DM，一个是资源管理者RM，DM一般为中间件，而RM一般为各节点的数据库，而对分布式事务处理的过程也分为两个阶段：</p>
+<ol>
+<li><p>第一阶段：提交事务请求，也称之为投票阶段</p>
+<ul>
+<li>DM向其他RM节点发送是否可以执行提交操作的询问，然后等待RM给DM的响应</li>
+<li>RM在接收到DM的询问后，开始执行各自的事务，并记录redo与undo</li>
+<li>若执RM执行事务成功，则此时会返回给DM一个类似于“yes”的确认，若失败则发送一个“No”，但是在此时各RM的事务只是执行了但是未提交。</li>
+</ul>
+</li>
+<li><p>第二阶段：DM进行决策</p>
+</li>
+</ol>
+<ul>
+<li>DM在收到所有RM发来的回应后，会进行决策，若所有的RM节点都回复了“Yes”，那么DM就向RM发送提交请求，RM接收到后进行事务提交,并向DM反馈确认消息，DM收到确认消息后完成事务。</li>
+<li>若DM收到了“No”，那么就说明有的RM执行失败了，DM就像RM发送回滚请求，RM收到后根据Undo记录的日志进行回滚，RM回滚后向DM发送确认消息，DM收到确认消息后完成事务。</li>
+</ul>
+<p>我们可以看到二阶段提交协议比单机中的事务处理起来麻烦多了，而且还是有一些弊病的，比如DM与RM之间的请求是同步阻塞的，这样会有性能问题，还有因为网络的延迟导致DM发送的消息RM没有接收到的问题，还有若是DM挂了，那就出现了单点问题，整个事务就无法进行下去了。虽然说可以引入异步消息机制、超时重试机制，但是DM的单点问题是一个大问题。</p>
+<h3 id="三阶段提交"><a href="#三阶段提交" class="headerlink" title="三阶段提交"></a>三阶段提交</h3><p>三阶段提交协议简称3PC，它是对二阶段协议的补充与改进。它将二阶段提交中的第一阶段投票阶段进行了拆分</p>
 
       
     </div>
@@ -509,7 +534,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务的起源"><span class="nav-number">1.</span> <span class="nav-text">分布式事务的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAP-amp-BASE"><span class="nav-number">2.</span> <span class="nav-text">CAP & BASE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAP"><span class="nav-number">2.1.</span> <span class="nav-text">CAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BASE"><span class="nav-number">2.2.</span> <span class="nav-text">BASE</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务的起源"><span class="nav-number">1.</span> <span class="nav-text">分布式事务的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAP-amp-BASE"><span class="nav-number">2.</span> <span class="nav-text">CAP & BASE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAP"><span class="nav-number">2.1.</span> <span class="nav-text">CAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BASE"><span class="nav-number">2.2.</span> <span class="nav-text">BASE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性协议"><span class="nav-number">3.</span> <span class="nav-text">一致性协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#二阶段提交"><span class="nav-number">3.1.</span> <span class="nav-text">二阶段提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三阶段提交"><span class="nav-number">3.2.</span> <span class="nav-text">三阶段提交</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
