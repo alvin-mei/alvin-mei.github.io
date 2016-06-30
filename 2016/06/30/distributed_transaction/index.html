@@ -64,7 +64,7 @@
 <meta property="og:site_name" content="隐忍以行">
 <meta property="og:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/server.png">
-<meta property="og:updated_time" content="2016-06-30T05:59:58.000Z">
+<meta property="og:updated_time" content="2016-06-30T06:54:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于分布式事务的思考">
 <meta name="twitter:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
@@ -320,7 +320,15 @@
 </ul>
 <p>这几个步骤要么都成功，要么都不成功。但是真实环境下，若账户服务中个人账户上的钱已经扣除了，但是结算服务这时挂了或者因为网络问题无法调用该服务，就会出现账户钱已经扣了，但是并没有进行结算的问题，所以对账户服务进行回滚，但是如何通知其回滚又会是一个问题。如下图所示，我们的结算服务分别向个人账户服务<br><img src="http://7xtc3q.com1.z0.glb.clouddn.com/server.png" alt=""></p>
 <p>在高并发情况下，我们可能同一个服务会部署在集群中，那么数据共享又会是一个问题等等，这些都是在微服务下出现的问题。</p>
-<h2 id="CAP-amp-BASE"><a href="#CAP-amp-BASE" class="headerlink" title="CAP &amp; BASE"></a>CAP &amp; BASE</h2><p>在分布式事务情形下，我们所熟知的单机事务模型ACID已经不适用了，尤其是对于高并发、高访问量的分布式系统来说，可用性与一致性是互相矛盾的，因为我们要求分布式系统具有严格的一致性时，那么它的可用性就会降低，但是对于一个产品，如果连可用性都丧失了，那么就会导致大量的客户流失。</p>
+<h2 id="CAP-amp-BASE"><a href="#CAP-amp-BASE" class="headerlink" title="CAP &amp; BASE"></a>CAP &amp; BASE</h2><p>在分布式事务情形下，我们所熟知的单机事务模型ACID已经不适用了，尤其是对于高并发、高访问量的分布式系统来说，可用性与一致性是互相矛盾的，因为我们要求分布式系统具有严格的一致性时，那么它的可用性就会降低，但是对于一个产品，如果连可用性都丧失了，那么就会导致大量的客户流失。为了满足分布式应用场景下的事务管理，就有了CAP与BASE理论。</p>
+<h3 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h3><p>CAP理论是分布式计算领域中工人的定义，CAP理论为：一个分布式系统不可能同时满足一致性、可用性、分区容错性这三个基本要求，最多只能同时满足其中两项。</p>
+<ul>
+<li>一致性(Consistency)：在更新操作前后数据总是一致的。</li>
+<li>可用性(Availability)：用户的每一个操作都能够在有限的时间内返回结果，也就是服务一直可用。</li>
+<li>分区容错性(Partition tolerance)：分布式系统在遇到任何网络分区故障的时候，仍然需要能够保证对外提供满足一致性和可用性的服务。</li>
+</ul>
+<p>通过CAP理论我们知道这三点我们最多只能满足两点，那么我们该舍弃谁呢？其实没有一个完美的定义，而且需要根据我们实际的应用场景来判断，如一些对数据不是很敏感场景但是对服务可靠性的场景下，那么我们会舍弃C，因为在多应用，部署分散、集群规模大的情况下，节点故障、网络故障是常态，我们对于服务的可用性用N个9来进行评估，所以保证A与P，从而保证C为最终一致性即可，不需要保证其强一致性。而对于涉及到金钱的场景，如一些银行的转账应用，我们必须得保证C，而出现故障我们可以暂停服务，但是若是金钱数目出现了问题，那么一定会引起用户的不满还有可能惹上官司，所以可以舍弃分区容错性保证CA两点。</p>
+<h3 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h3><p>BASE理论是对CAP理论的延伸，其核心思想是我们的应用即使无法做到强一致性，但是可以采用合适的方式到达最终一致性。所以BASE理论提倡的是基本可用的思想，就是分布式系统出现不可预知故障的时候，允许损失部分可用性。</p>
 
       
     </div>
@@ -501,7 +509,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务的起源"><span class="nav-number">1.</span> <span class="nav-text">分布式事务的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAP-amp-BASE"><span class="nav-number">2.</span> <span class="nav-text">CAP & BASE</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务的起源"><span class="nav-number">1.</span> <span class="nav-text">分布式事务的起源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAP-amp-BASE"><span class="nav-number">2.</span> <span class="nav-text">CAP & BASE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAP"><span class="nav-number">2.1.</span> <span class="nav-text">CAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BASE"><span class="nav-number">2.2.</span> <span class="nav-text">BASE</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
