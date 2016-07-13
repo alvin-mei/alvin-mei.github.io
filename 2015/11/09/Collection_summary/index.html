@@ -67,7 +67,7 @@ HashSetHashSet类继承了AbstractSe">
 <meta property="og:description" content="在之前的一段时间里，对Collection中的各个源码都研究了一遍，也写了几个容器的源码分析文章，这篇文章就对整个Collection中的所有容器做一个总结。
 Set接口Set接口继承了Collection接口，它不允许包含两个相同的元素，每个元素必须是唯一的。继承Set接口的类有HashSet、TreeSet、LinkedHashSet。
 HashSetHashSet类继承了AbstractSe">
-<meta property="og:updated_time" content="2016-05-26T05:52:05.000Z">
+<meta property="og:updated_time" content="2016-07-03T13:51:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Collection探究之总结">
 <meta name="twitter:description" content="在之前的一段时间里，对Collection中的各个源码都研究了一遍，也写了几个容器的源码分析文章，这篇文章就对整个Collection中的所有容器做一个总结。
@@ -314,7 +314,7 @@ HashSetHashSet类继承了AbstractSe">
 <h3 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h3><p>LinkedList其实就是利用双向链表来实现List,所有的操作都是对链表进行操作，所以要获取数据的话需要遍历链表，比较消耗时间，但是数据插入的话就方便了，无需复制，直接在两个节点中插入。但是个人觉得LinkedList比ArrayList更加的灵活，在数据插入或删除比较频繁的情况下，使用LinkedList比较好。</p>
 <h3 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h3><p>Vector本质也是一个可变数组，但是他的所有操作都是synchronized的，所以是线程安全的。若在飞并发情况下还是不要使用比较好，因为性能比ArrayList较差。在扩容时是直接扩容两倍，而ArrayList是扩容当前size的50%。</p>
 <h2 id="Map接口"><a href="#Map接口" class="headerlink" title="Map接口"></a>Map接口</h2><p>Map是“Key - Value” 的抽象接口。</p>
-<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><p>HashMap是我们使用的比较多的key-value容器，它实现了Map接口，继承自AbstractMap抽象类。其内部就是一张hash表，每个hash表的entry是一个节点为key-value的链表。在HashMap中最多能够保存一个null键值对。HashMap是非线程安全的，所以在使用的时候要注意并发问题。在对HashMap进行插入时，先根据key的值计算出hashcode，然后根据hashcode找到相应的Entry（链表），然后遍历该链表，使用equals与各个节点的key值对比，若没有则插入，若有则取代其旧值。</p>
+<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><p>HashMap是我们使用的比较多的key-value容器，它实现了Map接口，继承自AbstractMap抽象类。其内部就是一张hash表，每个hash表的entry是一个节点为key-value的链表。在HashMap中最多能够允许一个key为null的k-v对，但是能够允许多个value为null的k-v堆。HashMap是非线程安全的，所以在使用的时候要注意并发问题。在对HashMap进行插入时，先根据key的值计算出hashcode，然后根据hashcode找到相应的Entry（链表），然后遍历该链表，使用equals与各个节点的key值对比，若没有则插入，若有则取代其旧值。</p>
 <h3 id="HashTable"><a href="#HashTable" class="headerlink" title="HashTable"></a>HashTable</h3><p>HashTable实现了Map接口，继承自Dictionary。所以HashTable是不能接受null键值对的，HashTable的所有方法都是线程安全的，所以在并发情况下可以使用Hashtable。</p>
 <h3 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h3><p>TreeMap内部结构是由红黑树构成，所以能够保存添加入的key的顺序，默认是按升序排的，也可以自己实现排序的比较器。</p>
 <h3 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h3><p>LinkedHashMap是HashMap的一个子类，它保留了key-value插入时的顺序，LinkedHashMap在HashMap的基础上增加了一个双向链表。LinkedHashMap也是可以保存一个null的key-value值。</p>
@@ -442,7 +442,7 @@ HashSetHashSet类继承了AbstractSe">
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">50</span>
+              <span class="site-state-item-count">51</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -459,7 +459,7 @@ HashSetHashSet类继承了AbstractSe">
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-count">52</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

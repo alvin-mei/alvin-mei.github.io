@@ -66,7 +66,7 @@
 <meta property="og:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
 数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png">
-<meta property="og:updated_time" content="2016-06-12T04:56:06.000Z">
+<meta property="og:updated_time" content="2016-07-06T06:34:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql性能调优">
 <meta name="twitter:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
@@ -359,14 +359,15 @@
 <li>INDEX_COLUMN like ?||’%’（后导模糊查询）</li>
 <li>T1. INDEX_COLUMN=T2. COLUMN1（两个表通过索引字段关联）</li>
 </ul>
-<p>哪些操作不走索引？</p>
 </li>
 </ol>
+<p> 哪些操作不走索引？</p>
 <ul>
 <li>在包含有null值的列上建立索引</li>
 <li>对索引列使用sql函数或者进行运算后无法走索引</li>
 <li>不等于操作不能使用索引</li>
 <li>前导模糊查询的Like语法不能使用索引</li>
+<li>or 操作时要确定or符号两边元素是否都建立索引</li>
 </ul>
 <p>哪些操作可以优化？</p>
 <ul>
@@ -522,7 +523,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">50</span>
+              <span class="site-state-item-count">51</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -539,7 +540,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-count">52</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

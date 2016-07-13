@@ -65,7 +65,7 @@
 <meta property="og:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/server.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/tow_step.png">
-<meta property="og:updated_time" content="2016-06-30T14:33:14.000Z">
+<meta property="og:updated_time" content="2016-07-06T09:13:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于分布式事务的思考">
 <meta name="twitter:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
@@ -333,7 +333,7 @@
 <ul>
 <li>基本可用(Basically Available):分布式系统中若有节点出现故障，那么允许损失部分可用性，保证核心功能可用就行。相关损失为时间上损失与响应损失。</li>
 <li>软状态(Soft State):在对数据进行修改时允许数据出现中间状态，该中间状态的存在不会影响系统的整体可用性。</li>
-<li>最终一致性(Eventual Consistency):系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致状态。</li>
+<li>最终一致性(Eventual Consistency):系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致状态。其过程主要是通过日志与补偿的方式，在做所有的不确定的事之前，先把做过的事记录下来，然后再去做不确定的事，若都成功，则没事；若有事件执行失败，则依靠定时任务重试，再不行，则根据日志回滚。</li>
 </ul>
 <p>我们可以看到BASE理论与我们传统的ACID是相反的，因为ACID是一味追求强一致性，而BASE理论是在分布式环境下，允许损失一部分一致性，只需要保证最终一致性从而来获得高可用性。</p>
 <h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><p>通过上述内容，我们知道在分布式系统架构设计中，往往会针对系统的可用性与数据一致性之间进行权衡，那么最终在BASE理论的指导下，我们只需要保证数据最终的一致性即可。为了保证数据最终一致性，在分布式事务设计过程中诞生了许多经典的一致性算法，来保证分布式事务的原子性。</p>
@@ -354,7 +354,7 @@
 </ul>
 </li>
 </ol>
-<p>我们可以看到二阶段提交协议比单机中的事务处理起来麻烦多了，而且还是有一些弊病的，比如DM与RM之间的请求是同步阻塞的，这样会有性能问题，还有因为网络的延迟导致DM发送的消息RM没有接收到的问题，还有若是DM挂了，那就出现了单点问题，整个事务就无法进行下去了。虽然说可以引入异步消息机制、超时重试机制，但是DM的单点问题是一个大问题。</p>
+<p>我们可以看到二阶段提交协议比单机中的事务处理起来麻烦多了，而且还是有一些弊病的，比如DM与RM之间的请求是同步阻塞的，这样会有性能问题，还有因为网络的延迟导致DM发送的消息RM没有接收到的问题。还有若是DM在发出Commit命令后挂了，那就出现了单点问题，整个事务就无法进行下去了或者是第二阶段一个RM进行了doCommit操作另一个RM却挂了，此时DM会收不到RM的全部回应而一直等待。虽然说可以引入异步消息机制、超时重试机制，但是DM的单点问题是一个大问题。</p>
 <h3 id="三阶段提交"><a href="#三阶段提交" class="headerlink" title="三阶段提交"></a>三阶段提交</h3><p>三阶段提交协议简称3PC，它是对二阶段协议的补充与改进。它将二阶段提交中的第一阶段投票阶段进行了拆分,分成了canCommit的询问与PreCommit的锁资源，而第二阶段没有改变。</p>
 <ol>
 <li>CanCommit<ul>
@@ -376,7 +376,7 @@
 </ul>
 </li>
 </ol>
-<p>我们可以看到三阶段协议的核心是，在询问的时候并不会锁定资源，除非所有的RM都同一了，才开始锁资源，而且若CanCommit阶段所有的RM都回复了DM的话，那么事务执行成功的盖旭非常大。但是三阶段提交协议带来的复杂性也是可想而知的，RM与DM之间更多的交互也必然带来更多的通信成本与延迟。</p>
+<p>我们可以看到三阶段协议的核心是，在询问的时候并不会锁定资源，除非所有的RM都同一了，才开始锁资源，而且若CanCommit阶段所有的RM都回复了DM的话，那么事务执行成功的概率非常大。还增加了超时机制，若DM在第二阶段没有收到部分RM的反馈，那么就自动认为执行失败，会发送“abort”命令。三阶段提交协议主要解决的单点故障问题，并减少阻塞，但是三阶段提交协议带来的复杂性也是可想而知的，RM与DM之间更多的交互也必然带来更多的通信成本与延迟。</p>
 <h3 id="Paxos算法"><a href="#Paxos算法" class="headerlink" title="Paxos算法"></a>Paxos算法</h3><p>Paxos算法是用来解决在分布式系统中若有节点出现问题，如何让剩余节点就某个事件达成一致的算法。它用来保证无论何时何种异常情况下，都不会破坏对某个值决议的一致性，也就是最大Commit原则。在Paxos算法中有两个角色：</p>
 <ul>
 <li>Proposer：提议的发起者，用来处理客户端的请求，并把客户端的请求分发到集群中</li>
@@ -390,20 +390,22 @@
 </ul>
 <p>Paxos算法的证明过程这里就忽略了，直接说其协议内容，由于Paxos是一个两阶段的通信协议，所以分为prepare和accept两个阶段：</p>
 <ol>
-<li>Prepare</li>
-</ol>
+<li><p>Prepare</p>
 <ul>
 <li>Proposer生成一个全局提案Id Mn，向集群中的所有Acceptor发送提案编号为Mn的提案</li>
 <li>Acceptor收到提案为Mn的请求后，会检查编号Mn是否大于所有已经响应过的prepare请求的编号，若是那么久会将已经批准过的最大的编号的提案Id的值返回给Proposer，并承诺不再批准任何编号小于Mn提案Id的提案与不再批准提案Id小于Mn提案Id的题案。若没有则返回空值</li>
 </ul>
-<ol>
-<li>Accept</li>
-</ol>
+</li>
+<li><p>Accept</p>
 <ul>
 <li>如果Proposer接受到了来自一半以上应答的Mn编号的值，那么它就会向所有的Acceptor发送一个针对Mn与其值的接受请求</li>
 <li>Acceptor接收到这个针对Mn提案后，只要他们没有为Proposer承诺比Mn提案Id大的提案，就能够对这个接受请求作出响应，通过这个题案。</li>
 </ul>
-<h2 id="如何保障分布式事务？"><a href="#如何保障分布式事务？" class="headerlink" title="如何保障分布式事务？"></a>如何保障分布式事务？</h2><h3 id="使用事务协调器"><a href="#使用事务协调器" class="headerlink" title="使用事务协调器"></a>使用事务协调器</h3><h3 id="使用消息队列"><a href="#使用消息队列" class="headerlink" title="使用消息队列"></a>使用消息队列</h3>
+</li>
+</ol>
+<h2 id="如何保障分布式事务？"><a href="#如何保障分布式事务？" class="headerlink" title="如何保障分布式事务？"></a>如何保障分布式事务？</h2><p>两阶段提交与补偿机制</p>
+<h3 id="使用事务协调器"><a href="#使用事务协调器" class="headerlink" title="使用事务协调器"></a>使用事务协调器</h3><h3 id="使用消息队列"><a href="#使用消息队列" class="headerlink" title="使用消息队列"></a>使用消息队列</h3><p>待续</p>
+
       
     </div>
 
@@ -451,6 +453,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/12/object_sort/" rel="prev" title="Comparator与Comparable小记">
+                Comparator与Comparable小记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -522,7 +528,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">50</span>
+              <span class="site-state-item-count">51</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -539,7 +545,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-count">52</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
