@@ -57,16 +57,19 @@
 
 
 
-<meta name="description" content="一直以来Comparator与Comparable这两个类排序工具我都傻傻分不清楚，其实我是知道他们的含义，但是就是对这两个单词无法区分，到底谁是谁？傻傻的分不清，所以这次决定下狠心一定要区分它们两个，因此写下这篇文章。">
+<meta name="description" content="一直以来Comparator与Comparable这两个类排序工具我都傻傻分不清楚，其实我是知道他们的含义，但是就是对这两个单词无法区分，到底谁是谁？傻傻的分不清，所以这次决定下狠心一定要区分它们两个，因此写下这篇文章。
+ComparableComparable是定义在Class内部的，位于util下。若一个实现了Comparable接口，只需要实现他的compareTO方法就能够直接使用Coll">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Comparator与Comparable小记">
 <meta property="og:url" content="http://alvin-mei.github.io/2016/07/12/object_sort/index.html">
 <meta property="og:site_name" content="隐忍以行">
-<meta property="og:description" content="一直以来Comparator与Comparable这两个类排序工具我都傻傻分不清楚，其实我是知道他们的含义，但是就是对这两个单词无法区分，到底谁是谁？傻傻的分不清，所以这次决定下狠心一定要区分它们两个，因此写下这篇文章。">
-<meta property="og:updated_time" content="2016-07-12T15:20:11.000Z">
+<meta property="og:description" content="一直以来Comparator与Comparable这两个类排序工具我都傻傻分不清楚，其实我是知道他们的含义，但是就是对这两个单词无法区分，到底谁是谁？傻傻的分不清，所以这次决定下狠心一定要区分它们两个，因此写下这篇文章。
+ComparableComparable是定义在Class内部的，位于util下。若一个实现了Comparable接口，只需要实现他的compareTO方法就能够直接使用Coll">
+<meta property="og:updated_time" content="2016-07-13T14:05:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Comparator与Comparable小记">
-<meta name="twitter:description" content="一直以来Comparator与Comparable这两个类排序工具我都傻傻分不清楚，其实我是知道他们的含义，但是就是对这两个单词无法区分，到底谁是谁？傻傻的分不清，所以这次决定下狠心一定要区分它们两个，因此写下这篇文章。">
+<meta name="twitter:description" content="一直以来Comparator与Comparable这两个类排序工具我都傻傻分不清楚，其实我是知道他们的含义，但是就是对这两个单词无法区分，到底谁是谁？傻傻的分不清，所以这次决定下狠心一定要区分它们两个，因此写下这篇文章。
+ComparableComparable是定义在Class内部的，位于util下。若一个实现了Comparable接口，只需要实现他的compareTO方法就能够直接使用Coll">
 
 
 
@@ -299,6 +302,8 @@
 
       
         <p>一直以来Comparator与Comparable这两个类排序工具我都傻傻分不清楚，其实我是知道他们的含义，但是就是对这两个单词无法区分，到底谁是谁？傻傻的分不清，所以这次决定下狠心一定要区分它们两个，因此写下这篇文章。</p>
+<h2 id="Comparable"><a href="#Comparable" class="headerlink" title="Comparable"></a>Comparable</h2><p>Comparable是定义在Class内部的，位于util下。若一个实现了Comparable接口，只需要实现他的compareTO方法就能够直接使用Collection.sort来对该类组成的集合进行排序。</p>
+<h2 id="Comparator"><a href="#Comparator" class="headerlink" title="Comparator"></a>Comparator</h2><p>Comparator是一个Class的专用比较器，定义在类的外部，当对象不支持字比较或字比较函数不能满足要求时，可以实现它来完成两个对象之间大小的比较。只需要实现他的compare算法就能够再加入集合的时候进行排序了，如treeMap。</p>
 
       
     </div>
@@ -479,7 +484,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Comparable"><span class="nav-number">1.</span> <span class="nav-text">Comparable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Comparator"><span class="nav-number">2.</span> <span class="nav-text">Comparator</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
