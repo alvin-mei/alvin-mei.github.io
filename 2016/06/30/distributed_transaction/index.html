@@ -65,7 +65,7 @@
 <meta property="og:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/server.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/tow_step.png">
-<meta property="og:updated_time" content="2016-07-06T09:13:52.000Z">
+<meta property="og:updated_time" content="2016-08-01T05:24:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于分布式事务的思考">
 <meta name="twitter:description" content="分布式事务的起源在以前我们的应用都是跑在单机上，存储用的也是单库，因为数据量小，所以也能承受，不行的话就加钱换上好的服务器。但是随着互联网的逐渐发展，阿里的去IOE运动，让我们的服务都分布在廉价的普通服务器上，而我们的应用随着时间的推移正在逐渐变大，成为一个怪物。所有的服务都集成在一个应用中，那么会导致业务耦合过重，修改了一处地方，从而导致全身受牵，在日常开发过程中，应用过大也会导致编译启动过程过">
@@ -404,7 +404,8 @@
 </li>
 </ol>
 <h2 id="如何保障分布式事务？"><a href="#如何保障分布式事务？" class="headerlink" title="如何保障分布式事务？"></a>如何保障分布式事务？</h2><p>两阶段提交与补偿机制</p>
-<h3 id="使用事务协调器"><a href="#使用事务协调器" class="headerlink" title="使用事务协调器"></a>使用事务协调器</h3><h3 id="使用消息队列"><a href="#使用消息队列" class="headerlink" title="使用消息队列"></a>使用消息队列</h3><p>待续</p>
+<h3 id="使用事务协调器"><a href="#使用事务协调器" class="headerlink" title="使用事务协调器"></a>使用事务协调器</h3><p>保证最终一致性，通过”记录”和”补偿”方法，在做所有不确定的事情之前，先把事情记录下来，然后去做不确定的事情。</p>
+<h3 id="使用消息队列"><a href="#使用消息队列" class="headerlink" title="使用消息队列"></a>使用消息队列</h3><p>待续</p>
 
       
     </div>

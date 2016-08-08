@@ -66,7 +66,7 @@
 <meta property="og:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
 数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png">
-<meta property="og:updated_time" content="2016-07-06T06:34:52.000Z">
+<meta property="og:updated_time" content="2016-08-08T05:31:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql性能调优">
 <meta name="twitter:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
@@ -363,22 +363,24 @@
 </ol>
 <p> 哪些操作不走索引？</p>
 <ul>
-<li>在包含有null值的列上建立索引</li>
-<li>对索引列使用sql函数或者进行运算后无法走索引</li>
-<li>不等于操作不能使用索引</li>
+<li>在包含有null值的列上建立索引，在创建表时应该将列都置为not null，因为在mysql中含有null的话搜索引擎很难进行查询优化。</li>
+<li>对索引列使用sql函数或者进行运算后无法走索引 eg： select id from t where num/2 = 100  =&gt; select id from t where num = 100*2</li>
+<li>避免在where子句中使用 != 和 &lt;&gt;，因为他们会使数据库引擎放弃使用索引而进行全表扫描。</li>
 <li>前导模糊查询的Like语法不能使用索引</li>
-<li>or 操作时要确定or符号两边元素是否都建立索引</li>
+<li>在进行or操作时要确定or符号两边元素是否都建立索引，若一个有索引，一个没有索引，则数据库引擎会放弃使用索引而进行全表扫描。</li>
 </ul>
 <p>哪些操作可以优化？</p>
 <ul>
-<li>使用exists代替in</li>
-<li>对于连续的数值匹配，那就使用between不要使用in</li>
-<li>对于符合索引，把使用最频繁的列作为前导列。这里需要注意的是使用复合索引查询时若前导列不再查询条件中时，则该符合索引不会被使用。   </li>
+<li>使用exists代替in eg：select num from a where num in(select num from b) =&gt; select num from a where exists(select 1 from b where num=a.num)</li>
+<li>对于连续的数值匹配，那就使用between不要使用in与not in</li>
+<li>对于复合索引，把使用最频繁的列作为前导列。这里需要注意的是使用复合索引查询时若前导列不再查询条件中时，则该符合索引不会被使用。   </li>
 </ul>
+<p>索引不是越多越好，索引可以提高读取效率，但是降低了insert与updated效率，因为在insert与update时会重建索引，一个表的索引最好不要超过6个。</p>
 <ol>
 <li>优化SQL执行计划<ul>
 <li>如果对于某张表，我们在查询时只使用其中几个字段，那么我们可以将这几个字段建立起组合索引，这样能够在查询时直接走索引，同时也能减少为每个单个字段建立索引带来的磁盘空间损耗。</li>
-<li>多表关联查询时，要选择合适的表作为内标，连接条件需充分考虑带有索引的表、行数多的表，尽量的降低笛卡尔积。<h3 id="返回更少的数据"><a href="#返回更少的数据" class="headerlink" title="返回更少的数据"></a>返回更少的数据</h3></li>
+<li>多表关联查询时，要选择合适的表作为内标，连接条件需充分考虑带有索引的表、行数多的表，尽量的降低笛卡尔积。</li>
+<li>对于某张表，我们只更改1、2个字段，在更新操作时不要update全部字段，因为这样会引起明显的性能消耗、同时带来大量日志。  <h3 id="返回更少的数据"><a href="#返回更少的数据" class="headerlink" title="返回更少的数据"></a>返回更少的数据</h3></li>
 </ul>
 </li>
 <li>数据分页<br>每次查库都只返回固定数量的数据，而不是将所有数据拉倒本地，这样能够节约带宽，节省系统内存。分页分为服务器分页与数据库分页，一般数据库分页用的比较多。</li>
