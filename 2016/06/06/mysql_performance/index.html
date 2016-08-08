@@ -66,7 +66,7 @@
 <meta property="og:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
 数据存储消耗我们来看一下计算机在处理的时候性能，这里讨论远程调用">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/sys_io.png">
-<meta property="og:updated_time" content="2016-08-08T05:31:27.000Z">
+<meta property="og:updated_time" content="2016-08-08T05:44:12.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql性能调优">
 <meta name="twitter:description" content="在大多数实际开发场景中，很多程序员在写sql时都追求能查出来就行，而不会对其进行性能优化，这里其实将很大一部分坑留给了后来的开发人员，因为随着用户的增加，一些不符合规范的sql语句很快就会遇到性能瓶颈。所以sql调优还是十分的有必要的，是每一位开发人员都应该掌握的技能，本文的中内存大多数都来自于网络，由本人整理，所以会不定时的更新。
@@ -332,10 +332,10 @@
 <li>利用更多资源</li>
 </ol>
 <p>根据一位前辈的文章中指出，每一次的优化法则都是解决其对应硬件的性能问题,所以带来的性能提升比例也不一样。根据经验做法，针对低速设备的优化手段更多，而且优化成本也低，带来的性能提升效果也大，所以我们针对任何一个SQL的性能优化都应该按这个规则来由上到下的步骤，一步步的进行优化。</p>
-<h2 id="数据库性能优化"><a href="#数据库性能优化" class="headerlink" title="数据库性能优化"></a>数据库性能优化</h2><h3 id="减少数据访问"><a href="#减少数据访问" class="headerlink" title="减少数据访问"></a>减少数据访问</h3><ol>
+<h2 id="数据库性能优化"><a href="#数据库性能优化" class="headerlink" title="数据库性能优化"></a>数据库性能优化</h2><h3 id="减少数据访问（减少磁盘访问）"><a href="#减少数据访问（减少磁盘访问）" class="headerlink" title="减少数据访问（减少磁盘访问）"></a>减少数据访问（减少磁盘访问）</h3><ol>
 <li><p>创建并正确使用索引<br>mysql中的innoDB存储引擎，我们知道innoDB的数据与索引是存储在一起的，通过利用其B+tree的特性能够减少磁盘I/O次数，大大提高检索数据效率。由于创建索引是需要消耗大量磁盘空间的，那么我们在什么样的字段上创建索引呢？</p>
 <ul>
-<li>可以作为查询的字段</li>
+<li>可以作为查询的字段，且越小的数据类型通常更好</li>
 <li>该字段被查询的频率较高</li>
 <li>通过该字段能够筛选出足够少的数据</li>
 <li>比如主键、外键、有对象或者身份表示意义的字段</li>
@@ -373,26 +373,27 @@
 <ul>
 <li>使用exists代替in eg：select num from a where num in(select num from b) =&gt; select num from a where exists(select 1 from b where num=a.num)</li>
 <li>对于连续的数值匹配，那就使用between不要使用in与not in</li>
-<li>对于复合索引，把使用最频繁的列作为前导列。这里需要注意的是使用复合索引查询时若前导列不再查询条件中时，则该符合索引不会被使用。   </li>
+<li>对于复合索引，把使用最频繁的列作为前导列。这里需要注意的是使用复合索引查询时若前导列不再查询条件中时，则该符合索引不会被使用。<br>索引不是越多越好，索引可以提高读取效率，但是降低了insert与updated效率，因为在insert与update时会重建索引，一个表的索引最好不要超过6个。</li>
 </ul>
-<p>索引不是越多越好，索引可以提高读取效率，但是降低了insert与updated效率，因为在insert与update时会重建索引，一个表的索引最好不要超过6个。</p>
 <ol>
 <li>优化SQL执行计划<ul>
 <li>如果对于某张表，我们在查询时只使用其中几个字段，那么我们可以将这几个字段建立起组合索引，这样能够在查询时直接走索引，同时也能减少为每个单个字段建立索引带来的磁盘空间损耗。</li>
 <li>多表关联查询时，要选择合适的表作为内标，连接条件需充分考虑带有索引的表、行数多的表，尽量的降低笛卡尔积。</li>
-<li>对于某张表，我们只更改1、2个字段，在更新操作时不要update全部字段，因为这样会引起明显的性能消耗、同时带来大量日志。  <h3 id="返回更少的数据"><a href="#返回更少的数据" class="headerlink" title="返回更少的数据"></a>返回更少的数据</h3></li>
+<li>对于某张表，我们只更改1、2个字段，在更新操作时不要update全部字段，因为这样会引起明显的性能消耗、同时带来大量日志。  </li>
 </ul>
 </li>
+</ol>
+<h3 id="返回更少的数据（减少网络传输或磁盘访问）"><a href="#返回更少的数据（减少网络传输或磁盘访问）" class="headerlink" title="返回更少的数据（减少网络传输或磁盘访问）"></a>返回更少的数据（减少网络传输或磁盘访问）</h3><ol>
 <li>数据分页<br>每次查库都只返回固定数量的数据，而不是将所有数据拉倒本地，这样能够节约带宽，节省系统内存。分页分为服务器分页与数据库分页，一般数据库分页用的比较多。</li>
 <li>不要返回*<br>每次查库只返回所需要的字段，而不是将查到的所有字段都返回，因为很多无用数据会占用网络带宽与服务器内存</li>
 </ol>
-<h3 id="减少交互次数"><a href="#减少交互次数" class="headerlink" title="减少交互次数"></a>减少交互次数</h3><p>减少与数据库的交互次数，因为若是需要往数据库中插入几百万条数据，如果每次都建立一个连接，然后提交数据，这样与服务器的交互次数为几百万次且需要重复传输许多大量重复sql，造成网络上的延时开销。所以在编写sql时，可以从以下几点去考虑。</p>
+<h3 id="减少交互次数（减少网络传输）"><a href="#减少交互次数（减少网络传输）" class="headerlink" title="减少交互次数（减少网络传输）"></a>减少交互次数（减少网络传输）</h3><p>减少与数据库的交互次数，因为若是需要往数据库中插入几百万条数据，如果每次都建立一个连接，然后提交数据，这样与服务器的交互次数为几百万次且需要重复传输许多大量重复sql，造成网络上的延时开销。所以在编写sql时，可以从以下几点去考虑。</p>
 <ol>
 <li>批量执行SQL<br>这个就不多说啦，我们在插入、更新、删除数据时都推荐使用批量方式，而且通过批量方式提交sql带来的性能提高是非常显著的。</li>
 <li>in List<br>也算是批量查询的一种，也是通过减少sql请求的数量来提高性能。</li>
 </ol>
 <h3 id="减少服务器CPU运算"><a href="#减少服务器CPU运算" class="headerlink" title="减少服务器CPU运算"></a>减少服务器CPU运算</h3><ol>
-<li>使用绑定变量<br>在数据库中所有语句是有缓存的，若是使用绑定变量，那么提交的sql只需要解析相关参数就行了，也就是软解析。若不使用变量，而是把参数直接写入sql中，那么数据库会认为是另一条sql（hash值不同），会对该sql重新进行硬解析，会消耗CPU资源。使用绑定变量还能够防止SQL注入，所以这是非常需要注意的。</li>
+<li>使用绑定变量<br>在数据库中所有语句是有缓存的，若是使用绑定变量，那么提交的sql只需要解析相关参数就行了，也就是软解析。若不使用变量，而是把参数直接写入sql中，那么数据库会认为是另一条sql（hash值不同），会对该sql重新进行硬解析，硬解析过程中优化器会创建结系数、生成执行计划，这些操作都会大量会消耗CPU资源。使用绑定变量还能够防止SQL注入，所以这是非常需要注意的。</li>
 <li>合并使用排序</li>
 <li>减少比较操作</li>
 <li>大量复杂运算在客户端处理</li>
@@ -586,7 +587,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据存储消耗"><span class="nav-number">1.</span> <span class="nav-text">数据存储消耗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库性能优化"><span class="nav-number">2.</span> <span class="nav-text">数据库性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#减少数据访问"><span class="nav-number">2.1.</span> <span class="nav-text">减少数据访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回更少的数据"><span class="nav-number">2.2.</span> <span class="nav-text">返回更少的数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少交互次数"><span class="nav-number">2.3.</span> <span class="nav-text">减少交互次数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少服务器CPU运算"><span class="nav-number">2.4.</span> <span class="nav-text">减少服务器CPU运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用更多资源"><span class="nav-number">2.5.</span> <span class="nav-text">利用更多资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据存储消耗"><span class="nav-number">1.</span> <span class="nav-text">数据存储消耗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库性能优化"><span class="nav-number">2.</span> <span class="nav-text">数据库性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#减少数据访问（减少磁盘访问）"><span class="nav-number">2.1.</span> <span class="nav-text">减少数据访问（减少磁盘访问）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回更少的数据（减少网络传输或磁盘访问）"><span class="nav-number">2.2.</span> <span class="nav-text">返回更少的数据（减少网络传输或磁盘访问）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少交互次数（减少网络传输）"><span class="nav-number">2.3.</span> <span class="nav-text">减少交互次数（减少网络传输）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少服务器CPU运算"><span class="nav-number">2.4.</span> <span class="nav-text">减少服务器CPU运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用更多资源"><span class="nav-number">2.5.</span> <span class="nav-text">利用更多资源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
