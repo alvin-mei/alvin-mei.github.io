@@ -66,7 +66,7 @@
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/abstract_.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/CLH.png">
 <meta property="og:image" content="http://7xtc3q.com1.z0.glb.clouddn.com/CLHqq.png">
-<meta property="og:updated_time" content="2016-05-25T08:25:09.000Z">
+<meta property="og:updated_time" content="2016-08-25T08:11:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ReenTrantLock 技术内幕">
 <meta name="twitter:description" content="在Java中有synchronized与Lock两种方式来进行并发编程，我们知道synchronized是Java的内置关键字而Lock是在类级别实现对线程的同步访问控制，所以使用Lock同步相比于synchronized关键字有着更强的灵活性。因为当一个线程持有锁后，其他线程也需要执行相关同步代码时，在持有锁的线程让出锁前会一直阻塞下去，而Lock提供了tryLock、lockInterrupt">
@@ -333,7 +333,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">waittStaus</td>
+<td style="text-align:center">waitStatus</td>
 <td style="text-align:center">当前节点状态</td>
 </tr>
 <tr>
@@ -354,7 +354,7 @@
 </tr>
 </tbody>
 </table>
-<p>其中 waittStaus有以下几种状态：</p>
+<p>其中 waitStatus有以下几种状态：</p>
 <ul>
 <li>CANCELLED：表明当前节点被取消，原因可能为超时或中断，这种状态会被踢出队列，从而被gc回收</li>
 <li>SIGNAL：表示当前节点的后继节点可以拥有执行权</li>

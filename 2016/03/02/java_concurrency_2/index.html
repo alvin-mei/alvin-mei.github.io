@@ -69,7 +69,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20160302231304894">
 <meta property="og:image" content="http://img.blog.csdn.net/20160302231324004">
 <meta property="og:image" content="http://img.blog.csdn.net/20160302231405536">
-<meta property="og:updated_time" content="2016-05-04T13:29:04.000Z">
+<meta property="og:updated_time" content="2016-08-24T08:57:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java并发原理（下）">
 <meta name="twitter:description" content="VolatileVolatile关键字用于确保共享数据的可见性与有序性，但是并不能保证方法的原子性，在程序中对Volatile关键字使用得当的话，它比synchronized的使用和执行成本会更低，因为他不会引起线程的上下文切换和调度。
@@ -362,13 +362,13 @@
 <li>double check</li>
 </ul>
 <h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><p>synchronized关键字用于解决在并发编程时的有序性、原子性、可见性。相比于Volatile关键字，synchronized锁能够控制的范围更大，使用synchronized关键字修饰方法或代码块时，能够确保在同一时刻最多只有一个线程能够执行该代码。当synchronized修饰方法时，它锁住的是对象的实例synchronized（this），当作用在对象实例时，它锁住的是代码块。</p>
-<h4 id="synchronized实现原理："><a href="#synchronized实现原理：" class="headerlink" title="synchronized实现原理："></a>synchronized实现原理：</h4><p>我们对于synchronized的理解也许只在于其互斥的特性，认为线程在执行加上synchronized关键字的代码，需要执行该代码块或方法的线程就会竞争该代码块或方法的互斥锁。若竞争成功则线程该代码块的执行权，而未竞争到该锁的线程只能被阻塞，等到持有锁的线程执行代码块或方法执行完毕后释放锁，其他线程才能继续竞争，而这仅仅synchronized关键字中重量锁的特性。其实synchronized在经过不断优化后，其锁的特性为偏向锁-》轻量锁-》重量锁三种，偏量锁和轻量锁在某种意义上能够减少重量锁带来的开销，但是他们都不能替代重量锁，下面就让我们来看看这三种锁的原理。</p>
+<h4 id="synchronized实现原理："><a href="#synchronized实现原理：" class="headerlink" title="synchronized实现原理："></a>synchronized实现原理：</h4><p>我们对于synchronized的理解也许只在于其互斥的特性，认为线程在执行加上synchronized关键字的代码，需要执行该代码块或方法的线程就会竞争该代码块或方法的互斥锁。若竞争成功则线程该代码块的执行权，而未竞争到该锁的线程只能被阻塞，等到持有锁的线程执行代码块或方法执行完毕后释放锁，其他线程才能继续竞争，synchronized在本质上它是针对内存区块申请的内存锁，是对内存的互斥。而这仅仅synchronized关键字中重量锁的特性。其实synchronized在经过不断优化后，其锁的特性为偏向锁-》轻量锁-》重量锁三种，偏量锁和轻量锁在某种意义上能够减少重量锁带来的开销，但是他们都不能替代重量锁，下面就让我们来看看这三种锁的原理。</p>
 <h4 id="重量锁"><a href="#重量锁" class="headerlink" title="重量锁"></a>重量锁</h4><p>重量锁故名思议就是需要消耗大量系统资源的锁，因为很重嘛。当多线程执行到具有synchronized关键字的代码时，会进行锁竞争，竞争失败的线程会进入一个阻塞队列，而获得锁的线程会获取代码的执行权。</p>
 <p>具体重量锁的原理可以参考：<a href="http://blog.csdn.net/chen77716/article/details/6618779" target="_blank" rel="external">http://blog.csdn.net/chen77716/article/details/6618779</a></p>
-<p>而synchronized锁是一种非公平锁，当线程竞争失败时会阻塞，我们知道线程从运行状态切换到阻塞状态是依赖于操作系统从用户态切换到内核态来执行的，这种切换会消耗大量的系统资源（因为用户态与内核态都有各自专用的内存空间，专用的寄存器租等，用户态切换至内核态需要传递给许多变量、参数给内核，内核也需要保护好用户态在切换时的一些寄存器值、变量等，以便内核态调用结束后切换回用户态继续工作）。如果该方法是一个高频操作时，这将会消耗很多CPU处理时间。所以为了避免线程阻塞带来的消耗，引入了轻量锁。</p>
-<h4 id="轻量锁"><a href="#轻量锁" class="headerlink" title="轻量锁"></a>轻量锁</h4><p>轻量锁是为了避免在没有竞争的情况下重量锁所带来的开销，一旦该对象有多个线程竞争，轻量锁就会升级为重量锁，所以轻量锁和偏向锁并不能在多线程竞争情况下代替重量锁！！！只能在无锁竞争的条件下减缓重量锁的开销。在了解轻量锁前，我们先了解一下CAS操作与mark word标记，他们是实现轻量锁的基础。</p>
+<p>而synchronized锁是一种非公平锁，当线程竞争失败时会阻塞，我们知道线程从运行状态切换到阻塞状态是依赖于操作系统从用户态切换到内核态来执行的，这种切换会消耗大量的系统资源（因为用户态与内核态都有各自专用的内存空间，专用的寄存器组等，用户态切换至内核态需要传递给许多变量、参数给内核，内核也需要保护好用户态在切换时的一些寄存器值、变量等，以便内核态调用结束后切换回用户态继续工作）。如果该方法是一个高频操作时，这将会消耗很多CPU处理时间。所以为了避免线程阻塞带来的消耗，引入了轻量锁。</p>
+<h4 id="轻量锁"><a href="#轻量锁" class="headerlink" title="轻量锁"></a>轻量锁</h4><p>轻量锁是为了避免在没有竞争的情况下重量锁锁带来的开销，一旦该对象有多个线程竞争，轻量锁就会升级为重量锁，所以轻量锁和偏向锁并不能在多线程竞争情况下代替重量锁！！！只能在无锁竞争的条件下减小重量锁的开销。在了解轻量锁前，我们先了解一下CAS操作与mark word标记，他们是实现轻量锁的基础。</p>
 <h4 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h4><p>CAS英文名（compare and swap）也就是比较交换，java语言在代码层面对其进行了封装，实际上是它是通过调用jni来实现的，它本质上是调用了cpu的指令集。在JUC中大量的使用到了CAS操作，它作为一种乐观锁，使用它就能实现所谓的无锁交换。</p>
-<p>在CAS操作中，一个变量有三个状态值，一个是内存值V，一个是旧的预期值A，还有一个是要替换新值的B。对应到JMM中，V表示为主存中的值，而旧的预期值A为我们工作内存中的值，而B为操作后的新值，若V与B相等就说明该变量没有被其他线程修改，那么将变量替换为B值，不相等则不进行交换。所以使用CAS操作的开销相对于线程竞争过程中的阻塞唤醒引起的上下文切换来说小了很多（竞争情况下，操作队列，线程挂起，上下文切换）。</p>
+<p>在CAS操作中，一个变量有三个状态值，一个是内存值V，一个是旧的预期值A，还有一个是要替换新值的B。对应到JMM中，V表示为主存中的值，而旧的预期值A为我们工作内存中的值，而B为操作后的新值，若V与A相等就说明该变量没有被其他线程修改，那么将变量替换为B值，不相等则不进行交换。所以使用CAS操作的开销相对于线程竞争过程中的阻塞唤醒引起的上下文切换来说小了很多（竞争情况下，操作队列，线程挂起，上下文切换）。</p>
 <h4 id="MARK-WORD"><a href="#MARK-WORD" class="headerlink" title="MARK WORD"></a>MARK WORD</h4><p>我们知道java的Class文件是对java程序二进制文件格式的定义，java编译器将Class文件编译成字节码在jvm中运行，在堆内存中的对象都含有各自的对象头用于确定obj在运行时的状态，而Mark Word正是一个长为32bit的对象头，是用来标记同步线程的，具体信息如下图所示：</p>
 <p><img src="http://img.blog.csdn.net/20160302231324004" alt="这里写图片描述"></p>
 <p>这里先解释HashCode 与state两个变量的值，轻量锁与重量锁在HashCode中存入的值为指向占有锁的线程的栈中的存储该线程所占有锁的信息的地址（有点绕口，其实就是存了一个地址，下面会详细说），state表示当前对象所处的状态，下面我们来看一下轻量锁如何来实现锁机制，这里分两种情况。</p>
