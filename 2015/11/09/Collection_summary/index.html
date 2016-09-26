@@ -67,7 +67,7 @@ HashSetHashSet类继承了AbstractSe">
 <meta property="og:description" content="在之前的一段时间里，对Collection中的各个源码都研究了一遍，也写了几个容器的源码分析文章，这篇文章就对整个Collection中的所有容器做一个总结。
 Set接口Set接口继承了Collection接口，它不允许包含两个相同的元素，每个元素必须是唯一的。继承Set接口的类有HashSet、TreeSet、LinkedHashSet。
 HashSetHashSet类继承了AbstractSe">
-<meta property="og:updated_time" content="2016-07-03T13:51:43.000Z">
+<meta property="og:updated_time" content="2016-09-24T00:31:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Collection探究之总结">
 <meta name="twitter:description" content="在之前的一段时间里，对Collection中的各个源码都研究了一遍，也写了几个容器的源码分析文章，这篇文章就对整个Collection中的所有容器做一个总结。
@@ -318,7 +318,7 @@ HashSetHashSet类继承了AbstractSe">
 <h3 id="HashTable"><a href="#HashTable" class="headerlink" title="HashTable"></a>HashTable</h3><p>HashTable实现了Map接口，继承自Dictionary。所以HashTable是不能接受null键值对的，HashTable的所有方法都是线程安全的，所以在并发情况下可以使用Hashtable。</p>
 <h3 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h3><p>TreeMap内部结构是由红黑树构成，所以能够保存添加入的key的顺序，默认是按升序排的，也可以自己实现排序的比较器。</p>
 <h3 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h3><p>LinkedHashMap是HashMap的一个子类，它保留了key-value插入时的顺序，LinkedHashMap在HashMap的基础上增加了一个双向链表。LinkedHashMap也是可以保存一个null的key-value值。</p>
-<h3 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h3><p>ConcurrentHashMap是一个读数据不加锁，写数据分散锁的容器。ConcurrentHashMap中的子节点分成16个Segment，每一个Segment其实就相当于是一个HashTable，Segment内部维护了一个链表。所以当有数据加入到ConcurrentHashMap中时，需要进行两次Hash操作，第一次Hash会定位到Segment上，第二次Hash用于定位到相应的HashTable中的Entry上。虽然说效率上没有HashMap高，但是在并发操作时，不同的Segment之间是相互隔离的。</p>
+<h3 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h3><p>ConcurrentHashMap是一个读数据不加锁，写数据分散锁的容器。ConcurrentHashMap中的子节点分成16个Segment，每一个Segment其实就相当于是一个HashTable，Segment内部维护了一个链表，就是采用了锁分离技术。所以当有数据加入到ConcurrentHashMap中时，需要进行两次Hash操作，第一次Hash会定位到Segment上，第二次Hash用于定位到相应的HashTable中的Entry上。若是需要对全map的操作如size等，那么他需要锁整个map，而且是按顺序锁定所有的Segment，完毕后又按顺序释放所有的Segment锁。虽然说效率上没有HashMap高，但是在并发操作时，不同的Segment之间是相互隔离的。</p>
 
       
     </div>
